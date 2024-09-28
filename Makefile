@@ -15,8 +15,21 @@ AR          = ar rcs
 CC          = gcc
 CFLAGS      = -Wall -Wextra -Werror -I . -I./libft -g3
 
+<<<<<<< HEAD
 PATH_LIBFT  = libft
 LIBFT       = ${PATH_LIBFT}/libft.a
+=======
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -I. -I./libft
+
+SRCS = main.c parsing_tokenizer.c parsing_quotes.c parsing_expansion.c \
+       parsing_redirections.c parsing_pipes.c parsing_syntax.c parsing_utils.c \
+       parsing_memory.c parsing_display.c
+
+OBJS = $(SRCS:.c=.o)
+
+LIBFT = ./libft/libft.a
+>>>>>>> 147caef (Modif sur le Makefile)
 
 # Chemins pour readline (ajuste-les selon ton installation)
 READLINE    = -L/opt/homebrew/opt/readline/lib -I/opt/homebrew/opt/readline/include -lreadline
