@@ -10,24 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "builtins.h"
+
+#include <unistd.h>
+
+
 
 int	ft_env(char **envp)
 {
 	int	i;
-	int	j;
 
 	i = 0;
-	j = 0;
-	if (!envp)
+	if (!envp || !envp[i])
 		return (1);
 	while (envp[i])
 	{
-		j = -1;
-		while (envp[i][++j])
-			write (1, &envp[i][j], 1);
-		write (1, "\n", 1);
-		i++;
+		if(ft_strlkforc(envp[i],'=') == 1)
+		{
+			write(1, envp[i], ft_strlen(envp[i]));
+			write(1, "\n", 1);
+			i++;
+		}
 	}
 	return (0);
 }

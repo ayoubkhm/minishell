@@ -2,33 +2,33 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2024/09/23 20:26:06 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/23 20:26:06 by gtraiman         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/28 22:04:46 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/09/28 22:04:46 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+typedef struct s_data
+{
+	int	ac;
+	char	**av;
+	char	**envp;
+}	t_data;
+
 # include "libft/libft.h"
 # include "parsing/parsing.h"
+# include "exec/exec.h"
+# include "exec/builtins/builtins.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-
-int	ft_pwd(char **envp);
-int	ft_env(char **envp);
-char	*ft_addstr(char *str1, char *str2);
-int	ft_unset(char **envp, char *str);
-void	ft_delstr(char *str);
-char	**ft_copytab(char **tab);
-int	ft_tabstrlen(char **tab);
-char	**ft_export(char **envp, char *str);
+# include <errno.h>
+# include <fcntl.h>
+# include <sys/wait.h>
 
 #endif
