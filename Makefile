@@ -6,7 +6,7 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/09/28 19:41:39 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/10/01 21:12:42 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,21 +22,24 @@ LIBFT       = ${PATH_LIBFT}/libft.a
 READLINE    = -L/opt/homebrew/opt/readline/lib -I/opt/homebrew/opt/readline/include -lreadline
 
 # Sources des fichiers
-SRCS        = builtins/env.c \
-              builtins/pwd.c \
-              builtins/utils.c \
-              builtins/unset.c \
-              builtins/export.c \
-              main.c \
-              parsing/parsing_tokenizer.c \
-              parsing/parsing_quotes.c \
-              parsing/parsing_expansion.c \
-              parsing/parsing_redirections.c \
-              parsing/parsing_pipes.c \
-              parsing/parsing_syntax.c \
-              parsing/parsing_utils.c \
-              parsing/parsing_memory.c \
-              parsing/parsing_display.c
+SRCS        =   exec/builtins/echo.c \
+                exec/builtins/env.c \
+                exec/builtins/pwd.c \
+                exec/builtins/utils.c \
+                exec/builtins/unset.c \
+                exec/builtins/export.c \
+                exec/exec.c \
+                exec/exec_utils.c \
+                main.c \
+                parsing/parsing_tokenizer.c \
+                parsing/parsing_quotes.c \
+                parsing/parsing_expansion.c \
+                parsing/parsing_redirections.c \
+                parsing/parsing_pipes.c \
+                parsing/parsing_syntax.c \
+                parsing/parsing_utils.c \
+                parsing/parsing_memory.c \
+                parsing/parsing_display.c \
 
 OBJS        = ${SRCS:.c=.o}
 
