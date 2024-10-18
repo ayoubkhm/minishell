@@ -19,7 +19,7 @@ char	*ft_addstr(char *str1, char *str2)
 	int i;
 	char *stret;
 
-	stret = malloc((ft_strlen(str1) + ft_strlen(str2) + 1) * sizeof(char));
+	stret = malloc((strlen(str1) + strlen(str2) + 1) * sizeof(char));
 	if (!stret)
 		return (NULL);
 	i = -1;
@@ -27,8 +27,8 @@ char	*ft_addstr(char *str1, char *str2)
 		stret[i] = str1[i];
 	i = -1;
 	while (str2[++i])
-		stret[i + ft_strlen(str1)] = str2[i];
-	stret[i] = '\0';
+		stret[i + strlen(str1)] = str2[i];
+	stret[i + strlen(str1)] = '\0';
 	return (stret);
 }
 
@@ -75,4 +75,18 @@ void	ft_freedata(t_data *data)
 		ft_freetab(data->av);
 	if (data->envp)
 		ft_freetab(data->envp);
+	if(data->cwd)
+		free(data->cwd);
+}
+
+void	ft_delfromc(char *str, char c)
+{
+	int		i;
+
+	if (!str)
+		return;
+	i = 0;
+	while (str[i] && str[i] != c)
+		i++;
+	str[i+1] = '\0';
 }

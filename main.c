@@ -9,11 +9,15 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	t_token	*tokens;
 	t_data	data;
+	
 
 
 	data.ac = argc;
-	data.av = argv;
+	data.av = ft_copytab(argv);
 	data.envp = ft_copytab(envp);
+	data.cwd = malloc(4096);
+	data.exit = 0;
+	getcwd(data.cwd, 1024);
 	while (1)
 	{
 		input = readline("minishell$ ");
@@ -22,15 +26,12 @@ int	main(int argc, char **argv, char **envp)
 		if (*input)
 			add_history(input);
 		tokens = tokenize_input(input);
+		free(input);
 		// printf("Tokens générés : \n");
 		// print_tokens(tokens);
 		if (check_syntax(tokens) == 0)
 			ft_exec(tokens, &data);
 		free_tokens(tokens);
-		free(input);
-		
 	}
-	ft_freedata(&data);
-	printf("exit\n");
-	return (0);
+	return(0);
 }

@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/06 23:26:40 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/18 15:57:07 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,32 @@ int	ft_access(char **tab, char *avi, char **path)
 		free(temp);
 		if (access(tab[j], F_OK | X_OK) == 0)
 		{
-                        *path = tab[j];
-                        return (1);
+			*path = tab[j];
+			return (1);
 		}
 		j++;
 	}
+	*path = NULL;
 	perror("access");
 	return (-1);
+}
+
+
+int	tklast(t_token *token)
+{
+	int	i;
+	t_token	*tmp;
+	
+	
+	i = 0;
+	tmp = token;
+	while(token)
+	{	
+		i++;
+		token = token->next;
+	}
+	token = tmp;
+	return(i);
 }
 
 char	**ft_get_path(char **envp)
@@ -102,63 +121,24 @@ int	ft_strlkforc(char *str,char c)
 	return (0);
 }
 
+char	*rmstrbfc(char *str, char c)
+{
+	int	i;
+	char	*str2;
+	int	j;
 
-// t_env   *new_env_node(char *name, char *value)
-// {
-//     t_env *new_node;
-
-//     new_node = (t_env *)malloc(sizeof(t_env));
-//     if (!new_node)
-//         return (NULL);
-//     new_node->name = name;
-//     new_node->value = value;
-//     new_node->next = NULL;
-//     return (new_node);
-// }
-
-// void    add_env_node(t_env **lst, t_env *new_node)
-// {
-//     t_env *tmp;
-
-//     if (!*lst)
-//     {
-//         *lst = new_node;
-//         return ;
-//     }
-//     tmp = *lst;
-//     while (tmp->next)
-//         tmp = tmp->next;
-//     tmp->next = new_node;
-// }
-
-// t_env   *create_env_node(char *env_entry)
-// {
-//     char *delimiter;
-//     char *name;
-//     char *value;
-
-//     delimiter = strchr(env_entry, '=');
-//     if (!delimiter)
-//         return (NULL);
-//     name = strndup(env_entry, delimiter - env_entry);
-//     value = strdup(delimiter + 1);
-//     return (new_env_node(name, value));
-// }
-
-// t_env   *ft_envtolst(char **envp)
-// {
-//     t_env   *env_list;
-//     t_env   *new_node;
-//     int     i;
-
-//     env_list = NULL;
-//     i = 0;
-//     while (envp[i])
-//     {
-//         new_node = create_env_node(envp[i]);
-//         if (new_node)
-//             add_env_node(&env_list, new_node);
-//         i++;
-//     }
-//     return (env_list);
-// }
+	j = -1;
+	i = 0;
+	while(str[i] && str[i] != c)
+		i++;
+	if(!str)
+		return(ft_strdup(str));
+	str2 = malloc((ft_strlen(str) - i + 1) * sizeof(char));
+	if(!str2)
+		return(NULL);
+	while(str[++i])
+		str2[j++] = str[i];
+	free(str);
+	str2[j] = '\0';
+	return(str2);
+}

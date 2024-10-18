@@ -22,8 +22,6 @@ char	**ft_unset(char **envp, char *str)
 	j = 0;
 	str = ft_addstr(str, "=");
 	tabret = malloc((ft_tabstrlen(envp)) * sizeof(char *));
-	if (!tabret)
-		exit(1);
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], str, ft_strlen(str)) != 0)
@@ -40,9 +38,8 @@ char	**ft_unset(char **envp, char *str)
 	return (tabret);
 }
 
-int	ft_parsunset(t_data *data,t_token *token)
+int	ft_parsunset(t_data *data, t_token *token)
 {
-	(void)data;
-	(void)token;
-	return(0);
+	ft_unset(data->envp,token->value);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 16:25:00 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/01 21:10:54 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/18 18:12:58 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ bool	is_n_option(char *arg)
 	return (false);
 }
 
-int	ft_parsecho(t_token *token)
+int	ft_parsecho(t_token *token, t_data *data)
 {
+	(void)data;
 	bool	newline;
 	bool	first_arg;
 
 	newline = true;
 	first_arg = true;
-	// fprintf(stderr,"here\n\n");
 	token = token->next;
 	while (token && token->value && is_n_option(token->value))
 	{

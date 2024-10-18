@@ -12,10 +12,6 @@
 
 #include "builtins.h"
 
-#include <unistd.h>
-
-
-
 int	ft_env(char **envp)
 {
 	int	i;
@@ -29,8 +25,8 @@ int	ft_env(char **envp)
 		{
 			write(1, envp[i], ft_strlen(envp[i]));
 			write(1, "\n", 1);
-			i++;
 		}
+		i++;
 	}
 	return (0);
 }
