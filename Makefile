@@ -6,7 +6,7 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/10/01 21:12:42 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/10/18 16:10:58 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,13 +22,19 @@ LIBFT       = ${PATH_LIBFT}/libft.a
 READLINE    = -L/opt/homebrew/opt/readline/lib -I/opt/homebrew/opt/readline/include -lreadline
 
 # Sources des fichiers
-SRCS        =   exec/builtins/echo.c \
+SRCS        =   exec/builtins/cd.c \
+                exec/builtins/echo.c \
                 exec/builtins/env.c \
-                exec/builtins/pwd.c \
-                exec/builtins/utils.c \
-                exec/builtins/unset.c \
+                exec/builtins/exit.c \
                 exec/builtins/export.c \
+                exec/builtins/pwd.c \
+                exec/builtins/unset.c \
+                exec/builtins/builtins_utils.c \
                 exec/exec.c \
+                exec/envp_var.c \
+                exec/heredoc.c \
+                exec/pipe.c \
+                exec/redirections.c \
                 exec/exec_utils.c \
                 main.c \
                 parsing/parsing_tokenizer.c \

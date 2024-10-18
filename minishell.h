@@ -18,6 +18,8 @@ typedef struct s_data
 	int	ac;
 	char	**av;
 	char	**envp;
+	char	*cwd;
+	int	exit;
 }	t_data;
 
 # include "libft/libft.h"
