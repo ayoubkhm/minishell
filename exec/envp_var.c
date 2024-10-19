@@ -1,28 +1,28 @@
 
 #include "exec.h"
 
-int	ft_envar(t_token *token, t_data *data)
-{
-	int		i;
+// int	ft_envar(t_token *token, t_data *data)
+// {
+// 	int		i;
 
-	i = 0;
+// 	i = 0;
 
-	token->value = rmstrbfc(token->value, '$');
-	while (data->envp[i])
-	{
-		if (ft_strncmp(data->envp[i], token->value, ft_strlen(token->value)
-				- 1) == 0)
-		{
-			token->value = rmstrbfc(data->envp[i], '=');
-			return (0);
-		}
-		i++;
-	}
-	printf("%d\n",data->exit);
-	if(token->value[0] == '?' && token->value[1] == '\0')
-		token->value = ft_itoa(data->exit);
-	return(0);
-}
+// 	token->value = rmstrbfc(token->value, '$');
+// 	while (data->envp[i])
+// 	{
+// 		if (ft_strncmp(data->envp[i], token->value, ft_strlen(token->value)
+// 				- 1) == 0)
+// 		{
+// 			token->value = rmstrbfc(data->envp[i], '=');
+// 			return (0);
+// 		}
+// 		i++;
+// 	}
+// 	printf("%d\n",data->exit);
+// 	if(token->value[0] == '?' && token->value[1] == '\0')
+// 		token->value = ft_itoa(data->exit);
+// 	return(0);
+// }
 
 // int	ft_envar(t_token *token, t_data *data)
 // {

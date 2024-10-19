@@ -1,15 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exit.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2024/10/12 19:40:25 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/12 19:40:25 by gtraiman         ###   ########.fr       */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/19 21:32:34 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/10/19 21:32:34 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,32 +14,34 @@
 
 long	ft_exatoi(char *str)
 {
-	long	atoi;
-	int	negative;
+	long atoi;
+	int s;
 
 	atoi = 0;
-	negative = 1;
+	s = 1;
 	while ((*str >= 9 && *str <= 13) || (*str == ' '))
 		str++;
 	if (*str == '+' || *str == '-')
 	{
 		if (*str == '-')
-			negative = negative * -1;
+			s = s * -1;
 		str++;
 	}
 	while (*str >= '0' && *str <= '9')
 	{
 		atoi = atoi * 10 + (*str) - 48;
 		str++;
+		if ((s == 1 && atoi > LLONG_MAX) || (s == -1 && atoi * s < LLONG_MIN))
+			return (2);
 	}
 	if (*str)
 		return (2);
-	return (atoi * negative);
+	return (atoi * s);
 }
 
 int	ft_exit(t_data *data, t_token *token)
 {
-	int	i;
+	int i;
 
 	write(1, "exit\n", 5);
 	ft_freedata(data);

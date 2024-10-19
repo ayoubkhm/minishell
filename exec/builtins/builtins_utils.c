@@ -90,3 +90,42 @@ void	ft_delfromc(char *str, char c)
 		i++;
 	str[i+1] = '\0';
 }
+
+char	*rpstrfrmc(char *src,char *dest, char c)
+{
+	int	i;
+	(void)dest;
+	(void)c;
+	i = 0;
+	(void)i;
+	return(src);
+	
+}
+
+
+char	*getstrfrmc(char *str, char c)
+{
+	char	*newstr;
+	int		i;
+	int		len;
+
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (str[i] && str[i] != c)
+		i++;
+	if (!str[i])
+		return (NULL);
+	len = 0;
+	while (str[i + len])
+		len++;
+	newstr = malloc(sizeof(char) * (len + 1));
+	if (!newstr)
+		return (NULL);
+	i++;
+	len = 0;
+	while (str[i])
+		newstr[len++] = str[i++];
+	newstr[len] = '\0';
+	return (newstr);
+}

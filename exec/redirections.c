@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/18 13:59:15 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/19 20:50:12 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,12 @@ int	ft_rdrin(t_token *token, t_data *data)
 		exit(2);
 	if(openin(token->next) == -1)
 		exit(1);
-	exit(0);
+	if(dup2(token->next->open,STDIN_FILENO) == -1)
+	{
+		perror("dup2");
+		exit(1);
+	}
+	close(token->next->open);
 	return(0);
 }
 
