@@ -1,16 +1,6 @@
 #ifndef PARSING_H
 # define PARSING_H
 
-typedef struct s_token
-{
-	char			*value;
-	int				type;
-	struct s_token	*next;
-	struct s_token	*prev;
-	int				open;
-	char			**tab;
-}					t_token;
-
 # include "../libft/libft.h"
 # include "../minishell.h"
 # include <ctype.h>
@@ -28,8 +18,6 @@ typedef struct s_token
 # define TYPE_QUOTED 7             // Contenu entre guillemets
 
 extern int			g_last_exit_status;
-
-
 
 // Prototypes
 t_token				*tokenize_input(char *input);
