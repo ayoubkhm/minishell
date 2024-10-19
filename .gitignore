@@ -1,2 +1,5 @@
-./valignr
-./*.o
+valignr
+*.a
+*.o
+minishell
+.vscode/
