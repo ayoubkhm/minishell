@@ -1,37 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/24 15:35:58 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/24 15:35:58 by gtraiman         ###   ########.fr       */
+/*   Created: 2024/09/23 19:45:58 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/09/23 19:45:58 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "builtins.h"
 
-int	ft_unset(char **envp, char *str)
+int	ft_env(char **envp)
 {
-	int		i;
-	int		j;
-	char	*target;
+	int	i;
 
 	i = 0;
-	if (!envp || !str)
+	if (!envp || !envp[i])
 		return (1);
-	target = ft_addstr(str, "=");
-	if (!target)
-		return (1);
-	while (envp[i] && ft_strncmp(target, envp[i], strlen(target)))
+	while (envp[i])
+	{
+		if(ft_strlkforc(envp[i],'=') == 1)
+		{
+			write(1, envp[i], ft_strlen(envp[i]));
+			write(1, "\n", 1);
+		}
 		i++;
-	free (target);
-	if (!envp[i])
-		return (1);
-	j = i - 1;
-	while (envp[++j])
-		envp[j] = envp[j + 1];
-	free(envp[j]);
+	}
 	return (0);
 }

@@ -6,14 +6,13 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 16:25:00 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/28 18:50:46 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/18 18:12:58 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-#include <unistd.h>
+#include "builtins.h"
 
-int	ft_echo(char *str, bool newline)
+int	ft_echo(char *str)
 {
 	int	i;
 
@@ -40,26 +39,30 @@ bool	is_n_option(char *arg)
 	return (false);
 }
 
-int	ft_parsecho(char **av)
+int	ft_parsecho(t_token *token, t_data *data)
 {
-	int		i;
+	(void)data;
 	bool	newline;
+	bool	first_arg;
 
-	i = 1;
 	newline = true;
-	while (av[i] && is_n_option(av[i]))
+	first_arg = true;
+	token = token->next;
+	while (token && token->value && is_n_option(token->value))
 	{
 		newline = false;
-		i++;
+		token = token->next;
 	}
-	while (av[i])
+	while (token && token->value)
 	{
-		ft_echo(av[i], false);
-		if (av[i + 1])
+		if (!first_arg)
 			write(1, " ", 1);
-		i++;
+		ft_echo(token->value);
+		first_arg = false;
+		token = token->next;
 	}
 	if (newline)
 		write(1, "\n", 1);
 	return (0);
 }
+
