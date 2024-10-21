@@ -1,7 +1,8 @@
 #ifndef PARSING_H
 # define PARSING_H
 
-# include "./libft/libft.h"
+# include "../libft/libft.h"
+# include "../minishell.h"
 # include <ctype.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -18,14 +19,6 @@
 
 extern int			g_last_exit_status;
 
-typedef struct s_token
-{
-	char			*value;
-	int				type;
-	struct s_token	*next;
-	struct s_token	*prev;
-}					t_token;
-
 // Prototypes
 t_token				*tokenize_input(char *input);
 int					handle_single_quotes(char *input, int i, t_token **tokens);
@@ -41,5 +34,14 @@ void				free_tokens(t_token *tokens);
 int					is_operator(char c);
 void				print_tokens(t_token *tokens);
 int					handle_pipe(int i, t_token **tokens);
+
+// Les nouvelles fonctions pour la liste chainée qui gère par commandes
+t_cmd_list *create_cmd_node(void);
+char **append_file(char **files_list, char *file);
+int *append_file_type(int *files_type, int type);
+int count_tokens(t_token *tokens);
+t_cmd_list *parse_commands(t_token *tokens);
+void print_cmd_list(t_cmd_list *cmd_list);
+void free_cmd_list(t_cmd_list *cmd_list);
 
 #endif
