@@ -29,8 +29,8 @@ int main(int argc, char **argv, char **envp)
         tokens = tokenize_input(input);
         free(input);
 
-        printf("Tokens générés : \n");
-        print_tokens(tokens);
+        //printf("Tokens générés : \n");
+        //print_tokens(tokens);
         if (check_syntax(tokens) == 0)
         {
             cmd_list = parse_commands(tokens);

@@ -16,7 +16,7 @@ int check_syntax(t_token *tokens)
         // Vérification des pipes mal placés
         if (current->type == TYPE_PIPE)
         {
-            printf("Token PIPE détecté.\n");
+            //printf("Token PIPE détecté.\n");
             // Pipe ne doit pas être le dernier token ou être répété sans commande entre deux pipes
             if (!current->next || current->next->type == TYPE_PIPE)
             {
