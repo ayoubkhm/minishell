@@ -7,13 +7,52 @@ t_cmd_list *create_cmd_node(void)
     if (!new_node)
         return (NULL);
     new_node->cmd_args = NULL;
+    new_node->cmd = NULL;
     new_node->files_list = NULL;
     new_node->files_type = NULL;
+    new_node->files_count = 0; // Initialisation
     new_node->last_in = -1;
     new_node->last_out = -1;
     new_node->next = NULL;
     return new_node;
 }
+
+
+void add_redirection(t_cmd_list *cmd, char *filename, int type)
+{
+    int new_count = cmd->files_count + 1;
+
+    // Reallocation de files_list
+    char **new_files_list = realloc(cmd->files_list, sizeof(char *) * new_count);
+    if (!new_files_list)
+    {
+        // Gérer l'erreur d'allocation
+        return;
+    }
+    cmd->files_list = new_files_list;
+    cmd->files_list[cmd->files_count] = ft_strdup(filename);
+
+    // Reallocation de files_type
+    int *new_files_type = realloc(cmd->files_type, sizeof(int) * new_count);
+    if (!new_files_type)
+    {
+        // Gérer l'erreur d'allocation
+        return;
+    }
+    cmd->files_type = new_files_type;
+    cmd->files_type[cmd->files_count] = type;
+
+    // Mettre à jour last_in ou last_out
+    if (type == 0) // 0 pour infile
+        cmd->last_in = cmd->files_count;
+    else if (type == 1 || type == 2) // 1 pour outfile (overwrite), 2 pour append
+        cmd->last_out = cmd->files_count;
+
+    // Mettre à jour files_count
+    cmd->files_count = new_count;
+}
+
+
 
 char **append_file(char **files_list, char *file)
 {
@@ -126,73 +165,71 @@ t_cmd_list *parse_commands(t_token *tokens)
         // Remplir cmd_args et gérer les redirections
         int arg_index = 0;
         tokens = start;
-        while (tokens && tokens->type != TYPE_PIPE)
+    while (tokens && tokens->type != TYPE_PIPE)
+    {
+        if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED)
         {
-            if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED)
+            current_cmd->cmd_args[arg_index++] = ft_strdup(tokens->value);
+            tokens = tokens->next;
+        }
+        else if (tokens->type == TYPE_REDIRECTION_INPUT)
+        {
+            tokens = tokens->next;
+            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
             {
-                current_cmd->cmd_args[arg_index++] = ft_strdup(tokens->value);
+                add_redirection(current_cmd, tokens->value, 0); // 0 pour infile
                 tokens = tokens->next;
-            }
-            else if (tokens->type == TYPE_REDIRECTION_INPUT)
-            {
-                tokens = tokens->next;
-                if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
-                {
-                    // Ajouter le fichier infile
-                    current_cmd->files_list = append_file(current_cmd->files_list, tokens->value);
-                    current_cmd->files_type = append_file_type(current_cmd->files_type, 0); // 0 pour infile
-                    current_cmd->last_in = get_last_index(current_cmd->files_list); // Mettre à jour last_in
-                    tokens = tokens->next;
-                }
-                else
-                {
-                    // Gérer l'erreur de syntaxe : fichier manquant après '<'
-                    printf("Erreur : fichier manquant après '<'\n");
-                    return NULL;
-                }
-            }
-            else if (tokens->type == TYPE_REDIRECTION_OUTPUT || tokens->type == TYPE_REDIRECTION_APPEND)
-            {
-                tokens = tokens->next;
-                if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
-                {
-                    // Ajouter le fichier outfile
-                    current_cmd->files_list = append_file(current_cmd->files_list, tokens->value);
-                    current_cmd->files_type = append_file_type(current_cmd->files_type, 1); // 1 pour outfile
-                    current_cmd->last_out = get_last_index(current_cmd->files_list); // Mettre à jour last_out
-                    tokens = tokens->next;
-                }
-                else
-                {
-                    // Gérer l'erreur de syntaxe : fichier manquant après '>' ou '>>'
-                    printf("Erreur : fichier manquant après '>' ou '>>'\n");
-                    return NULL;
-                }
             }
             else
             {
-                // Autres types de tokens (à gérer selon vos besoins)
-                tokens = tokens->next;
+                printf("Erreur : fichier manquant après '<'\n");
+                return NULL;
             }
         }
-
-        // Terminer cmd_args par NULL
+        else if (tokens->type == TYPE_REDIRECTION_OUTPUT)
+        {
+            tokens = tokens->next;
+            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+            {
+                add_redirection(current_cmd, tokens->value, 1); // 1 pour outfile overwrite
+                tokens = tokens->next;
+            }
+            else
+            {
+                printf("Erreur : fichier manquant après '>'\n");
+                return NULL;
+            }
+        }
+        else if (tokens->type == TYPE_REDIRECTION_APPEND)
+        {
+            tokens = tokens->next;
+            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+            {
+                add_redirection(current_cmd, tokens->value, 2); // 2 pour outfile append
+                tokens = tokens->next;
+            }
+            else
+            {
+                printf("Erreur : fichier manquant après '>>'\n");
+                return NULL;
+            }
+        }
+        else
+        {
+            tokens = tokens->next;
+        }
+    }
         current_cmd->cmd_args[arg_index] = NULL;
-
-        // Initialiser le champ 'cmd' avec le premier argument
         if (current_cmd->cmd_args && current_cmd->cmd_args[0])
         {
             current_cmd->cmd = ft_strdup(current_cmd->cmd_args[0]);
         }
-
-        // Passer au token suivant si un pipe est rencontré
         if (tokens && tokens->type == TYPE_PIPE)
         {
-            printf("Pipe détecté, prochaine commande\n");
             tokens = tokens->next;
         }
     }
-	//print_cmd_list(cmd_list);
+	print_cmd_list(cmd_list);
     return cmd_list;
 }
 
@@ -203,25 +240,24 @@ void print_cmd_list(t_cmd_list *cmd_list)
 {
     while (cmd_list)
     {
-        // Afficher la commande
         printf("Commande : %s\n", cmd_list->cmd);
-
-        // Afficher les arguments de la commande
         printf("Arguments de la commande : \n");
         for (int i = 0; cmd_list->cmd_args && cmd_list->cmd_args[i]; i++)
         {
             printf("cmd_args[%d] = %s\n", i, cmd_list->cmd_args[i]);
         }
-
-        // Afficher les fichiers de redirection
         printf("Liste des fichiers (infile et outfile) : \n");
-        for (int i = 0; cmd_list->files_list && cmd_list->files_list[i]; i++)
+        for (int i = 0; i < cmd_list->files_count; i++)
         {
-            const char *type_str = (cmd_list->files_type[i] == 0) ? "infile" : "outfile";
+            const char *type_str = "";
+            if (cmd_list->files_type[i] == 0)
+                type_str = "infile";
+            else if (cmd_list->files_type[i] == 1)
+                type_str = "outfile (overwrite)";
+            else if (cmd_list->files_type[i] == 2)
+                type_str = "outfile (append)";
             printf("files_list[%d] = %s (type = %d : %s)\n", i, cmd_list->files_list[i], cmd_list->files_type[i], type_str);
         }
-
-        // Afficher last_in et last_out
         if (cmd_list->last_in != -1)
             printf("last_in = files_list[%d]\n", cmd_list->last_in);
         else
@@ -231,19 +267,14 @@ void print_cmd_list(t_cmd_list *cmd_list)
             printf("last_out = files_list[%d]\n", cmd_list->last_out);
         else
             printf("last_out = -1\n");
-
-        // Passer à la commande suivante
         cmd_list = cmd_list->next;
-
-        printf("\n"); // Séparation entre les commandes
+        printf("\n");
     }
 }
 
 
-
-
 // Fonction pour libérer la mémoire de la liste chaînée de commandes
-//POUR L'INSTANT JE NE M'EN SERS PAS. 
+//POUR L'INSTANT JE NE M'EN SERS PAS CAR ME GENERE UNE ERREUR
 void free_cmd_list(t_cmd_list *cmd_list)
 {
     t_cmd_list *tmp;
