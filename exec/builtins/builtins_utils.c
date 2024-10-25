@@ -69,6 +69,21 @@ void	ft_freetab(char **tab)
 	free(tab);
 }
 
+int	ft_printab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		write(1, tab[i], ft_strlen(tab[i]));
+		write(1, "\n", 1);
+		i++;
+	}
+	return (0);
+}
+
+
 void	ft_freedata(t_data *data)
 {
 	if (data->av)
