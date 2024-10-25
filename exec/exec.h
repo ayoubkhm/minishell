@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/18 17:12:06 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/25 17:00:29 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,29 @@
 # include "../minishell.h"
 
 
-int     openin(t_token *token);
-int     openout(t_token *token);
+int	ft_openout(t_cmd_list *list,char *fname);
+int     ft_openin(t_cmd_list *list,char *fname);
 int	ft_strcmp(const char *s1, const char *s2);
 int	ft_access(char **tab, char *avi, char **path);
 char	**ft_get_path(char **envp);
 int	ft_strlkforc(char *str,char c);
-char	**ft_tokentab(t_token *token);
-int	tklast(t_token *token);
+char	**ft_tokentab(t_cmd_list *list);
 char	*rmstrbfc(char *str, char c);
+void	ft_free_list(t_cmd_list *list);
+void	ft_free_inlist(t_cmd_list *list);
 
-int     ft_exec(t_token *token,t_data *data);
-int     parsebi(t_token *token, t_data *data);
-int     ft_exec2(t_token *token,t_data *data);
-int	ft_checkarg(t_token *token, t_data *data);
+
+int     parsebi(t_cmd_list *list, t_data *data);
+int     ft_exec(t_cmd_list *list,t_data *data);
+int	ft_exec1(t_cmd_list *list, t_data *data);
+int     ft_exec2(t_cmd_list *list,t_data *data);
 char	*ft_get_command_path(char *cmd, t_data *data);
 int	ft_is_absolute_path(char *cmd);
 
 
-int	ft_rdrout(t_token *token, t_data *data);
-int	ft_rdrin(t_token *token, t_data *data);
-int	ft_rdrapp(t_token *token, t_data *data);
 
-int	ft_execpipe(t_token *token,t_data *data);
+int	ft_execpipe(t_cmd_list *list,t_data *data);
 
-int     ft_heredoc(t_token *token, t_data *data);
-
-int     ft_envar(t_token *token,t_data *data);
+int     ft_heredoc(t_cmd_list *list, t_data *data);
 
 #endif

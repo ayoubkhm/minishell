@@ -39,7 +39,7 @@ int main(int argc, char **argv, char **envp)
                 free_tokens(tokens);
                 continue; // Ou gérez l'erreur selon vos besoins
             }
-            // ft_exec(cmd_list, &data);
+            ft_exec(cmd_list, &data);
             // free_cmd_list(cmd_list); --> Je suis censé free command mais ça bloque quand je free
         }
         free_tokens(tokens);

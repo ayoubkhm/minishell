@@ -39,7 +39,8 @@ typedef struct s_cmd_list // un noeud de la liste = une commande, exemple : cat 
 	int		*files_type;   // 0 pour infile 1 pour outfile
 	int			last_in;       // index du dernier infile
 	int			last_out;      // index du dernier outfile
-	int files_count; // Nouveau champ pour suivre le nombre de redirections
+	int 	files_count; // Nouveau champ pour suivre le nombre de redirections
+	int	open;
     char        **cmd_args;     // Tableau de la commande et de ses arguments
 	char		*cmd;         // string de la commande ex : "ls -a"
 	struct s_cmd_list	*next;

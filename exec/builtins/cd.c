@@ -15,12 +15,11 @@
 
 #include "builtins.h"
 
-
-int	ft_cd(t_token *token, t_data *data)
+int	ft_cd(t_cmd_list *list, t_data *data)
 {
 	char *path;
 
-	path = token->next->value;
+	path = list->cmd_args[1];
 	if (path == NULL || strlen(path) == 0)
 		return (1);
 	if (chdir(path) != 0)

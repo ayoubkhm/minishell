@@ -40,12 +40,13 @@ char	**ft_export(char **envp, char *str)
 	return (tabret);
 }
 
-int	ft_parsexport(t_data *data, t_token *token)
+int	ft_parsexport(t_data *data, t_cmd_list *list)
 {
-	if (!token->next)
+	if (!list->cmd_args[1])
 		ft_envexport(data->envp);
-	if (token->next)
-		data->envp = ft_export(data->envp, token->next->value);
+	else
+		data->envp = ft_export(data->envp, list->cmd_args[1]);
+	// ft_printab(data->envp);
 	return (0);
 }
 
@@ -63,18 +64,21 @@ int	ft_envexport(char **envp)
 		if (!envp[i][j])
 			break ;
 		write(1, "export ", 7);
-		while (envp[i][j] != '=')
+		while (envp[i][j] != '=' && envp[i][j])
 		{
 			write(1, &envp[i][j], 1);
 			j++;
 		}
-		write(1, &envp[i][j], 1);
-		write(1, "\"", 1);
-		while (envp[i][j + 1] && envp[i][++j])
+		if (envp[i][j])
+		{
 			write(1, &envp[i][j], 1);
-		write(1, "\"", 1);
-		write(1, "\n", 1);
+			write(1, "\"", 1);
+			while (envp[i][j + 1] && envp[i][++j])
+				write(1, &envp[i][j], 1);
+			write(1, "\"", 1);
+		}
 		i++;
+		write(1, "\n", 1);
 	}
 	return (0);
 }

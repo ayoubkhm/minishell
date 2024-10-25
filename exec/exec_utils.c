@@ -6,16 +6,16 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/19 18:31:39 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/25 16:59:26 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../minishell.h"
 
-int	openout(t_token *token)
+int	ft_openout(t_cmd_list *list,char *fname)
 {
-	token->open = open(token->value ,O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (token->open == -1)
+	list->open = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (list->open == -1)
 	{
 		perror("open");
 		return (-1);
@@ -23,10 +23,10 @@ int	openout(t_token *token)
 	return (0);
 }
 
-int     openin(t_token *token)
+int     ft_openin(t_cmd_list *list,char *fname)
 {
-	token->open = open(token->value, O_RDONLY);
-	if (token->open == -1)
+	list->open = open(fname, O_RDONLY);
+	if (list->open == -1)
 	{
 		perror("open");
 		return (-1);
@@ -70,22 +70,6 @@ int	ft_access(char **tab, char *avi, char **path)
 }
 
 
-int	tklast(t_token *token)
-{
-	int	i;
-	t_token	*tmp;
-	
-	
-	i = 0;
-	tmp = token;
-	while(token)
-	{	
-		i++;
-		token = token->next;
-	}
-	token = tmp;
-	return(i);
-}
 
 char	**ft_get_path(char **envp)
 {
@@ -141,4 +125,24 @@ char	*rmstrbfc(char *str, char c)
 	free(str);
 	str2[j] = '\0';
 	return(str2);
+}
+
+void	ft_free_list(t_cmd_list *list)
+{
+	t_cmd_list *temp;
+	while(list)
+	{
+		temp = list->next;
+		ft_free_inlist(list);
+		list = temp;
+	}
+}
+
+void	ft_free_inlist(t_cmd_list *list)
+{	
+	ft_freetab(list->files_list);
+	free(list->files_type);
+	ft_freetab(list->cmd_args);
+	free(list->cmd);
+	free(list);
 }

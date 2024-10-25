@@ -6,15 +6,15 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/19 19:53:29 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/25 14:25:12 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
 
-int	ft_execpipe(t_token *token,t_data *data)
+int	ft_execpipe(t_cmd_list *list,t_data *data)
 {
-	(void)token;
+	(void)list;
 	(void)data;
 	return(0);
 }
