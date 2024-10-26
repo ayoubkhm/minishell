@@ -10,7 +10,7 @@ t_cmd_list *create_cmd_node(void)
     new_node->cmd = NULL;
     new_node->files_list = NULL;
     new_node->files_type = NULL;
-    new_node->files_count = 0; // Initialisation
+    new_node->files_count = 0;
     new_node->last_in = -1;
     new_node->last_out = -1;
     new_node->next = NULL;
@@ -229,7 +229,7 @@ t_cmd_list *parse_commands(t_token *tokens)
             tokens = tokens->next;
         }
     }
-	print_cmd_list(cmd_list);
+	//print_cmd_list(cmd_list);
     return cmd_list;
 }
 
@@ -284,35 +284,33 @@ void free_cmd_list(t_cmd_list *cmd_list)
         tmp = cmd_list;
         cmd_list = cmd_list->next;
 
-        // Libérer les arguments de la commande
         if (tmp->cmd_args)
         {
-            int i = 0;
-            while (tmp->cmd_args[i])
+            for (int i = 0; tmp->cmd_args[i]; i++)
             {
                 free(tmp->cmd_args[i]);
-                i++;
             }
             free(tmp->cmd_args);
         }
 
-        // Libérer la liste des fichiers (infiles/outfiles)
+        if (tmp->cmd)
+        {
+            free(tmp->cmd);
+        }
+
         if (tmp->files_list)
         {
-            int i = 0;
-            while (tmp->files_list[i])
+            for (int i = 0; i < tmp->files_count; i++) // Utilise files_count pour libérer chaque élément
             {
                 free(tmp->files_list[i]);
-                i++;
             }
             free(tmp->files_list);
         }
 
-        // Libérer les types de fichiers (infile/outfile)
         if (tmp->files_type)
+        {
             free(tmp->files_type);
-
-        // Libérer le nœud lui-même
+        }
         free(tmp);
     }
 }

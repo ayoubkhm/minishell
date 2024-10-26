@@ -58,6 +58,6 @@ typedef struct s_cmd_list // un noeud de la liste = une commande, exemple : cat 
 # include "exec/builtins/builtins.h"
 # include "libft/libft.h"
 # include "exec/exec.h"
-
+# include <signal.h>
 
 #endif

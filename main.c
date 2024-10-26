@@ -4,6 +4,22 @@
 
 int g_last_exit_status = 0;
 
+void sigint_handler(int sig_num)
+{
+    (void)sig_num;
+    write(1, "\n", 1);
+    rl_replace_line("", 0);
+    rl_on_new_line();
+    rl_redisplay(); 
+}
+
+void sigquit_handler(int sig_num)
+{
+    (void)sig_num;
+}
+
+
+
 int main(int argc, char **argv, char **envp)
 {
     char        *input;
@@ -18,11 +34,17 @@ int main(int argc, char **argv, char **envp)
     data.exit = 0;
     getcwd(data.cwd, 1024);
 
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, sigquit_handler);
+
     while (1)
     {
         input = readline("minishell$ ");
         if (!input)
+        {
+            write(1, "exit\n", 5);
             break;
+        }
         if (*input)
             add_history(input);
 
@@ -37,15 +59,13 @@ int main(int argc, char **argv, char **envp)
             if (!cmd_list)
             {
                 free_tokens(tokens);
-                continue; // Ou gérez l'erreur selon vos besoins
+                continue;
             }
             ft_exec(cmd_list, &data);
-            // free_cmd_list(cmd_list); --> Je suis censé free command mais ça bloque quand je free
+            free_cmd_list(cmd_list);
         }
         free_tokens(tokens);
     }
-
-    // Libérer la mémoire avant de quitter
     ft_freetab(data.av);
     ft_freetab(data.envp);
     free(data.cwd);
