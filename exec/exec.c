@@ -19,6 +19,7 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 
 	if(!list)
 		return(data->exit);
+
 	if(parsebi(list,data) == 0)
 			return(0);
 	pid = fork();
@@ -28,9 +29,19 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 			return(-1);
 	}
 	if (pid == 0)
+	{
+	    signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
 		ft_exec1(list, data);
+	}
 	else if(pid > 0)
+	{
 		waitpid(pid, &status, 0);
+        if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+        {
+            write(1, "Quit\n", 5);
+        }
+	}
 	if(WIFEXITED(status))
 		data->exit = WEXITSTATUS(status);
 	return(0);
@@ -46,7 +57,7 @@ int	ft_exec1(t_cmd_list *list, t_data *data)
 int	ft_openall(t_cmd_list *list, t_data *data)
 {
 	int	i;
-
+	(void)data;
 	i = 0;
 	if(!list->files_list)
 		return(0);
@@ -57,8 +68,8 @@ int	ft_openall(t_cmd_list *list, t_data *data)
 		else if (list->files_type[i] == 1)
 			ft_openout(list,list->files_list[i]);
 		i++;
-		if(i != list->last_in && i != list->last_out)
-			close(list->files_list[i]);
+		//if(i != list->last_in && i != list->last_out)
+			//close(list->files_list[i]);
 	}
 	return(0);	
 }
