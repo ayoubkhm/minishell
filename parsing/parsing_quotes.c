@@ -1,74 +1,96 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_quotes.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/27 12:10:28 by akhamass          #+#    #+#             */
+/*   Updated: 2024/10/27 12:10:29 by akhamass         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
-int handle_single_quotes(char *input, int i, t_token **tokens)
+int	handle_single_quotes(char *input, int i, t_token **tokens)
 {
-    int start = ++i;
+	int		start;
+	char	*value;
 
-    // Parcours jusqu'à la fermeture de la quote simple
-    while (input[i] && input[i] != '\'')
-    {
-        i++;
-    }
-
-    // Si la quote simple n'est pas fermée, on affihche une erreur tmtc
-    if (input[i] != '\'')
-    {
-        fprintf(stderr, "minishell: syntax error: unclosed single quote\n");
-        return i;
-    }
-
-    i++;  // Ignorer la quote fermante
-
-    // Créer un token avec tout le contenu entre quotes simples
-    char *value = ft_substr(input, start, i - start - 1);  // -1 pour exclure la quote qui ferme
-    add_token(tokens, create_token(value, TYPE_QUOTED));
-    free(value);
-
-    return i;  // Retourner l'index mis à jour après la quote fermante
+	start = i + 1;
+	while (input[i] && input[i] != '\'')
+	{
+		i++;
+	}
+	if (input[i] != '\'')
+	{
+		fprintf(stderr, "minishell: syntax error: unclosed single quote\n");
+		return (i);
+	}
+	value = ft_substr(input, start + 1, i - start - 1);
+	add_token(tokens, create_token(value, TYPE_QUOTED));
+	free(value);
+	return (i + 1);
 }
 
-
-
-int handle_double_quotes(char *input, int i, t_token **tokens)
+char	*append_variable_value(char *value, char *inp, int *i, t_token **tok)
 {
-    i++;  // Ignorer la quote ouvrante
-    char *value = ft_strdup("");  // Ici on initialise la chaîne vide
+	char	*var_value;
+	char	*temp;
 
-    while (input[i] && input[i] != '"')
-    {
-        if (input[i] == '$')
-        {
-            // Dans les quotes, on récupère la valeur pour la cat
-            char *var_value = handle_variable_expansion(input, &i, 1, tokens);
-            char *temp = ft_strjoin(value, var_value);
-            free(value);
-            free(var_value);
-            value = temp;
-        }
-        else
-        {
-            // ici le caractère courant à la chaîne
-            char temp_str[2] = {input[i], '\0'};
-            char *temp = ft_strjoin(value, temp_str);
-            free(value);
-            value = temp;
-            i++;
-        }
-    }
+	var_value = handle_variable_expansion(inp, i, 1, tok);
+	temp = ft_strjoin(value, var_value);
+	free(value);
+	free(var_value);
+	return (temp);
+}
 
-    // Si la quote double n'est pas fermée, on affiche une erreur
-    if (input[i] != '"')
-    {
-        fprintf(stderr, "minishell: syntax error: unclosed double quote\n");
-        free(value);
-        return i;
-    }
+char	*append_character(char *value, char c)
+{
+	char	temp_str[2];
+	char	*temp;
 
-    i++;  // ignore la 2ème quote 
+	temp_str[0] = c;
+	temp_str[1] = '\0';
+	temp = ft_strjoin(value, temp_str);
+	free(value);
+	return (temp);
+}
 
-    // Ajouter le token avec la chaîne complète comme TYPE_QUOTED
-    add_token(tokens, create_token(value, TYPE_QUOTED));
-    free(value);
+char	*build_double_quoted_string(char *input, int *i, t_token **tokens)
+{
+	char	*value;
 
-    return i;  // Retourner  l'index mis à jour après la quote fermante
+	value = ft_strdup("");
+	while (input[*i] && input[*i] != '"')
+	{
+		if (input[*i] == '$')
+		{
+			value = append_variable_value(value, input, i, tokens);
+		}
+		else
+		{
+			value = append_character(value, input[*i]);
+			(*i)++;
+		}
+	}
+	return (value);
+}
+
+int	handle_double_quotes(char *input, int i, t_token **tokens)
+{
+	char	*value;
+
+	i = i + 1;
+	value = build_double_quoted_string(input, &i, tokens);
+	if (input[i] != '"')
+	{
+		fprintf(stderr, "minishell: syntax error: unclosed double quote\n");
+		free(value);
+		return (i);
+	}
+	i++;
+	add_token(tokens, create_token(value, TYPE_QUOTED));
+	free(value);
+	return (i);
 }

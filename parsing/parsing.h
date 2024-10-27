@@ -1,48 +1,79 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
+/*   Updated: 2024/10/27 13:13:51 by akhamass         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSING_H
 # define PARSING_H
 
 # include "../libft/libft.h"
 # include "../minishell.h"
-# include <ctype.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
 
-# define TYPE_WORD 0               // Mots , commandes, arguments
-# define TYPE_REDIRECTION_INPUT 1  // '<'
-# define TYPE_REDIRECTION_OUTPUT 2 // '>'
-# define TYPE_REDIRECTION_APPEND 3 // '>>'
-# define TYPE_HEREDOC 4            // '<<'
-# define TYPE_ENV_VAR 5            // Variables d'environnement (ex: $HOME)
-# define TYPE_PIPE 6               // '|'
-# define TYPE_QUOTED 7             // Contenu entre guillemets
+# define TYPE_WORD 0
+# define TYPE_REDIR_IN 1
+# define TYPE_REDIR_OUT 2
+# define TYPE_REDIR_APPEND 3
+# define TYPE_HEREDOC 4
+# define TYPE_ENV_VAR 5
+# define TYPE_PIPE 6
+# define TYPE_QUOTED 7
 
-extern int			g_last_exit_status;
+t_token		*tokenize_input(char *input);
+int			handle_single_quotes(char *input, int i, t_token **tokens);
+int			handle_double_quotes(char *input, int i, t_token **tokens);
+char		*handle_variable_expansion(char *input, int *i,
+				int in_quotes, t_token **tokens);
+int			handle_operator(char *input, int i, t_token **tokens);
+int			handle_word(char *input, int i, t_token **tokens);
+int			check_syntax(t_token *tokens);
+t_token		*create_token(char *value, int type);
+void		add_token(t_token **tokens, t_token *new_token);
+void		free_tokens(t_token *tokens);
+int			is_operator(char c);
+void		print_tokens(t_token *tokens);
+int			handle_pipe(int i, t_token **tokens);
+int			handle_variable_reference(char *input, int i, t_token **tokens);
+char		*ft_strndup(const char *s, size_t n);
+t_cmd_list	*create_cmd_node(void);
+t_cmd_list	*init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd);
+int			allocate_command_args(t_cmd_list *current_cmd, int arg_count);
+void		post_process_command(t_cmd_list *current_cmd, t_env **env_list);
+t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list);
+void		set_env_variable(t_env **env_list, char *name, char *value);
+char		*get_env_variable(t_env *env_list, char *name);
+void		add_env_variable(char *arg, t_env **env_list);
+void		handle_export(t_cmd_list *cmd, t_env **env_list);
+char		*expand_variable(char *arg, int *i, t_env *env_list, char *result);
+char		*append_character_main(char *result, char c);
+char		*expand_variables(char *arg, t_env *env_list);
+int			add_to_files_list(t_cmd_list *cmd, char *filename, int new_count);
+int			add_to_files_type(t_cmd_list *cmd, int type, int new_count);
+void		add_redirection(t_cmd_list *cmd, char *filename, int type);
+int			handle_redirection_w_token(t_token **tokens,
+				t_cmd_list *current_cmd);
+void		free_cmd_args(char **cmd_args);
+void		free_files_list(char **files_list, int files_count);
+void		free_files_type(int *files_type);
+void		free_cmd_node(t_cmd_list *cmd_node);
+void		free_cmd_list(t_cmd_list *cmd_list);
+int			proc_com_args(t_token **tok, t_cmd_list *c_cmd,
+				t_env **e_list, int *arg_i);
+int			process_redirections(t_token **tokens, t_cmd_list *current_cmd);
+int			process_tokens(t_token **tokens, t_cmd_list *curr_cmd,
+				t_env **env_lis);
+int			count_tokens(t_token *tokens);
+int			count_arguments(t_token *tokens);
+int			detect_operator(char *input, int i,
+				char **operator_str, int *operatortype);
+void		extract_name_value(char *env_var, char **name, char **value);
+t_env		*create_env_node(char *name, char *value);
+t_env		*init_env(char **envp);
 
-// Prototypes
-t_token				*tokenize_input(char *input);
-int					handle_single_quotes(char *input, int i, t_token **tokens);
-int					handle_double_quotes(char *input, int i, t_token **tokens);
-char				*handle_variable_expansion(char *input, int *i,
-						int in_quotes, t_token **tokens);
-int					handle_operator(char *input, int i, t_token **tokens);
-int					handle_word(char *input, int i, t_token **tokens);
-int					check_syntax(t_token *tokens);
-t_token				*create_token(char *value, int type);
-void				add_token(t_token **tokens, t_token *new_token);
-void				free_tokens(t_token *tokens);
-int					is_operator(char c);
-void				print_tokens(t_token *tokens);
-int					handle_pipe(int i, t_token **tokens);
-int handle_variable_reference(char *input, int i, t_token **tokens);
-
-// Les nouvelles fonctions pour la liste chainée qui gère par commandes
-t_cmd_list *create_cmd_node(void);
-char **append_file(char **files_list, char *file);
-int *append_file_type(int *files_type, int type);
-int count_tokens(t_token *tokens);
-t_cmd_list *parse_commands(t_token *tokens, t_env_var **env_list);
-void print_cmd_list(t_cmd_list *cmd_list);
-void free_cmd_list(t_cmd_list *cmd_list);
-char *ft_strndup(const char *s, size_t n);
 #endif
