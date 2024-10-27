@@ -14,17 +14,17 @@ t_token *tokenize_input(char *input)
         }
         if (input[i] == '\'')
         {
-            i = handle_single_quotes(input, i, &tokens);  // Mettre à jour i correctement après la gestion des quotes simples
+            i = handle_single_quotes(input, i, &tokens);
         }
         else if (input[i] == '"')
         {
-            i = handle_double_quotes(input, i, &tokens);  // Mettre à jour i correctement après la gestion des quotes doubles
+            i = handle_double_quotes(input, i, &tokens);
         }
         else if (input[i] == '$')
         {
-            // Hors des quotes, on ajoute le token directement
-            handle_variable_expansion(input, &i, 0, &tokens);
+            i = handle_variable_reference(input, i, &tokens);
         }
+
         else if (is_operator(input[i]))
         {
             i = handle_operator(input, i, &tokens);
@@ -37,8 +37,6 @@ t_token *tokenize_input(char *input)
     return tokens;
 }
 
-
-
 int is_operator(char c)
 {
     return (c == '|' || c == '<' || c == '>');
@@ -48,31 +46,26 @@ int handle_operator(char *input, int i, t_token **tokens)
 {
     if (input[i] == '>' && input[i + 1] == '>')
     {
-        // Redirection en mode append (>>)
         add_token(tokens, create_token(">>", TYPE_REDIRECTION_APPEND));
         return i + 2;
     }
     else if (input[i] == '>')
     {
-        // Redirection de sortie (>)
         add_token(tokens, create_token(">", TYPE_REDIRECTION_OUTPUT));
         return i + 1;
     }
     else if (input[i] == '<' && input[i + 1] == '<')
     {
-        // Here-document (<<)
         add_token(tokens, create_token("<<", TYPE_HEREDOC));
         return i + 2;
     }
     else if (input[i] == '<')
     {
-        // Redirection d'entrée (<)
         add_token(tokens, create_token("<", TYPE_REDIRECTION_INPUT));
         return i + 1;
     }
     else if (input[i] == '|')
     {
-        // Pipe (|)
         add_token(tokens, create_token("|", TYPE_PIPE));
         return i + 1;
     }
