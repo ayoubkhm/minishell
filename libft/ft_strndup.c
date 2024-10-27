@@ -1,22 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_display.c                                  :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:10:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:10:21 by akhamass         ###   ########.fr       */
+/*   Created: 2024/10/27 12:50:14 by akhamass          #+#    #+#             */
+/*   Updated: 2024/10/27 12:52:23 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "libft.h"
 
-void	print_tokens(t_token *tokens)
+char	*ft_strndup(const char *s, size_t n)
 {
-	while (tokens)
-	{
-		printf("Token: %s   Type: %d\n", tokens->value, tokens->type);
-		tokens = tokens->next;
-	}
+	char	*result;
+
+	result = malloc(n + 1);
+	if (!result)
+		return (NULL);
+	strncpy(result, s, n);
+	result[n] = '\0';
+	return (result);
 }

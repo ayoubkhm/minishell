@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/25 17:00:29 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/27 12:53:28 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXEC_H
 # define EXEC_H
-
 # include "../minishell.h"
 
+extern int			g_last_exit_status;
 
 int	ft_openout(t_cmd_list *list,char *fname);
 int     ft_openin(t_cmd_list *list,char *fname);

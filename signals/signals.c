@@ -1,22 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_display.c                                  :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:10:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:10:21 by akhamass         ###   ########.fr       */
+/*   Created: 2024/10/27 13:02:34 by akhamass          #+#    #+#             */
+/*   Updated: 2024/10/27 13:04:14 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "signals.h"
 
-void	print_tokens(t_token *tokens)
+void	sigint_handler(int sig_num)
 {
-	while (tokens)
-	{
-		printf("Token: %s   Type: %d\n", tokens->value, tokens->type);
-		tokens = tokens->next;
-	}
+	(void)sig_num;
+	write(1, "\n", 1);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_redisplay();
+}
+
+void	sigquit_handler(int sig_num)
+{
+	(void)sig_num;
 }

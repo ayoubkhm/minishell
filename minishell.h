@@ -33,11 +33,11 @@ typedef struct s_data
 	int exit;
 } t_data;
 
-typedef struct s_env_var {
+typedef struct s_env {
     char *name;
     char *value;
-    struct s_env_var *next;
-} t_env_var;
+    struct s_env *next;
+} t_env;
 
 typedef struct s_cmd_list {
     char        **files_list;
@@ -48,11 +48,11 @@ typedef struct s_cmd_list {
     int         open;
     char        **cmd_args;
     char        *cmd;
-    t_env_var   *env_vars;
+    t_env   *env_vars;
     struct s_cmd_list  *next;
 } t_cmd_list;
 
-
+# include <ctype.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <stdio.h>
@@ -64,5 +64,9 @@ typedef struct s_cmd_list {
 # include "libft/libft.h"
 # include "exec/exec.h"
 # include <signal.h>
+# include "signals/signals.h"
+#include <readline/history.h>
+#include <readline/readline.h>
+
 
 #endif

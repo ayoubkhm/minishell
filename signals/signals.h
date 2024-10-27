@@ -1,22 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_display.c                                  :+:      :+:    :+:   */
+/*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:10:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:10:21 by akhamass         ###   ########.fr       */
+/*   Created: 2024/10/27 12:57:09 by akhamass          #+#    #+#             */
+/*   Updated: 2024/10/27 13:05:01 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
-void	print_tokens(t_token *tokens)
-{
-	while (tokens)
-	{
-		printf("Token: %s   Type: %d\n", tokens->value, tokens->type);
-		tokens = tokens->next;
-	}
-}
+# include "../libft/libft.h"
+# include "../minishell.h"
+
+void	sigint_handler(int sig_num);
+void	sigquit_handler(int sig_num);
+
+#endif

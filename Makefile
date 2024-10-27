@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/10/25 13:55:43 by gtraiman         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME        = minishell
 AR          = ar rcs
 CC          = gcc
@@ -39,14 +27,24 @@ SRCS        =   exec/builtins/cd.c \
                 main.c \
                 parsing/parsing_tokenizer.c \
                 parsing/parsing_quotes.c \
-                parsing/parsing_expansion.c \
                 parsing/parsing_redirections.c \
                 parsing/parsing_pipes.c \
                 parsing/parsing_syntax.c \
                 parsing/parsing_utils.c \
                 parsing/parsing_memory.c \
                 parsing/parsing_display.c \
-                parsing/parser_commands.c \
+                parsing/command.c \
+                parsing/memory_utils.c \
+                parsing/expansion.c \
+                parsing/parsing_expansion.c \
+                parsing/redirection.c \
+                parsing/environment.c \
+                parsing/token_processing.c \
+                parsing/operator_detection.c \
+                parsing/init_env.c \
+                signals/signals.c \
+
+
 
 OBJS        = ${SRCS:.c=.o}
 
