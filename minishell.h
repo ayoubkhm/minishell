@@ -33,19 +33,24 @@ typedef struct s_data
 	int exit;
 } t_data;
 
-typedef struct s_cmd_list // un noeud de la liste = une commande, exemple : cat | ls  1 noeud pour cat et un deuxieme noeud pour ls
-{
-	char	**files_list; // liste infile et outfile dans l'ordre
-	int		*files_type;   // 0 pour infile 1 pour outfile
-	int			last_in;       // index du dernier infile
-	int			last_out;      // index du dernier outfile
-	int 	files_count; // Nouveau champ pour suivre le nombre de redirections
-	int	open;
-    char        **cmd_args;     // Tableau de la commande et de ses arguments
-	char		*cmd;         // string de la commande ex : "ls -a"
-	struct s_cmd_list	*next;
-} 		t_cmd_list;
+typedef struct s_env_var {
+    char *name;
+    char *value;
+    struct s_env_var *next;
+} t_env_var;
 
+typedef struct s_cmd_list {
+    char        **files_list;
+    int         *files_type;
+    int         last_in;
+    int         last_out;
+    int         files_count;
+    int         open;
+    char        **cmd_args;
+    char        *cmd;
+    t_env_var   *env_vars;
+    struct s_cmd_list  *next;
+} t_cmd_list;
 
 
 # include <errno.h>

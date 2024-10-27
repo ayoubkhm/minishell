@@ -1,6 +1,5 @@
 #include "parsing.h"
 
-// Fonction pour créer un nouveau nœud de commande
 t_cmd_list *create_cmd_node(void)
 {
     t_cmd_list *new_node = malloc(sizeof(t_cmd_list));
@@ -18,55 +17,126 @@ t_cmd_list *create_cmd_node(void)
 }
 
 
+void set_env_variable(t_env_var **env_list, char *name, char *value)
+{
+    t_env_var *current = *env_list;
+
+    while (current)
+    {
+        if (strcmp(current->name, name) == 0)
+        {
+            free(current->value);
+            current->value = strdup(value);
+            return;
+        }
+        current = current->next;
+    }
+    t_env_var *new_var = malloc(sizeof(t_env_var));
+    new_var->name = strdup(name);
+    new_var->value = strdup(value);
+    new_var->next = *env_list;
+    *env_list = new_var;
+}
+
+void handle_export(t_cmd_list *cmd, t_env_var **env_list)
+{
+    for (int i = 1; cmd->cmd_args[i]; i++)
+    {
+        char *arg = cmd->cmd_args[i];
+        char *equal_sign = strchr(arg, '=');
+        if (equal_sign) {
+            size_t name_len = equal_sign - arg;
+            char *name = strndup(arg, name_len);
+            char *value = strdup(equal_sign + 1);
+            set_env_variable(env_list, name, value);
+            free(name);
+            free(value);
+        }
+    }
+}
+
+char *get_env_variable(t_env_var *env_list, char *name)
+{
+    t_env_var *current = env_list;
+    while (current)
+    {
+        if (strcmp(current->name, name) == 0)
+        {
+            return current->value;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+char *expand_variables(char *arg, t_env_var *env_list)
+{
+    char *result = strdup("");
+    int i = 0;
+    while (arg[i])
+    {
+        if (arg[i] == '$')
+        {
+            i++;
+            int var_start = i;
+            while (arg[i] && (isalnum((unsigned char)arg[i]) || arg[i] == '_'))
+                i++;
+            char *var_name = ft_strndup(&arg[var_start], i - var_start);
+            char *var_value = get_env_variable(env_list, var_name);
+            if (var_value)
+            {
+                char *temp = result;
+                result = ft_strjoin(result, var_value);
+                free(temp);
+            }
+            free(var_name);
+        }
+        else
+        {
+            char temp_str[2] = {arg[i], '\0'};
+            char *temp = result;
+            result = ft_strjoin(result, temp_str);
+            free(temp);
+            i++;
+        }
+    }
+    return result;
+}
+
 void add_redirection(t_cmd_list *cmd, char *filename, int type)
 {
     int new_count = cmd->files_count + 1;
-
-    // Reallocation de files_list
     char **new_files_list = realloc(cmd->files_list, sizeof(char *) * new_count);
     if (!new_files_list)
     {
-        // Gérer l'erreur d'allocation
         return;
     }
     cmd->files_list = new_files_list;
     cmd->files_list[cmd->files_count] = ft_strdup(filename);
-
-    // Reallocation de files_type
     int *new_files_type = realloc(cmd->files_type, sizeof(int) * new_count);
     if (!new_files_type)
     {
-        // Gérer l'erreur d'allocation
         return;
     }
     cmd->files_type = new_files_type;
     cmd->files_type[cmd->files_count] = type;
-
-    // Mettre à jour last_in ou last_out
-    if (type == 0) // 0 pour infile
+    if (type == 0)
         cmd->last_in = cmd->files_count;
-    else if (type == 1 || type == 2) // 1 pour outfile (overwrite), 2 pour append
+    else if (type == 1 || type == 2)
         cmd->last_out = cmd->files_count;
-
-    // Mettre à jour files_count
     cmd->files_count = new_count;
 }
-
-
 
 char **append_file(char **files_list, char *file)
 {
     int len = 0;
     while (files_list && files_list[len])
         len++;
-
-    char **new_list = realloc(files_list, sizeof(char *) * (len + 2)); // +2 pour le nouvel élément et NULL
+    char **new_list = realloc(files_list, sizeof(char *) * (len + 2));
     if (!new_list)
-        return NULL; // Gérer l'erreur d'allocation
-
+        return NULL;
     new_list[len] = ft_strdup(file);
     new_list[len + 1] = NULL;
-
     return new_list;
 }
 
@@ -75,13 +145,10 @@ int *append_file_type(int *files_type, int type)
     int len = 0;
     while (files_type && files_type[len])
         len++;
-
     int *new_types = realloc(files_type, sizeof(int) * (len + 1));
     if (!new_types)
-        return NULL; // Gérer l'erreur d'allocation
-
+        return NULL;
     new_types[len] = type;
-
     return new_types;
 }
 
@@ -90,33 +157,29 @@ int get_last_index(char **list)
     int len = 0;
     while (list && list[len])
         len++;
-
-    return len - 1; // Retourner l'index du dernier élément
+    return len - 1;
 }
-
-
 
 int count_tokens(t_token *tokens)
 {
     int count = 0;
     
-    while (tokens && tokens->type != TYPE_PIPE) // On arrête au pipe
+    while (tokens && tokens->type != TYPE_PIPE)
     {
-        if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED) // Vous pouvez ajuster selon vos types
+        if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED)
             count++;
         tokens = tokens->next;
     }
     return count;
 }
 
-t_cmd_list *parse_commands(t_token *tokens)
+t_cmd_list *parse_commands(t_token *tokens, t_env_var **env_list)
 {
     t_cmd_list *cmd_list = NULL;
     t_cmd_list *current_cmd = NULL;
 
     while (tokens)
     {
-        // Création d'un nouveau nœud de commande
         if (!cmd_list)
         {
             cmd_list = create_cmd_node();
@@ -127,28 +190,18 @@ t_cmd_list *parse_commands(t_token *tokens)
             current_cmd->next = create_cmd_node();
             current_cmd = current_cmd->next;
         }
-
-        // Initialiser last_in et last_out à -1 (pas de redirection par défaut)
         current_cmd->last_in = -1;
         current_cmd->last_out = -1;
-
-        // Initialisation des listes de fichiers et types
-        current_cmd->files_list = NULL;
-        current_cmd->files_type = NULL;
-
-        // Variables pour construire cmd_args
         t_token *start = tokens;
         int arg_count = 0;
-
-        // Compter le nombre d'arguments pour cmd_args (hors redirections)
         t_token *tmp = tokens;
         while (tmp && tmp->type != TYPE_PIPE)
         {
-            if (tmp->type == TYPE_WORD || tmp->type == TYPE_QUOTED)
+            if (tmp->type == TYPE_WORD || tmp->type == TYPE_QUOTED || tmp->type == 5) 
                 arg_count++;
-            else if (tmp->type == TYPE_REDIRECTION_INPUT || tmp->type == TYPE_REDIRECTION_OUTPUT || tmp->type == TYPE_REDIRECTION_APPEND || tmp->type == TYPE_HEREDOC)
+            else if (tmp->type == TYPE_REDIRECTION_INPUT || tmp->type == TYPE_REDIRECTION_OUTPUT ||
+                     tmp->type == TYPE_REDIRECTION_APPEND || tmp->type == TYPE_HEREDOC)
             {
-                // Sauter le token de redirection et le fichier suivant
                 tmp = tmp->next;
                 if (tmp)
                     tmp = tmp->next;
@@ -156,85 +209,75 @@ t_cmd_list *parse_commands(t_token *tokens)
             }
             tmp = tmp->next;
         }
-
-        // Allocation de cmd_args
         current_cmd->cmd_args = malloc(sizeof(char *) * (arg_count + 1));
         if (!current_cmd->cmd_args)
-            return NULL; // Gérer l'erreur d'allocation
-
-        // Remplir cmd_args et gérer les redirections
+            return NULL;
         int arg_index = 0;
         tokens = start;
-    while (tokens && tokens->type != TYPE_PIPE)
-    {
-        if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED)
+        while (tokens && tokens->type != TYPE_PIPE)
         {
-            current_cmd->cmd_args[arg_index++] = ft_strdup(tokens->value);
-            tokens = tokens->next;
-        }
-        else if (tokens->type == TYPE_REDIRECTION_INPUT)
-        {
-            tokens = tokens->next;
-            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+            if (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED || tokens->type == TYPE_ENV_VAR)
             {
-                add_redirection(current_cmd, tokens->value, 0); // 0 pour infile
+                char *expanded_arg = expand_variables(tokens->value, *env_list);
+                current_cmd->cmd_args[arg_index++] = expanded_arg;
                 tokens = tokens->next;
+            }
+            else if (tokens->type == TYPE_REDIRECTION_INPUT)
+            {
+                tokens = tokens->next;
+                if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+                {
+                    add_redirection(current_cmd, tokens->value, 0);
+                    tokens = tokens->next;
+                }
+                else
+                    return NULL;
+            }
+            else if (tokens->type == TYPE_REDIRECTION_OUTPUT)
+            {
+                tokens = tokens->next;
+                if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+                {
+                    add_redirection(current_cmd, tokens->value, 1);
+                    tokens = tokens->next;
+                }
+                else
+                    return NULL;
+            }
+            else if (tokens->type == TYPE_REDIRECTION_APPEND)
+            {
+                tokens = tokens->next;
+                if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
+                {
+                    add_redirection(current_cmd, tokens->value, 2);
+                    tokens = tokens->next;
+                }
+                else
+                    return NULL;
             }
             else
             {
-                printf("Erreur : fichier manquant après '<'\n");
-                return NULL;
-            }
-        }
-        else if (tokens->type == TYPE_REDIRECTION_OUTPUT)
-        {
-            tokens = tokens->next;
-            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
-            {
-                add_redirection(current_cmd, tokens->value, 1); // 1 pour outfile overwrite
                 tokens = tokens->next;
             }
-            else
-            {
-                printf("Erreur : fichier manquant après '>'\n");
-                return NULL;
-            }
         }
-        else if (tokens->type == TYPE_REDIRECTION_APPEND)
-        {
-            tokens = tokens->next;
-            if (tokens && (tokens->type == TYPE_WORD || tokens->type == TYPE_QUOTED))
-            {
-                add_redirection(current_cmd, tokens->value, 2); // 2 pour outfile append
-                tokens = tokens->next;
-            }
-            else
-            {
-                printf("Erreur : fichier manquant après '>>'\n");
-                return NULL;
-            }
-        }
-        else
-        {
-            tokens = tokens->next;
-        }
-    }
+
         current_cmd->cmd_args[arg_index] = NULL;
+
         if (current_cmd->cmd_args && current_cmd->cmd_args[0])
         {
-            current_cmd->cmd = ft_strdup(current_cmd->cmd_args[0]);
+            current_cmd->cmd = strdup(current_cmd->cmd_args[0]);
+            if (strcmp(current_cmd->cmd, "export") == 0)
+            {
+                handle_export(current_cmd, env_list);
+                continue;
+            }
         }
         if (tokens && tokens->type == TYPE_PIPE)
-        {
             tokens = tokens->next;
-        }
     }
-	//print_cmd_list(cmd_list);
+    //print_cmd_list(cmd_list);
     return cmd_list;
 }
-
-
-
 
 void print_cmd_list(t_cmd_list *cmd_list)
 {
@@ -272,9 +315,6 @@ void print_cmd_list(t_cmd_list *cmd_list)
     }
 }
 
-
-// Fonction pour libérer la mémoire de la liste chaînée de commandes
-//POUR L'INSTANT JE NE M'EN SERS PAS CAR ME GENERE UNE ERREUR
 void free_cmd_list(t_cmd_list *cmd_list)
 {
     t_cmd_list *tmp;
@@ -300,7 +340,7 @@ void free_cmd_list(t_cmd_list *cmd_list)
 
         if (tmp->files_list)
         {
-            for (int i = 0; i < tmp->files_count; i++) // Utilise files_count pour libérer chaque élément
+            for (int i = 0; i < tmp->files_count; i++)
             {
                 free(tmp->files_list[i]);
             }

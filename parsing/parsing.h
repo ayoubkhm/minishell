@@ -34,14 +34,15 @@ void				free_tokens(t_token *tokens);
 int					is_operator(char c);
 void				print_tokens(t_token *tokens);
 int					handle_pipe(int i, t_token **tokens);
+int handle_variable_reference(char *input, int i, t_token **tokens);
 
 // Les nouvelles fonctions pour la liste chainée qui gère par commandes
 t_cmd_list *create_cmd_node(void);
 char **append_file(char **files_list, char *file);
 int *append_file_type(int *files_type, int type);
 int count_tokens(t_token *tokens);
-t_cmd_list *parse_commands(t_token *tokens);
+t_cmd_list *parse_commands(t_token *tokens, t_env_var **env_list);
 void print_cmd_list(t_cmd_list *cmd_list);
 void free_cmd_list(t_cmd_list *cmd_list);
-
+char *ft_strndup(const char *s, size_t n);
 #endif
