@@ -12,21 +12,16 @@
 
 #include "builtins.h"
 
-int	ft_pwd(char **envp)
+int	ft_pwd(t_data *data)
 {
 	int	i;
-	int	j;
 
 	i = 0;
-	if (!envp)
-		return (1);
-	while (envp[i] && ft_strncmp ("PWD=", envp[i], 4) != 0)
+	while(data->cwd[i])
+	{
+		write(1,&data->cwd[i],1);
 		i++;
-	if (!envp[i])
-		exit (1);
-	j = 3;
-	while (envp[i][++j])
-		write (1, &envp[i][j], 1);
-	write (1, "\n", 1);
+	}
+	write(1,"\n",1);
 	return (0);
 }

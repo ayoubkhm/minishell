@@ -144,3 +144,20 @@ char	*getstrfrmc(char *str, char c)
 	newstr[len] = '\0';
 	return (newstr);
 }
+
+
+int	ft_isainnum(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if ((str[i] == '-' || str[i] == '+') && i != 0)
+			return (1);
+		if ((str[i] < '0' || str[i] > '9') && str[i] != '-' && str[i] != '+')
+			return (1);
+		i++;
+	}
+	return (0);
+}
