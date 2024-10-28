@@ -40,6 +40,6 @@ char	**ft_unset(char **envp, char *str)
 
 int	ft_parsunset(t_data *data, t_cmd_list *list)
 {
-	ft_unset(data->envp,list->cmd_args[1]);
+	data->envp = ft_unset(data->envp,list->cmd_args[1]);
 	return (0);
 }

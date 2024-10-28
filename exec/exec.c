@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/25 17:08:20 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/10/28 22:16:37 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,17 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	}
 	if (pid == 0)
 	{
-	    signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		ft_exec1(list, data);
 	}
 	else if(pid > 0)
 	{
 		waitpid(pid, &status, 0);
-        if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
-        {
-            write(1, "Quit\n", 5);
-        }
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+		{
+			write(1, "Quit\n", 5);
+		}
 	}
 	if(WIFEXITED(status))
 		data->exit = WEXITSTATUS(status);
@@ -126,7 +126,7 @@ int     parsebi(t_cmd_list *list, t_data *data)
         if(ft_strcmp(list->cmd_args[0],"exit") == 0)
                 ft_exit(data,list);
         if(ft_strcmp(list->cmd_args[0],"pwd") == 0)
-                return(ft_pwd(data->envp));
+                return(ft_pwd(data));
         if(ft_strcmp(list->cmd_args[0],"unset") == 0)
                 return(ft_parsunset(data,list));
         if(ft_strcmp(list->cmd_args[0],"export") == 0)
