@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 13:13:51 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/05 01:23:05 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "../libft/libft.h"
 # include "../minishell.h"
+# include <unistd.h>
 
 # define TYPE_WORD 0
 # define TYPE_REDIR_IN 1
@@ -25,21 +26,23 @@
 # define TYPE_PIPE 6
 # define TYPE_QUOTED 7
 
-t_token		*tokenize_input(char *input);
+extern int g_status;
+
+t_token	*tokenize_input(char *input, t_env *env_list);
+char *append_character(char *value, char c);
 int			handle_single_quotes(char *input, int i, t_token **tokens);
-int			handle_double_quotes(char *input, int i, t_token **tokens);
-char		*handle_variable_expansion(char *input, int *i,
-				int in_quotes, t_token **tokens);
+int	handle_double_quotes(char *input, int i, t_token **tokens, t_env *env_list);
+char	*handle_variable_expansion(char *input, int *i, int in_quotes, t_token **tokens, t_env *env_list);
 int			handle_operator(char *input, int i, t_token **tokens);
-int			handle_word(char *input, int i, t_token **tokens);
+int handle_word(char *input, int i, t_token **tokens, t_env *env_list);
 int			check_syntax(t_token *tokens);
-t_token		*create_token(char *value, int type);
+t_token	*create_token(char *value, int type, int expand);
 void		add_token(t_token **tokens, t_token *new_token);
 void		free_tokens(t_token *tokens);
 int			is_operator(char c);
 void		print_tokens(t_token *tokens);
 int			handle_pipe(int i, t_token **tokens);
-int			handle_variable_reference(char *input, int i, t_token **tokens);
+int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list);
 char		*ft_strndup(const char *s, size_t n);
 t_cmd_list	*create_cmd_node(void);
 t_cmd_list	*init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd);
@@ -63,11 +66,9 @@ void		free_files_list(char **files_list, int files_count);
 void		free_files_type(int *files_type);
 void		free_cmd_node(t_cmd_list *cmd_node);
 void		free_cmd_list(t_cmd_list *cmd_list);
-int			proc_com_args(t_token **tok, t_cmd_list *c_cmd,
-				t_env **e_list, int *arg_i);
+int	proc_com_args(t_token **tok, t_cmd_list *c_cmd, int *arg_i);
 int			process_redirections(t_token **tokens, t_cmd_list *current_cmd);
-int			process_tokens(t_token **tokens, t_cmd_list *curr_cmd,
-				t_env **env_lis);
+int process_token(char *input, int i, t_token **tokens, t_env *env_list);
 int			count_tokens(t_token *tokens);
 int			count_arguments(t_token *tokens);
 int			detect_operator(char *input, int i,
@@ -75,5 +76,11 @@ int			detect_operator(char *input, int i,
 void		extract_name_value(char *env_var, char **name, char **value);
 t_env		*create_env_node(char *name, char *value);
 t_env		*init_env(char **envp);
+int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand);
+
+int	process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list);
+char *append_string(char *original, char *addition);
+
+char	*get_user_input(void);
 
 #endif

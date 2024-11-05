@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:09:19 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:09:34 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/03 23:33:40 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list)
 		arg_count = count_arguments(tokens);
 		if (allocate_command_args(current_cmd, arg_count) == -1)
 			return (NULL);
-		if (process_tokens(&tokens, current_cmd, env_list) == -1)
+		if (process_token_cmd(&tokens, current_cmd, *env_list) == -1)
 			return (NULL);
 		post_process_command(current_cmd, env_list);
 		if (tokens && tokens->type == TYPE_PIPE)

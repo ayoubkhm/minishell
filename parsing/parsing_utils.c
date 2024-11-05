@@ -6,13 +6,13 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:36 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:12:00 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/05 00:19:21 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-t_token	*create_token(char *value, int type)
+t_token	*create_token(char *value, int type, int expand)
 {
 	t_token	*new;
 
@@ -21,6 +21,7 @@ t_token	*create_token(char *value, int type)
 		return (NULL);
 	new->value = ft_strdup(value);
 	new->type = type;
+	new->expand = expand; // Correction ici
 	new->next = NULL;
 	new->prev = NULL;
 	return (new);
@@ -43,6 +44,7 @@ void	add_token(t_token **tokens, t_token *new_token)
 		new_token->prev = last;
 	}
 }
+
 
 char	**append_file(char **files_list, char *file)
 {
