@@ -22,6 +22,7 @@ typedef struct s_token
 	struct s_token	*prev;
 	int				open;
 	char			**tab;
+    int             expand;
 }					t_token;
 
 typedef struct s_data
