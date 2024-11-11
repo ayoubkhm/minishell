@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/07 11:23:15 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/12 00:30:57 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 	if (ft_is_absolute_path(cmd))
 		return (cmd);
 	tab = ft_get_path(data->envp);
-	if (ft_access(tab, cmd, &path) == -1)
+	if (ft_access(tab, cmd, &path, data) == -1)
 		return (ft_freetab(tab),NULL);
 	return (path);
 }
@@ -113,7 +113,6 @@ int	ft_exec2(t_cmd_list *list, t_data *data)
 	}
 	return (0);
 }
-
 
 int     parsebi(t_cmd_list *list, t_data *data)
 {
