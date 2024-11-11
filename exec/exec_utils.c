@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/25 16:59:26 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/12 00:34:32 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*(unsigned char *)(s1 + i) - *(unsigned char *)(s2 + i));
 }
 
-int	ft_access(char **tab, char *avi, char **path)
+int	ft_access(char **tab, char *avi, char **path, t_data *data)
 {
 	int		j;
 	char	*temp;
@@ -64,12 +64,12 @@ int	ft_access(char **tab, char *avi, char **path)
 		}
 		j++;
 	}
-	*path = NULL;
-	perror("access");
-	return (-1);
+	temp = data->cwd;
+	temp = ft_strjoin(temp,"/");
+	temp = ft_strjoin(temp, avi);
+	*path = temp;
+	return (1);
 }
-
-
 
 char	**ft_get_path(char **envp)
 {

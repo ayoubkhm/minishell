@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/07 11:25:35 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/11 20:55:49 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
         if (cmd_list)
         {
             (void)data;
-            //ft_exec(cmd_list, data);
+            ft_exec(cmd_list, data);
             free_cmd_list(cmd_list);
         }
     }
