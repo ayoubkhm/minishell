@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 00:34:32 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/12 19:20:40 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*(unsigned char *)(s1 + i) - *(unsigned char *)(s2 + i));
 }
 
-int	ft_access(char **tab, char *avi, char **path, t_data *data)
+int	ft_access(char **tab, char *avi, char **path)
 {
 	int		j;
 	char	*temp;
@@ -64,11 +64,9 @@ int	ft_access(char **tab, char *avi, char **path, t_data *data)
 		}
 		j++;
 	}
-	temp = data->cwd;
-	temp = ft_strjoin(temp,"/");
-	temp = ft_strjoin(temp, avi);
-	*path = temp;
-	return (1);
+	*path = NULL;
+	perror("access");
+	return (-1);
 }
 
 char	**ft_get_path(char **envp)
@@ -85,11 +83,26 @@ char	**ft_get_path(char **envp)
 	}
 	if (!envp[i])
 		exit(-1);
-	tab = ft_split(&envp[i][5], ':');
+	tab = ft_copyntab(ft_split(&envp[i][5], ':'),1);
 	if (!tab)
 	{
 		perror("ft_split");
 		return (NULL);
+	}
+	i = 0;
+	while(tab[i])
+		i++;
+	tab[i] = malloc(1024);
+	if (!tab[i])
+	{
+		perror("malloc");
+		return (NULL);
+	}
+	if (!getcwd(tab[i], 1024))
+	{
+		perror("getcwd");
+		free(tab[i]);
+		tab[i] = NULL;
 	}
 	return (tab);
 }

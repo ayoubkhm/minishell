@@ -24,6 +24,7 @@ char	*ft_addstr(char *str1, char *str2);
 void	ft_freedata(t_data *data);
 void	ft_freetab(char **tab);
 char	**ft_copytab(char **tab);
+char	**ft_copyntab(char **tab, int n);
 int	ft_printab(char **tab);
 int		ft_tabstrlen(char **tab);
 void	ft_delfromc(char *str, char c);
