@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 19:20:40 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/12 20:06:15 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	ft_openout(t_cmd_list *list,char *fname)
 {
-	list->open = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (list->open == -1)
+	list->open[0] = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (list->open[0] == -1)
 	{
 		perror("open");
 		return (-1);
@@ -25,8 +25,8 @@ int	ft_openout(t_cmd_list *list,char *fname)
 
 int     ft_openin(t_cmd_list *list,char *fname)
 {
-	list->open = open(fname, O_RDONLY);
-	if (list->open == -1)
+	list->open[1] = open(fname, O_RDONLY);
+	if (list->open[1] == -1)
 	{
 		perror("open");
 		return (-1);
