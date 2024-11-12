@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 00:31:48 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/12 19:04:10 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ extern int			g_last_exit_status;
 int	ft_openout(t_cmd_list *list,char *fname);
 int     ft_openin(t_cmd_list *list,char *fname);
 int	ft_strcmp(const char *s1, const char *s2);
-int	ft_access(char **tab, char *avi, char **path, t_data *data);
+int	ft_access(char **tab, char *avi, char **path);
 char	**ft_get_path(char **envp);
 int	ft_strlkforc(char *str,char c);
 char	**ft_tokentab(t_cmd_list *list);

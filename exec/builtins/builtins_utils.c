@@ -57,6 +57,21 @@ char	**ft_copytab(char **tab)
 	return (tabret);
 }
 
+char	**ft_copyntab(char **tab, int n)
+{
+	char **tabret;
+	int i;
+
+	i = -1;
+	tabret = malloc((ft_tabstrlen(tab) + n + 1) * sizeof(char *));
+	if (!tabret)
+		exit(1);
+	while (tab[++i])
+		tabret[i] = ft_strdup(tab[i]);
+	tabret[i] = NULL;
+	return (tabret);
+}
+
 void	ft_freetab(char **tab)
 {
 	int i;
