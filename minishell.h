@@ -46,8 +46,9 @@ typedef struct s_cmd_list {
     int         last_in;
     int         last_out;
     int         files_count;
-    int         open;
+    int         open[2];
     char        **cmd_args;
+    int         pipe[2];
     char        *cmd;
     t_env   *env_vars;
     struct s_cmd_list  *next;

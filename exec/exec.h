@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 19:04:10 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/12 20:21:17 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ char	*ft_get_command_path(char *cmd, t_data *data);
 int	ft_is_absolute_path(char *cmd);
 
 
-int	ft_openall(t_cmd_list *list, t_data *data);
+int	ft_openall(t_cmd_list *list);
 int	ft_execpipe(t_cmd_list *list,t_data *data);
 
 int     ft_heredoc(t_cmd_list *list, t_data *data);
