@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 20:21:17 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:13:30 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	ft_free_inlist(t_cmd_list *list);
 
 int     parsebi(t_cmd_list *list, t_data *data);
 int     ft_exec(t_cmd_list *list,t_data *data);
-int	ft_exec1(t_cmd_list *list, t_data *data);
+int	ft_exec1(t_cmd_list *list);
 int     ft_exec2(t_cmd_list *list,t_data *data);
 char	*ft_get_command_path(char *cmd, t_data *data);
 int	ft_is_absolute_path(char *cmd);

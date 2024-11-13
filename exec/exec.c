@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 18:33:54 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:17:36 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		ft_exec1(list, data);
+		ft_exec1(list);
+    		ft_exec2(list, data);
 	}
 	else if(pid > 0)
 	{
@@ -41,63 +42,6 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	if(WIFEXITED(status))
 		data->exit = WEXITSTATUS(status);
 	return(0);
-}
-
-int	ft_exec1(t_cmd_list *list, t_data *data)
-{
-	if(ft_openall(list) == -1)
-		exit(1);
-	// if (list->open[0] != -1)
-	// {
-	// 	dup2(list->open[0], STDIN_FILENO);
-	// 	close(list->open[0]);
-	// }
-	// if (list->open[1] != -1)
-	// {
-	// 	dup2(list->open[1], STDOUT_FILENO);
-	// 	close(list->open[1]);
-	// }
-	if(!list->cmd_args[0])
-		exit(g_last_exit_status);	
-	ft_exec2(list, data);
-	return (0);
-}
-
-int	ft_openall(t_cmd_list *list)
-{
-	int	i;
-
-	i = 0;
-	list->open[0] = -1;
-	list->open[1] = -1;
-	if (!list->files_list || !list->files_list[0])
-		return (0);
-	while (list->files_list[i])
-	{
-		if (list->files_type[i] == 0) // Fichier d'entrée
-		{
-			list->open[0] = ft_openin(list, list->files_list[i]);
-			if (list->open[0] == -1)
-				return (-1); // Gestion d'erreur si open échoue
-			// if(i != list->last_in && list->open[0] != STDIN_FILENO)
-			// 	close(list->open[0]);
-			dup2(list->open[0], STDIN_FILENO);
-			close(list->open[0]);
-		}
-		else if (list->files_type[i] == 1) // Fichier de sortie
-		{
-			list->open[1] = ft_openout(list, list->files_list[i]);
-			if (list->open[1] == -1)
-				return (-1); // Gestion d'erreur si open échoue
-			// if(i != list->last_out && list->open[1] != STDOUT_FILENO)
-			// 	close(list->open[1]);
-			printf("here\n");
-			dup2(list->open[1], STDOUT_FILENO);
-			close(list->open[1]);
-		}
-		i++;
-	}
-	return (0);	
 }
 
 
