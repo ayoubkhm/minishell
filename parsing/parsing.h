@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/05 01:23:05 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/13 05:40:50 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,5 @@ int	process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list);
 char *append_string(char *original, char *addition);
 
 char	*get_user_input(void);
-
+void print_commands(t_cmd_list *cmd_list);
 #endif

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   command.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:09:19 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/07 11:34:35 by akhamass         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "parsing.h"
 
 t_cmd_list	*create_cmd_node(void)
@@ -65,6 +53,57 @@ void	post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 			handle_export(current_cmd, env_list);
 		}
 	}
+}
+void print_commands(t_cmd_list *cmd_list)
+{
+    t_cmd_list *current_cmd = cmd_list;
+    int i;
+
+    while (current_cmd)
+    {
+        printf("Commande : %s\n", current_cmd->cmd ? current_cmd->cmd : "NULL");
+
+        printf("Arguments :\n");
+        if (current_cmd->cmd_args)
+        {
+            for (i = 0; current_cmd->cmd_args[i]; i++)
+            {
+                printf("  arg[%d]: %s\n", i, current_cmd->cmd_args[i]);
+            }
+        }
+        else
+        {
+            printf("  Aucun argument\n");
+        }
+
+        printf("Fichiers de redirection :\n");
+        if (current_cmd->files_list && current_cmd->files_count > 0)
+        {
+            for (i = 0; i < current_cmd->files_count; i++)
+            {
+                char *type_str;
+                if (current_cmd->files_type[i] == 0)
+                    type_str = "Entrée";
+                else if (current_cmd->files_type[i] == 1)
+                    type_str = "Sortie";
+                else if (current_cmd->files_type[i] == 2)
+                    type_str = "Append";
+                else
+                    type_str = "Inconnu";
+
+                printf("  file[%d]: %s (type: %s)\n", i, current_cmd->files_list[i], type_str);
+            }
+        }
+        else
+        {
+            printf("  Aucun fichier de redirection\n");
+        }
+
+        printf("last_in: %d, last_out: %d\n", current_cmd->last_in, current_cmd->last_out);
+        printf("---------------------\n");
+
+        current_cmd = current_cmd->next;
+    }
 }
 
 t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list)
