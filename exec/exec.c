@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 19:17:36 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/13 20:41:57 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 
 	if(!list)
 		return(data->exit);
-
+	if(list->next)
+		makeapipe(list->pipe);
 	if(list->cmd_args[0] && parsebi(list,data) == 0)
 			return(0);
 	pid = fork();
@@ -32,6 +33,7 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		ft_execpipe(list, data);
 		ft_exec1(list);
     		ft_exec2(list, data);
 	}
