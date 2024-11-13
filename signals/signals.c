@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:02:34 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/05 19:21:56 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/13 06:15:05 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void sigint_handler(int signum)
 void sigquit_handler(int signum)
 {
     (void)signum;
-    write(1, "\b\b  \b\b", 4);  // Ignore `SIGQUIT` proprement
-
+    write(1, "Quit\n", 5);  // Affiche "Quit" suivi d'une nouvelle ligne
+    rl_replace_line("", 0); // Efface le buffer en cours
+    rl_redisplay();         // Redessine le prompt
 }
