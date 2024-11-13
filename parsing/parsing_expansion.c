@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:22 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/05 00:20:21 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/13 05:41:41 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,21 +61,4 @@ char	*handle_variable_expansion(char *input, int *i, int in_quotes, t_token **to
 			add_token(tokens, create_token("", TYPE_ENV_VAR, 0));
 		return NULL;
 	}
-}
-
-
-int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
-{
-    char    *var_ref;
-    int     start;
-
-	(void)env_list;
-    start = i;
-    i++;
-    while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
-        i++;
-    var_ref = ft_substr(input, start, i - start);
-    add_token(tokens, create_token(var_ref, TYPE_ENV_VAR, 0));
-    free(var_ref);
-    return (i);
 }
