@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/12 23:19:39 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/13 06:13:00 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,6 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	else if(pid > 0)
 	{
 		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
-		{
-			write(1, "Quit\n", 5);
-		}
 	}
 	if(WIFEXITED(status))
 		data->exit = WEXITSTATUS(status);
