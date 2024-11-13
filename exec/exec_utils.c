@@ -6,34 +6,39 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 18:33:21 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:10:50 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../minishell.h"
 
-int	ft_openout(t_cmd_list *list,char *fname)
+int	ft_openin(t_cmd_list *list, char *fname)
 {
-	list->open[0] = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (list->open[0] == -1)
+	int	fd;
+	
+	(void)list;
+	fd = open(fname, O_RDONLY);
+	if (fd == -1)
 	{
 		perror("open");
 		return (-1);
 	}
-	return (0);
+	return (fd);
 }
 
-int     ft_openin(t_cmd_list *list,char *fname)
+int	ft_openout(t_cmd_list *list, char *fname)
 {
-	list->open[1] = open(fname, O_RDONLY);
-	if (list->open[1] == -1)
+	int	fd;
+	
+	(void)list;
+	fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (fd == -1)
 	{
 		perror("open");
 		return (-1);
-	}        
-	return (0);
+	}
+	return (fd);
 }
-
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
