@@ -46,17 +46,23 @@ int	allocate_command_args(t_cmd_list *current_cmd, int arg_count)
 	return (0);
 }
 
-void	post_process_command(t_cmd_list *current_cmd, t_env **env_list)
+void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 {
-	if (current_cmd->cmd_args && current_cmd->cmd_args[0])
-	{
-		current_cmd->cmd = strdup(current_cmd->cmd_args[0]);
-		if (strcmp(current_cmd->cmd, "export") == 0)
-		{
-			handle_export(current_cmd, env_list);
-		}
-	}
+    if (current_cmd->cmd_args && current_cmd->cmd_args[0])
+    {
+        if (current_cmd->cmd) // Libère l'ancienne commande si elle existe
+        {
+            free(current_cmd->cmd);
+            current_cmd->cmd = NULL;
+        }
+        current_cmd->cmd = strdup(current_cmd->cmd_args[0]);
+        if (strcmp(current_cmd->cmd, "export") == 0)
+        {
+            handle_export(current_cmd, env_list);
+        }
+    }
 }
+
 
 void print_commands(t_cmd_list *cmd_list)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/17 23:08:44 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:46:29 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int ft_execpipe(t_cmd_list *list, int n)
 		dup2(list->pipe[2],STDIN_FILENO);
 		close(list->pipe[2]);	
 	}
-	if(list->pipe)
+	//if(list->pipe)
         	close(list->pipe[0]);
 	if (list->next)
 		dup2(list->pipe[1], STDOUT_FILENO);

@@ -3,65 +3,101 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/17 23:06:23 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:45:09 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../minishell.h"
 
-int     ft_exec(t_cmd_list *list,t_data *data)
+int ft_exec(t_cmd_list *list, t_data *data)
 {
-	pid_t   pid;
-	int	status;
+    pid_t pid;
+    int status;
 
-	pid = -1;
-	if(!list)
-		return(data->exit);
-	if(!list->next)
-		makeapipe(list->pipe);
-	if(list->cmd_args[0] && parsebi(list,data) == 0 && !list->next)
-			return(0);
-	pid = fork();
-	if(pid == -1)
-	{
-		perror("fork");
-		return(-1);
-	}
-	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		if(list->next || data->nodenb != 0)
-			ft_execpipe(list, data->nodenb);
-		ft_exec1(list);
-    		ft_exec2(list, data);
-	}
-	if(pid > 0)
-	{
-		// printf("%d \n",data->nodenb);
-		// if(list->next)
-		// 	close(list->pipe[1]);
-		if(data->nodenb != 0)
-			close(list->pipe[2]);
-	}
-	if(list && list->next)
-	{
-		data->nodenb++;
-		list->next->pipe[2] = list->pipe[0];
-		ft_exec(list->next,data);
-	}
-	if(pid > 0 && !list->next)
-	{	
-		while(waitpid(-1, &status, 0) != pid)
-			;
-	}
-	// if(WIFEXITED(status))
-	// 	data->exit = WEXITSTATUS(status);
-	return(0);
+    if (!list)
+        return (data->exit);
+
+    if (list->next)
+    {
+        // Create a pipe to connect this process's output to the next process's input
+        if (pipe(list->pipe) == -1)
+        {
+            perror("pipe");
+            exit(1);
+        }
+    }
+
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        return (-1);
+    }
+
+    if (pid == 0)
+    {
+        // Child process
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+
+        // If not the first command, redirect input
+        if (data->nodenb != 0)
+        {
+            dup2(data->prev_pipe_read_end, STDIN_FILENO);
+            close(data->prev_pipe_read_end);
+        }
+
+        // If there is a next command, redirect output
+        if (list->next)
+        {
+            close(list->pipe[0]); // Close unused read end
+            dup2(list->pipe[1], STDOUT_FILENO);
+            close(list->pipe[1]);
+        }
+
+        ft_exec1(list); // Prepare execution
+        ft_exec2(list, data); // Execute command
+
+        exit(0); // Ensure child process exits after execution
+    }
+    else
+    {
+        // Parent process
+
+        // Close previous read end in parent
+        if (data->nodenb != 0)
+            close(data->prev_pipe_read_end);
+
+        if (list->next)
+        {
+            close(list->pipe[1]); // Close write end in parent
+            data->prev_pipe_read_end = list->pipe[0]; // Save read end for next command
+        }
+
+        // Wait for the child process
+        waitpid(pid, &status, 0);
+        // Handle the status if necessary
+
+        // Recursive call for the next command
+        if (list->next)
+        {
+            data->nodenb++;
+            ft_exec(list->next, data);
+        }
+        else
+        {
+            // If this is the last command, reset nodenb and prev_pipe_read_end
+            data->nodenb = 0;
+            data->prev_pipe_read_end = -1;
+        }
+    }
+
+    return (0);
 }
+
 
 void	initpipe(t_cmd_list *list)
 {

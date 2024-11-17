@@ -33,6 +33,8 @@ typedef struct s_data
 	char *cwd;
 	int exit;
 	int	nodenb;
+    int prev_pipe_read_end;
+
 } t_data;
 
 typedef struct s_env {
