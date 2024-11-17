@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 20:15:43 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:29:18 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,11 @@ int	ft_is_absolute_path(char *cmd);
 
 
 int	ft_openall(t_cmd_list *list);
-int	ft_execpipe(t_cmd_list *list,t_data *data);
+int     ft_execpipe(t_cmd_list *list, int n);
 int	makeapipe(int *pipefd);
+void	ft_close_pipes(int pipefd[2]);
+int	ft_execute_child(t_cmd_list *list, t_data *data);
+void	initpipe(t_cmd_list *list);
 
 int     ft_heredoc(t_cmd_list *list, t_data *data);
 

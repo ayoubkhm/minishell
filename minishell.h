@@ -32,6 +32,7 @@ typedef struct s_data
 	char **envp;
 	char *cwd;
 	int exit;
+	int	nodenb;
 } t_data;
 
 typedef struct s_env {
@@ -41,17 +42,18 @@ typedef struct s_env {
 } t_env;
 
 typedef struct s_cmd_list {
-    char        **files_list;
-    int         *files_type;
-    int         last_in;
-    int         last_out;
-    int         files_count;
-    int         open[2];
-    char        **cmd_args;
-    int         pipe[2];
-    char        *cmd;
-    t_env   *env_vars;
-    struct s_cmd_list  *next;
+	char        **files_list;
+	int         *files_type;
+	int         last_in;
+	int         last_out;
+	int         files_count;
+	int         open[2];
+	char        **cmd_args;
+	int         pipe[2];
+	char        *cmd;
+	t_env   *env_vars;
+	struct s_cmd_list  *next;
+    	struct s_cmd_list  *prev;
 } t_cmd_list;
 
 # include <ctype.h>

@@ -15,25 +15,28 @@ t_cmd_list	*create_cmd_node(void)
 	new_node->last_in = -1;
 	new_node->last_out = -1;
 	new_node->next = NULL;
+	new_node->prev = NULL; 
 	return (new_node);
 }
 
-t_cmd_list	*init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd)
+t_cmd_list *init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd)
 {
-	if (!(*cmd_list))
-	{
-		*cmd_list = create_cmd_node();
-		*current_cmd = *cmd_list;
-	}
-	else
-	{
-		(*current_cmd)->next = create_cmd_node();
-		*current_cmd = (*current_cmd)->next;
-	}
-	(*current_cmd)->last_in = -1;
-	(*current_cmd)->last_out = -1;
-	return (*current_cmd);
+    if (!(*cmd_list))
+    {
+        *cmd_list = create_cmd_node();
+        *current_cmd = *cmd_list;
+    }
+    else
+    {
+        (*current_cmd)->next = create_cmd_node();
+        (*current_cmd)->next->prev = *current_cmd; // Lien avec le nœud précédent
+        *current_cmd = (*current_cmd)->next;
+    }
+    (*current_cmd)->last_in = -1;
+    (*current_cmd)->last_out = -1;
+    return (*current_cmd);
 }
+
 
 int	allocate_command_args(t_cmd_list *current_cmd, int arg_count)
 {
@@ -54,6 +57,7 @@ void	post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 		}
 	}
 }
+
 void print_commands(t_cmd_list *cmd_list)
 {
     t_cmd_list *current_cmd = cmd_list;
@@ -100,11 +104,16 @@ void print_commands(t_cmd_list *cmd_list)
         }
 
         printf("last_in: %d, last_out: %d\n", current_cmd->last_in, current_cmd->last_out);
+
+        printf("prev: %p, current: %p, next: %p\n",
+               (void *)current_cmd->prev, (void *)current_cmd, (void *)current_cmd->next);
+
         printf("---------------------\n");
 
         current_cmd = current_cmd->next;
     }
 }
+
 
 t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list)
 {
