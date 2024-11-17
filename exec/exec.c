@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 20:41:57 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/17 23:06:23 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,36 +17,62 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 	pid_t   pid;
 	int	status;
 
+	pid = -1;
 	if(!list)
 		return(data->exit);
-	if(list->next)
+	if(!list->next)
 		makeapipe(list->pipe);
-	if(list->cmd_args[0] && parsebi(list,data) == 0)
+	if(list->cmd_args[0] && parsebi(list,data) == 0 && !list->next)
 			return(0);
 	pid = fork();
 	if(pid == -1)
 	{
 		perror("fork");
-			return(-1);
+		return(-1);
 	}
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		ft_execpipe(list, data);
+		if(list->next || data->nodenb != 0)
+			ft_execpipe(list, data->nodenb);
 		ft_exec1(list);
     		ft_exec2(list, data);
 	}
-	else if(pid > 0)
+	if(pid > 0)
 	{
-		waitpid(pid, &status, 0);
+		// printf("%d \n",data->nodenb);
+		// if(list->next)
+		// 	close(list->pipe[1]);
+		if(data->nodenb != 0)
+			close(list->pipe[2]);
 	}
-	if(WIFEXITED(status))
-		data->exit = WEXITSTATUS(status);
+	if(list && list->next)
+	{
+		data->nodenb++;
+		list->next->pipe[2] = list->pipe[0];
+		ft_exec(list->next,data);
+	}
+	if(pid > 0 && !list->next)
+	{	
+		while(waitpid(-1, &status, 0) != pid)
+			;
+	}
+	// if(WIFEXITED(status))
+	// 	data->exit = WEXITSTATUS(status);
 	return(0);
 }
 
-
+void	initpipe(t_cmd_list *list)
+{
+	while(list)
+	{
+		list->pipe[0] = 0;
+		list->pipe[1] = 0;
+		list->pipe[2] = 0;
+		list = list->next;
+	}
+}
 
 int	ft_is_absolute_path(char *cmd)
 {

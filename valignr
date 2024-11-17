@@ -1,27 +1,30 @@
 {
-   ncurses_memory_leak
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:_nc_read_termtype
-   obj:/usr/lib/x86_64-linux-gnu/libtinfo.so.6.3
-   obj:/usr/lib/x86_64-linux-gnu/libtinfo.so.6.3
-   fun:_nc_read_entry2
-   obj:/usr/lib/x86_64-linux-gnu/libtinfo.so.6.3
-   fun:_nc_setupterm
-   fun:tgetent_sp
-   fun:_rl_init_terminal_io
-   fun:rl_initialize
-   fun:readline
-   fun:main
-   readline_memory_leak
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:xmalloc
-   fun:rl_make_bare_keymap
-   fun:rl_generic_bind
-   fun:rl_parse_and_bind
-   fun:rl_initialize
-   fun:readline
+    leak readline
+    Memcheck:Leak
+    ...
+    fun:readline
+}
+{
+	leak readline_buffer
+	Memcheck:Leak
+	...
+	fun:readline_internal_char
+}
+{
+    leak add_history
+    Memcheck:Leak
+    ...
+    fun:add_history
+}
+{
+    leak usrbin
+    Memcheck:Leak
+    ...
+    obj:/usr/bin/*
+}
+{
+    leak binbin
+    Memcheck:Leak
+    ...
+    obj:/bin/*
 }
