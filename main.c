@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/17 23:11:40 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:49:13 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +17,38 @@ int g_last_exit_status = 0;
 int g_status = 0;
 volatile sig_atomic_t g_received_signal = 0;
 
-void	init_data(int argc, char **argv, char **envp, t_data *data)
+void init_data(int argc, char **argv, char **envp, t_data *data)
 {
-	data->ac = argc;
-	data->av = ft_copytab(argv);
-	data->envp = ft_copytab(envp);
-	data->cwd = malloc(4096);
-	data->exit = 0;
+    data->ac = argc;
+    data->av = ft_copytab(argv);
+    data->envp = ft_copytab(envp);
+    data->cwd = malloc(4096);
+    data->exit = 0;
     data->nodenb = 0;
-	getcwd(data->cwd, 1024);
+    data->prev_pipe_read_end = -1; // Initialize here
+    if (!data->cwd)
+    {
+        perror("malloc failed in init_data");
+        exit(1);
+    }
+    getcwd(data->cwd, 1024);
+    printf("Debug: init_data completed successfully.\n");
 }
+
 
 void cleanup_resources(t_data *data, t_env **env_list)
 {
     if (data->av) {
         ft_freetab(data->av);
-        data->av = NULL;
+        data->av = NULL;  // Assurez-vous que le pointeur est mis à NULL
     }
     if (data->envp) {
         ft_freetab(data->envp);
-        data->envp = NULL;
+        data->envp = NULL;  // Idem pour envp
     }
     if (data->cwd) {
         free(data->cwd);
-        data->cwd = NULL;
+        data->cwd = NULL;  // Idem pour cwd
     }
 
     while (*env_list)
@@ -54,6 +62,7 @@ void cleanup_resources(t_data *data, t_env **env_list)
 
     printf("Resources cleaned up successfully.\n");
 }
+
 
 
 
@@ -117,7 +126,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
             // print_commands(cmd_list);
             (void)data;
             initpipe(cmd_list);
-            // ft_exec(cmd_list, data);
+            ft_exec(cmd_list, data);
 
             free_cmd_list(cmd_list);
         }
@@ -145,7 +154,7 @@ int main(int argc, char **argv, char **envp)
 
         input = get_user_input();
 
-        if (!input)
+        if (!input) // Ctrl+D ou EOF
         {
             write(1, "exit\n", 5);
             cleanup_resources(&data, &env_list);
@@ -154,5 +163,8 @@ int main(int argc, char **argv, char **envp)
 
         process_input(input, &data, &env_list);
     }
+
+    // cleanup_resources a déjà tout libéré.
     return (0);
 }
+

@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:08:45 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:51:32 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,16 @@ void	free_cmd_node(t_cmd_list *cmd_node)
 	free_files_type(cmd_node->files_type);
 }
 
-void	free_cmd_list(t_cmd_list *cmd_list)
+void free_cmd_list(t_cmd_list *cmd_list)
 {
-	t_cmd_list	*tmp;
+    t_cmd_list *tmp;
 
-	while (cmd_list)
-	{
-		tmp = cmd_list;
-		cmd_list = cmd_list->next;
-		free_cmd_node(tmp);
-		free(tmp);
-	}
+    while (cmd_list)
+    {
+        tmp = cmd_list;
+        cmd_list = cmd_list->next;
+        free_cmd_node(tmp);
+        free(tmp);
+    }
 }
+
