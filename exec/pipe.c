@@ -3,27 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/19 06:02:29 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:09:26 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
 
-int ft_execpipe(t_cmd_list *list, int n)
+int ft_execpipe(t_cmd_list *list)
 {
-	if(n != 0)
+	if(list->prev)
 	{
-		dup2(list->pipe[2],STDIN_FILENO);
-		close(list->pipe[2]);	
+		dup2(list->prev->pipe[0],STDIN_FILENO);
+		close(list->prev->pipe[0]);
 	}
-	//if(list->pipe)
-        	close(list->pipe[0]);
 	if (list->next)
+	{
 		dup2(list->pipe[1], STDOUT_FILENO);
-	close(list->pipe[1]);
+		close(list->pipe[1]);
+        	close(list->pipe[0]);
+	}
 	return (0);
 }
 
@@ -47,8 +48,8 @@ int	ft_execute_child(t_cmd_list *list, t_data *data)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	ft_execpipe(list, data->nodenb);
+	ft_execpipe(list);
 	ft_exec1(list); // Prépare l'exécution
-	ft_exec2(list, data, NULL); // Exécute réellement
+	ft_exec2(list, data); // Exécute réellement
 	return (0);
 }
