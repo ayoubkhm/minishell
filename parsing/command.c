@@ -29,7 +29,7 @@ t_cmd_list *init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd)
     else
     {
         (*current_cmd)->next = create_cmd_node();
-        (*current_cmd)->next->prev = *current_cmd; // Lien avec le nœud précédent
+        (*current_cmd)->next->prev = *current_cmd;
         *current_cmd = (*current_cmd)->next;
     }
     (*current_cmd)->last_in = -1;
@@ -121,25 +121,33 @@ void print_commands(t_cmd_list *cmd_list)
 }
 
 
-t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list)
+t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
 {
-	t_cmd_list	*cmd_list;
-	t_cmd_list	*current_cmd;
-	int			arg_count;
+    t_cmd_list *cmd_list;
+    t_cmd_list *current_cmd;
+    int arg_count;
 
-	cmd_list = NULL;
-	current_cmd = NULL;
-	while (tokens)
-	{
-		current_cmd = init_command_node(&cmd_list, &current_cmd);
-		arg_count = count_arguments(tokens);
-		if (allocate_command_args(current_cmd, arg_count) == -1)
-			return (NULL);
-		if (process_token_cmd(&tokens, current_cmd, *env_list) == -1)
-			return (NULL);
-		post_process_command(current_cmd, env_list);
-		if (tokens && tokens->type == TYPE_PIPE)
-			tokens = tokens->next;
-	}
-	return (cmd_list);
+    cmd_list = NULL;
+    current_cmd = NULL;
+    while (tokens)
+    {
+        current_cmd = init_command_node(&cmd_list, &current_cmd);
+        arg_count = count_arguments(tokens);
+        if (allocate_command_args(current_cmd, arg_count) == -1)
+            return (NULL);
+        if (process_token_cmd(&tokens, current_cmd, *env_list) == -1)
+            return (NULL);
+        post_process_command(current_cmd, env_list);
+
+        if (tokens && tokens->type == TYPE_PIPE)
+        {
+            tokens = tokens->next;
+        }
+    }
+    if (current_cmd && current_cmd->cmd)
+    {
+        free(current_cmd->cmd);
+        current_cmd->cmd = NULL;
+    }
+    return cmd_list;
 }

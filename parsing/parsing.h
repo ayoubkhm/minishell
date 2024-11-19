@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/13 05:40:50 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/19 05:57:57 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,6 @@ char *append_string(char *original, char *addition);
 
 char	*get_user_input(void);
 void print_commands(t_cmd_list *cmd_list);
+void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list);
+
 #endif

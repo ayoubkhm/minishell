@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/18 00:51:32 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/19 10:44:38 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,20 @@ void	free_files_type(int *files_type)
 	}
 }
 
-void	free_cmd_node(t_cmd_list *cmd_node)
+void free_cmd_node(t_cmd_list *cmd_node)
 {
-	free_cmd_args(cmd_node->cmd_args);
-	if (cmd_node->cmd)
-	{
-		free(cmd_node->cmd);
-	}
-	free_files_list(cmd_node->files_list, cmd_node->files_count);
-	free_files_type(cmd_node->files_type);
+    free_cmd_args(cmd_node->cmd_args);
+
+    if (cmd_node->cmd)
+    {
+        free(cmd_node->cmd); // Libération de la commande
+        cmd_node->cmd = NULL; // Bonnes pratiques : mettre à NULL après libération
+    }
+
+    free_files_list(cmd_node->files_list, cmd_node->files_count);
+    free_files_type(cmd_node->files_type);
 }
+
 
 void free_cmd_list(t_cmd_list *cmd_list)
 {
@@ -75,4 +79,3 @@ void free_cmd_list(t_cmd_list *cmd_list)
         free(tmp);
     }
 }
-
