@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/18 00:45:09 by akhamass         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 # include "../minishell.h"
 
-int ft_exec(t_cmd_list *list, t_data *data)
+int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
     pid_t pid;
     int status;
@@ -22,10 +10,10 @@ int ft_exec(t_cmd_list *list, t_data *data)
 
     if (list->next)
     {
-        // Create a pipe to connect this process's output to the next process's input
         if (pipe(list->pipe) == -1)
         {
             perror("pipe");
+            cleanup_resources(data, env_list, list);
             exit(1);
         }
     }
@@ -39,29 +27,26 @@ int ft_exec(t_cmd_list *list, t_data *data)
 
     if (pid == 0)
     {
-        // Child process
         signal(SIGINT, SIG_DFL);
         signal(SIGQUIT, SIG_DFL);
 
-        // If not the first command, redirect input
         if (data->nodenb != 0)
         {
             dup2(data->prev_pipe_read_end, STDIN_FILENO);
             close(data->prev_pipe_read_end);
         }
 
-        // If there is a next command, redirect output
         if (list->next)
         {
-            close(list->pipe[0]); // Close unused read end
+            close(list->pipe[0]);
             dup2(list->pipe[1], STDOUT_FILENO);
             close(list->pipe[1]);
         }
 
-        ft_exec1(list); // Prepare execution
-        ft_exec2(list, data); // Execute command
-
-        exit(0); // Ensure child process exits after execution
+        ft_exec1(list);
+        ft_exec2(list, data, env_list);
+        cleanup_resources(data, env_list, list);
+        exit(0);
     }
     else
     {
@@ -85,7 +70,7 @@ int ft_exec(t_cmd_list *list, t_data *data)
         if (list->next)
         {
             data->nodenb++;
-            ft_exec(list->next, data);
+            ft_exec(list->next, data, env_list);
         }
         else
         {
@@ -131,7 +116,7 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 	return (path);
 }
 
-int	ft_exec2(t_cmd_list *list, t_data *data)
+int	ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	char	*path;
 
@@ -139,12 +124,15 @@ int	ft_exec2(t_cmd_list *list, t_data *data)
 	if (!path)
 	{
 		perror("command not found");
+        cleanup_resources(data, env_list, list);
 		exit(127);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
 		// perror("execve");
 		free(path);
+        cleanup_resources(data, env_list, list);
+
 		exit(1);
 	}
 	return (0);

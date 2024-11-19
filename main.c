@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/18 00:49:13 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/19 10:44:10 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,22 +35,28 @@ void init_data(int argc, char **argv, char **envp, t_data *data)
     printf("Debug: init_data completed successfully.\n");
 }
 
-
-void cleanup_resources(t_data *data, t_env **env_list)
+void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
 {
-    if (data->av) {
+    if (data->av)
+    {
         ft_freetab(data->av);
-        data->av = NULL;  // Assurez-vous que le pointeur est mis à NULL
+        data->av = NULL;
     }
-    if (data->envp) {
+    if (data->envp)
+    {
         ft_freetab(data->envp);
-        data->envp = NULL;  // Idem pour envp
+        data->envp = NULL;
     }
-    if (data->cwd) {
+    if (data->cwd)
+    {
         free(data->cwd);
-        data->cwd = NULL;  // Idem pour cwd
+        data->cwd = NULL;
     }
-
+    if (list)
+    {
+        free_cmd_list(list);
+        list = NULL;
+    }
     while (*env_list)
     {
         t_env *tmp = *env_list;
@@ -59,9 +65,8 @@ void cleanup_resources(t_data *data, t_env **env_list)
         *env_list = (*env_list)->next;
         free(tmp);
     }
-
-    printf("Resources cleaned up successfully.\n");
 }
+
 
 
 
@@ -73,7 +78,6 @@ void	init_signals_and_env(t_env **env_list, char **envp)
 	*env_list = init_env(envp);
 }
 
-// Fonction pour configurer le mode du terminal
 void set_terminal_mode(int canonical)
 {
     struct termios term;
@@ -93,9 +97,8 @@ char	*get_user_input(void)
 
     if (g_received_signal == SIGINT)
     {
-        // Si interruption, on affiche une invite vide et ne redessine pas
         input = readline("");
-        g_received_signal = 0;  // Réinitialise après interruption
+        g_received_signal = 0;
     }
     else
     {
@@ -121,17 +124,18 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     if (check_syntax(tokens) == 0)
     {
         cmd_list = parse_commands(tokens, env_list);
+        free_tokens(tokens);
+
         if (cmd_list)
         {
             // print_commands(cmd_list);
             (void)data;
             initpipe(cmd_list);
-            ft_exec(cmd_list, data);
-
+            ft_exec(cmd_list, data, env_list);
+            //cleanup_resources(data, env_list, cmd_list);
             free_cmd_list(cmd_list);
         }
     }
-    free_tokens(tokens);
 }
 
 
@@ -157,14 +161,11 @@ int main(int argc, char **argv, char **envp)
         if (!input) // Ctrl+D ou EOF
         {
             write(1, "exit\n", 5);
-            cleanup_resources(&data, &env_list);
+            cleanup_resources(&data, &env_list, NULL);
             break;
         }
-
         process_input(input, &data, &env_list);
     }
-
-    // cleanup_resources a déjà tout libéré.
     return (0);
 }
 

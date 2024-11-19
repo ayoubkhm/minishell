@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/18 00:46:29 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/19 06:02:29 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,6 @@ int	ft_execute_child(t_cmd_list *list, t_data *data)
 	signal(SIGQUIT, SIG_DFL);
 	ft_execpipe(list, data->nodenb);
 	ft_exec1(list); // Prépare l'exécution
-	ft_exec2(list, data); // Exécute réellement
+	ft_exec2(list, data, NULL); // Exécute réellement
 	return (0);
 }
