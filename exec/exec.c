@@ -1,88 +1,63 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/11/19 18:46:52 by gtraiman         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 # include "../minishell.h"
 
-int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
+int     ft_exec(t_cmd_list *list,t_data *data)
 {
-    pid_t pid;
-    int status;
+	pid_t   pid;
+	int	status;
 
-    if (!list)
-        return (data->exit);
-
-    if (list->next)
-    {
-        if (pipe(list->pipe) == -1)
-        {
-            perror("pipe");
-            cleanup_resources(data, env_list, list);
-            exit(1);
-        }
-    }
-
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        return (-1);
-    }
-
-    if (pid == 0)
-    {
-        signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
-
-        if (data->nodenb != 0)
-        {
-            dup2(data->prev_pipe_read_end, STDIN_FILENO);
-            close(data->prev_pipe_read_end);
-        }
-
-        if (list->next)
-        {
-            close(list->pipe[0]);
-            dup2(list->pipe[1], STDOUT_FILENO);
-            close(list->pipe[1]);
-        }
-
-        ft_exec1(list);
-        ft_exec2(list, data, env_list);
-        cleanup_resources(data, env_list, list);
-        exit(0);
-    }
-    else
-    {
-        // Parent process
-
-        // Close previous read end in parent
-        if (data->nodenb != 0)
-            close(data->prev_pipe_read_end);
-
-        if (list->next)
-        {
-            close(list->pipe[1]); // Close write end in parent
-            data->prev_pipe_read_end = list->pipe[0]; // Save read end for next command
-        }
-
-        // Wait for the child process
-        waitpid(pid, &status, 0);
-        // Handle the status if necessary
-
-        // Recursive call for the next command
-        if (list->next)
-        {
-            data->nodenb++;
-            ft_exec(list->next, data, env_list);
-        }
-        else
-        {
-            // If this is the last command, reset nodenb and prev_pipe_read_end
-            data->nodenb = 0;
-            data->prev_pipe_read_end = -1;
-        }
-    }
-
-    return (0);
+	if(!list)
+		return(data->exit);
+	if(list->next)
+		makeapipe(list->pipe);
+	if(list->cmd_args[0] && parsebi(list,data) == 0 && !list->next)
+			return(0);
+	pid = fork();
+	if(pid == -1)
+	{
+		perror("fork");
+		return(-1);
+	}
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		if(list->next || list->prev)
+			ft_execpipe(list);
+		ft_exec1(list);
+    		ft_exec2(list, data);
+	}
+	if(pid > 0)
+	{
+		if(list->prev)
+			close(list->prev->pipe[0]);
+		if(list->next)	
+		{
+			close(list->pipe[1]);
+			ft_exec(list->next,data);
+		}
+		else
+		{
+			while (waitpid(-1, &status, 0) > 0)
+			{
+				if (WIFEXITED(status))
+					data->exit = WEXITSTATUS(status);
+			}
+		}
+	}
+	return(0);
 }
-
 
 void	initpipe(t_cmd_list *list)
 {
@@ -90,7 +65,6 @@ void	initpipe(t_cmd_list *list)
 	{
 		list->pipe[0] = 0;
 		list->pipe[1] = 0;
-		list->pipe[2] = 0;
 		list = list->next;
 	}
 }
@@ -116,7 +90,7 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 	return (path);
 }
 
-int	ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
+int	ft_exec2(t_cmd_list *list, t_data *data)
 {
 	char	*path;
 
@@ -124,15 +98,12 @@ int	ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 	if (!path)
 	{
 		perror("command not found");
-        cleanup_resources(data, env_list, list);
 		exit(127);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
 		// perror("execve");
 		free(path);
-        cleanup_resources(data, env_list, list);
-
 		exit(1);
 	}
 	return (0);
