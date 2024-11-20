@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/19 18:46:52 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/20 10:24:30 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../minishell.h"
 
-int     ft_exec(t_cmd_list *list,t_data *data)
+int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	pid_t   pid;
 	int	status;
@@ -36,7 +36,7 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 		if(list->next || list->prev)
 			ft_execpipe(list);
 		ft_exec1(list);
-    		ft_exec2(list, data);
+    		ft_exec2(list, data, env_list);
 	}
 	if(pid > 0)
 	{
@@ -45,7 +45,7 @@ int     ft_exec(t_cmd_list *list,t_data *data)
 		if(list->next)	
 		{
 			close(list->pipe[1]);
-			ft_exec(list->next,data);
+			ft_exec(list->next,data,env_list);
 		}
 		else
 		{
@@ -90,7 +90,7 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 	return (path);
 }
 
-int	ft_exec2(t_cmd_list *list, t_data *data)
+int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	char	*path;
 
@@ -98,12 +98,14 @@ int	ft_exec2(t_cmd_list *list, t_data *data)
 	if (!path)
 	{
 		perror("command not found");
+        cleanup_resources(data, env_list, list);
 		exit(127);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
 		// perror("execve");
 		free(path);
+        cleanup_resources(data, env_list, list);
 		exit(1);
 	}
 	return (0);

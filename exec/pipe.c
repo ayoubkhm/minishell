@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/18 00:09:26 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/20 10:25:35 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ void	ft_close_pipes(int pipefd[2])
 	close(pipefd[1]);
 }
 
-int	ft_execute_child(t_cmd_list *list, t_data *data)
+int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	ft_execpipe(list);
 	ft_exec1(list); // Prépare l'exécution
-	ft_exec2(list, data); // Exécute réellement
+	ft_exec2(list, data, env_list); // Exécute réellement
 	return (0);
 }
