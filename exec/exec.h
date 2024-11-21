@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/20 10:25:51 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:00:57 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void	ft_close_pipes(int pipefd[2]);
 int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list);
 void	initpipe(t_cmd_list *list);
 
-int     ft_heredoc(t_cmd_list *list, t_data *data);
-
+int     ft_heredoc(t_cmd_list *list, char *str);
 
 #endif

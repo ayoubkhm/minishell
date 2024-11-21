@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/20 10:34:17 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:44:23 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,8 @@ void init_data(int argc, char **argv, char **envp, t_data *data)
 
 void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
 {
-    if (data->av)
-    {
-        ft_freetab(data->av);
-        data->av = NULL;
-    }
-    if (data->envp)
-    {
-        ft_freetab(data->envp);
-        data->envp = NULL;
-    }
-    if (data->cwd)
-    {
-        free(data->cwd);
-        data->cwd = NULL;
-    }
+    if(data)
+        ft_freedata(data);
     if (list)
     {
         free_cmd_list(list);
@@ -66,10 +53,6 @@ void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
         free(tmp);
     }
 }
-
-
-
-
 
 void	init_signals_and_env(t_env **env_list, char **envp)
 {
@@ -115,7 +98,7 @@ char	*get_user_input(void)
 void    process_input(char *input, t_data *data, t_env **env_list)
 {
     t_token     *tokens;
-     *cmd_list;
+    t_cmd_list *cmd_list;
 
     tokens = tokenize_input(input, *env_list);
     //print_tokens(tokens);
@@ -158,7 +141,7 @@ int main(int argc, char **argv, char **envp)
 
         input = get_user_input();
 
-        if (!input) // Ctrl+D ou EOF
+        if (!input)
         {
             write(1, "exit\n", 5);
             cleanup_resources(&data, &env_list, NULL);

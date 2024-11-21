@@ -62,6 +62,7 @@ char	**ft_copyntab(char **tab, int n)
 	char **tabret;
 	int i;
 
+	tabret = NULL;
 	i = -1;
 	tabret = malloc((ft_tabstrlen(tab) + n + 1) * sizeof(char *));
 	if (!tabret)

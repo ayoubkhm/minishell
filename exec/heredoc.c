@@ -6,16 +6,8 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 12:48:06 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/25 14:24:48 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:39:49 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
-
-int     ft_heredoc(t_cmd_list *list, t_data *data)
-{
-        (void)data;
-        if(!list->cmd_args[1])
-                exit(2);
-        return(0);
-}
