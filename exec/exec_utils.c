@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 19:10:50 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:23:04 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	ft_access(char **tab, char *avi, char **path)
 		free(temp);
 		if (access(tab[j], F_OK | X_OK) == 0)
 		{
-			*path = tab[j];
+			*path = ft_strdup(tab[j]);
 			return (1);
 		}
 		j++;
@@ -78,6 +78,7 @@ char	**ft_get_path(char **envp)
 {
 	char	**tab;
 	int		i;
+	char **split;
 
 	i = 0;
 	if (!envp)
@@ -87,8 +88,9 @@ char	**ft_get_path(char **envp)
 		i++;
 	}
 	if (!envp[i])
-		exit(-1);
-	tab = ft_copyntab(ft_split(&envp[i][5], ':'),1);
+		return(NULL); ///check leaks
+	split = ft_split(&envp[i][5], ':');
+	tab = ft_copyntab(split,1);
 	if (!tab)
 	{
 		perror("ft_split");
@@ -110,6 +112,7 @@ char	**ft_get_path(char **envp)
 		tab[i] = NULL;
 	}
 	tab[i + 1] = NULL;
+	ft_freetab(split);
 	return (tab);
 }
 

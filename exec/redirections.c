@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/13 19:38:25 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/21 19:56:54 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	ft_openall(t_cmd_list *list)
         return (0);
     while (list->files_list[i])
     {
-        if (list->files_type[i] == 0)
+        if (list->files_type[i] == 0 || list->files_type[i] == 3)
         {
             int fd_in = open(list->files_list[i], O_RDONLY);
             if (fd_in == -1)

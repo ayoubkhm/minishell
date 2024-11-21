@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/20 10:24:30 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:05:46 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,12 +83,16 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 
 	path = NULL;
 	if (ft_is_absolute_path(cmd))
-		return (cmd);
+		return (ft_strdup(cmd));
 	tab = ft_get_path(data->envp);
+	if(!tab)
+		return(ft_freetab(tab),NULL);
 	if (ft_access(tab, cmd, &path) == -1)
 		return (ft_freetab(tab),NULL);
+	ft_freetab(tab);
 	return (path);
 }
+
 
 int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 {
@@ -97,16 +101,18 @@ int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 	path = ft_get_command_path(list->cmd_args[0], data);
 	if (!path)
 	{
-		perror("command not found");
-        cleanup_resources(data, env_list, list);
-		exit(127);
+		free(path);
+        	cleanup_resources(data, env_list, list);
+		g_last_exit_status = 127;
+		exit(g_last_exit_status);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
 		// perror("execve");
 		free(path);
-        cleanup_resources(data, env_list, list);
-		exit(1);
+        	cleanup_resources(data, env_list, list);
+		g_last_exit_status = 1;
+		exit(g_last_exit_status);
 	}
 	return (0);
 }
