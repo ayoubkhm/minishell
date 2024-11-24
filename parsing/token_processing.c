@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   token_processing.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:10:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/07 11:34:45 by akhamass         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "parsing.h"
 
 int	proc_com_args(t_token **tok, t_cmd_list *c_cmd, int *arg_i)
@@ -38,53 +26,62 @@ int	process_redirections(t_token **tokens, t_cmd_list *current_cmd)
 	return (0);
 }
 
-int	process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
+
+int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
 {
-	int	arg_index;
+    int arg_index = 0;
 
-	arg_index = 0;
-	while (*tokens && (*tokens)->type != TYPE_PIPE)
-	{
-		// Si le token est un argument à ajouter à `cmd_args`
-		if ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR)
-		{
-			char *arg_value;
+    while (*tokens && (*tokens)->type != TYPE_PIPE)
+    {
+        // Si le token est un argument à ajouter à `cmd_args`
+        if ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR)
+        {
+            char *arg_value;
 
-			// Expansion uniquement si le token est marqué pour cela
-			if ((*tokens)->expand)
-				arg_value = expand_variables((*tokens)->value, env_list);
-			else
-				arg_value = ft_strdup((*tokens)->value);
+            // Expansion uniquement si le token est marqué pour cela
+            if ((*tokens)->expand)
+                arg_value = expand_variables((*tokens)->value, env_list);
+            else
+                arg_value = ft_strdup((*tokens)->value);
 
-			// Vérifier l'allocation
-			if (!arg_value)
-				return (-1);
+            // Vérifier l'allocation
+            if (!arg_value)
+                return (-1);
 
-			// Ajouter l'argument à `cmd_args` et gérer l'indexation
-			curr_cmd->cmd_args[arg_index++] = arg_value;
+            // Ajouter l'argument à `cmd_args` et gérer l'indexation
+            curr_cmd->cmd_args[arg_index++] = arg_value;
 
-			// Avancer le pointeur tokens
-			*tokens = (*tokens)->next;
-		}
-		else if ((*tokens)->type == TYPE_REDIR_IN || (*tokens)->type == TYPE_REDIR_OUT || (*tokens)->type == TYPE_REDIR_APPEND || (*tokens)->type == TYPE_HEREDOC)
-		{
-			// Si c'est une redirection, appeler `process_redirections`
-			if (process_redirections(tokens, curr_cmd) == -1)
-				return (-1);
-			// NE PAS avancer le pointeur `tokens` ici si `process_redirections` l'a déjà fait
-			// Suppression de `*tokens = (*tokens)->next;` ici
-		}
-		else
-		{
-			// Si le token n'est ni un argument ni une redirection, on avance simplement
-			*tokens = (*tokens)->next;
-		}
-	}
+            // Avancer le pointeur tokens
+            *tokens = (*tokens)->next;
+        }
+        else if ((*tokens)->type == TYPE_REDIR_IN || (*tokens)->type == TYPE_REDIR_OUT || 
+                 (*tokens)->type == TYPE_REDIR_APPEND || (*tokens)->type == TYPE_HEREDOC)
+        {
+            // Gestion spécifique pour heredocs
+            if ((*tokens)->type == TYPE_HEREDOC)
+            {
+                if (process_heredoc(tokens, curr_cmd) == -1)
+                    return (-1);
+            }
+            else
+            {
+                // Si c'est une redirection classique, appeler `process_redirections`
+                if (process_redirections(tokens, curr_cmd) == -1)
+                    return (-1);
+            }
+        }
+        else
+        {
+            // Si le token n'est ni un argument ni une redirection, on avance simplement
+            *tokens = (*tokens)->next;
+        }
+    }
 
-	// Terminer la liste des arguments avec NULL
-	curr_cmd->cmd_args[arg_index] = NULL;
-	return (0);
+    // Terminer la liste des arguments avec NULL
+    curr_cmd->cmd_args[arg_index] = NULL;
+    return (0);
 }
+
 
 
 

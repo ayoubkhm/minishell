@@ -54,6 +54,8 @@ typedef struct s_cmd_list {
 	int         pipe[2];
 	char        *cmd;
 	t_env   *env_vars;
+    char        *heredoc_delimiter;
+    char        *heredoc_content; 
 	struct s_cmd_list  *next;
     	struct s_cmd_list  *prev;
 } t_cmd_list;
