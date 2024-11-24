@@ -42,6 +42,7 @@ SRCS        =   exec/builtins/cd.c \
                 parsing/token_processing.c \
                 parsing/operator_detection.c \
                 parsing/init_env.c \
+                parsing/heredoc.c \
                 signals/signals.c \
 
 

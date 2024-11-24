@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/21 18:00:57 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/24 14:21:15 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	ft_free_list(t_cmd_list *list);
 void	ft_free_inlist(t_cmd_list *list);
 
 
-int     parsebi(t_cmd_list *list, t_data *data);
+int parsebi(t_cmd_list *list, t_data *data, t_env **env_list);
 int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list);
 int	ft_exec1(t_cmd_list *list);
 int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list);

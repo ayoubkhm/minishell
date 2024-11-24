@@ -92,12 +92,14 @@ void print_commands(t_cmd_list *cmd_list)
             for (i = 0; i < current_cmd->files_count; i++)
             {
                 char *type_str;
-                if (current_cmd->files_type[i] == 0)
+                if (current_cmd->files_type[i] == TYPE_REDIR_IN)
                     type_str = "Entrée";
-                else if (current_cmd->files_type[i] == 1)
+                else if (current_cmd->files_type[i] == TYPE_REDIR_OUT)
                     type_str = "Sortie";
-                else if (current_cmd->files_type[i] == 2)
+                else if (current_cmd->files_type[i] == TYPE_REDIR_APPEND)
                     type_str = "Append";
+                else if (current_cmd->files_type[i] == TYPE_HEREDOC)
+                    type_str = "Heredoc";
                 else
                     type_str = "Inconnu";
 
@@ -108,6 +110,12 @@ void print_commands(t_cmd_list *cmd_list)
         {
             printf("  Aucun fichier de redirection\n");
         }
+
+        if (current_cmd->heredoc_delimiter)
+            printf("Heredoc delimiter: %s\n", current_cmd->heredoc_delimiter);
+
+        if (current_cmd->heredoc_content)
+            printf("Heredoc content:\n%s\n", current_cmd->heredoc_content);
 
         printf("last_in: %d, last_out: %d\n", current_cmd->last_in, current_cmd->last_out);
 
@@ -121,11 +129,13 @@ void print_commands(t_cmd_list *cmd_list)
 }
 
 
+
 t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
 {
     t_cmd_list *cmd_list;
     t_cmd_list *current_cmd;
     int arg_count;
+    int ret; // Variable pour stocker le retour de process_token_cmd
 
     cmd_list = NULL;
     current_cmd = NULL;
@@ -135,8 +145,11 @@ t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
         arg_count = count_arguments(tokens);
         if (allocate_command_args(current_cmd, arg_count) == -1)
             return (NULL);
-        if (process_token_cmd(&tokens, current_cmd, *env_list) == -1)
+        
+        ret = process_token_cmd(&tokens, current_cmd, *env_list);        
+        if (ret == -1)
             return (NULL);
+
         post_process_command(current_cmd, env_list);
 
         if (tokens && tokens->type == TYPE_PIPE)

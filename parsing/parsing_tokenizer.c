@@ -173,20 +173,24 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     char *var_value;
 
     i++;
+    if (input[i] == '?')
+    {
+        var_value = ft_itoa(g_last_exit_status);
+        add_token(tokens, create_token(var_value, TYPE_WORD, 1));
+        free(var_value);
+        return (i + 1);
+    }
     int var_start = i;
     while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
     {
         i++;
     }
-
     var_name = ft_substr(input, var_start, i - var_start);
-
     var_value = get_env_variable(env_list, var_name);
     if (!var_value)
     {
         var_value = ft_strdup("");
     }
-
     if (ft_strchr(var_value, ' '))
     {
         t_token *expanded_tokens = tokenize_input(var_value, env_list);
@@ -206,5 +210,5 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     free(var_name);
     free(var_value);
 
-    return (i);
+    return i;
 }

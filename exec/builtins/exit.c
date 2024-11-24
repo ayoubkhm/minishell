@@ -41,40 +41,29 @@ long long	ft_exatoi(t_cmd_list *list)
 }
 
 
-void	ft_exit(t_data *data,t_cmd_list *list)
+void ft_exit(t_data *data, t_env **env_list, t_cmd_list *list)
 {
-	long long i;
+    long long exit_code;
 
-	write(1, "exit\n", 5);
-	ft_freedata(data);
-	i = 0;
-	if (list->cmd_args[1])
-	{
-		i = ft_exatoi(list);
-		if(i != 1 || !list->cmd_args[2])
-		{
-			if(ft_isainnum(list->cmd_args[1]) == 1)
-			{
-				write(2,"exit: ",6);
-				write(2,&list->cmd_args[1],1);
-				write(2,": numeric argument required\n",29);
-			}
-			if(list->next)
-				ft_free_list(list);
-			else
-				ft_free_inlist(list);
-			exit(i % 256);
-		}
-		else 
-			write(2,"exit: too many arguments\n",26);
-	}
-	else
-	{
-		(void)i;
-		if(list->next)
-			ft_free_list(list);
-		else
-			ft_free_inlist(list);
-		exit(g_last_exit_status);  
-	}
+    write(1, "exit\n", 5);
+    exit_code = 0;
+    if (list->cmd_args[1])
+    {
+        exit_code = ft_exatoi(list);
+        if (ft_isainnum(list->cmd_args[1]) == 1)
+        {
+            write(2, "exit: ", 6);
+            write(2, list->cmd_args[1], ft_strlen(list->cmd_args[1]));
+            write(2, ": numeric argument required\n", 29);
+            cleanup_resources(data, env_list, list);
+            exit(2);
+        }
+        if (list->cmd_args[2])
+        {
+            write(2, "exit: too many arguments\n", 26);
+            return;
+        }
+    }
+    cleanup_resources(data, env_list, list);
+    exit(exit_code % 256);
 }

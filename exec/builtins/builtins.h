@@ -11,7 +11,7 @@ int		ft_echo(char *str);
 bool	is_n_option(char *arg);
 int	        ft_parsecho(t_cmd_list *list, t_data *data);
 int		ft_env(char **envp);
-void		ft_exit(t_data *data, t_cmd_list *list);
+void ft_exit(t_data *data, t_env **env_list, t_cmd_list *list);
 char	**ft_export(char **envp, char *str);
 int		ft_parsexport(t_data *data, t_cmd_list *list);
 int		ft_envexport(char **envp);
