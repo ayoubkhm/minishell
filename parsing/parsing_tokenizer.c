@@ -19,7 +19,7 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
         char *var_value;
         i = handle_variable_reference(input, i, tokens, env_list);
         var_value = (*tokens)->value;
-        if (prefix)
+        if (prefix && *prefix) // Ajout condition pour ignorer les prefixes vides
         {
             char *combined = ft_strjoin(prefix, var_value);
             free(prefix);
@@ -27,7 +27,7 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
             (*tokens)->value = combined;
         }
     }
-    else if (prefix)
+    else if (prefix && *prefix) // Ignore les tokens vides
     {
         add_token(tokens, create_token(prefix, TYPE_WORD, 1));
         free(prefix);
@@ -36,8 +36,51 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
     return i;
 }
 
+t_token *get_last_token(t_token *tokens)
+{
+    if (!tokens) // Si la liste est vide
+        return NULL;
+
+    while (tokens->next) // Parcourt jusqu'à la fin de la liste
+        tokens = tokens->next;
+
+    return tokens; // Retourne le dernier token
+}
+
+
+void remove_last_token(t_token **tokens)
+{
+    if (!tokens || !*tokens)
+        return;
+
+    t_token *current = *tokens;
+
+    // Si la liste ne contient qu'un seul token
+    if (!current->next)
+    {
+        free(current->value);  // Libère la valeur du token
+        free(current);         // Libère la structure du token
+        *tokens = NULL;        // Met à jour la tête de la liste
+        return;
+    }
+
+    // Parcourt la liste pour trouver l'avant-dernier token
+    while (current->next && current->next->next)
+    {
+        current = current->next;
+    }
+
+    // Libère le dernier token
+    free(current->next->value);
+    free(current->next);
+    current->next = NULL; // Met à jour le pointeur du dernier élément
+}
+
+
 int process_token(char *input, int i, t_token **tokens, t_env *env_list)
 {
+    int initial_token_count = count_tokens(*tokens); // Compte initial des tokens
+
     if (input[i] == '$')
     {
         return (handle_variable_reference(input, i, tokens, env_list));
@@ -54,7 +97,17 @@ int process_token(char *input, int i, t_token **tokens, t_env *env_list)
     {
         return (handle_word(input, i, tokens, env_list));
     }
+
+    if (count_tokens(*tokens) > initial_token_count)
+    {
+        t_token *last_token = get_last_token(*tokens);
+        if (last_token && last_token->value && last_token->value[0] == '\0')
+        {
+            remove_last_token(tokens);
+        }
+    }
 }
+
 
 t_token *tokenize_input(char *input, t_env *env_list)
 {
@@ -75,9 +128,9 @@ t_token *tokenize_input(char *input, t_env *env_list)
             return NULL;
         }
     }
-
     return tokens;
 }
+
 
 int handle_operator(char *input, int i, t_token **tokens)
 {
@@ -101,21 +154,30 @@ int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char,
 
     i++;
     start = i;
+
     while (input[i] && input[i] != quote_char)
     {
         i++;
     }
+
     if (input[i] != quote_char)
     {
         fprintf(stderr, "minishell: syntax error: unclosed %c quote\n", quote_char);
         return -1;
     }
+
+    if (i == start)
+    {
+        return (i + 1);
+    }
+
     value = ft_substr(input, start, i - start);
     add_token(tokens, create_token(value, TYPE_WORD, expand));
     free(value);
-    i++;
-    return i;
+
+    return (i + 1); // Passe la quote fermante
 }
+
 
 int handle_word(char *input, int i, t_token **tokens, t_env *env_list)
 {
@@ -172,43 +234,42 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     char *var_name;
     char *var_value;
 
-    i++;
+    i++; // Avance après le symbole '$'
     if (input[i] == '?')
     {
+        // Gère la variable spéciale $?
         var_value = ft_itoa(g_last_exit_status);
         add_token(tokens, create_token(var_value, TYPE_WORD, 1));
         free(var_value);
-        return (i + 1);
+        i++; // Avance après '?'
+        return i;
     }
-    int var_start = i;
-    while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+    else if (!input[i] || (!ft_isalnum(input[i]) && input[i] != '_'))
     {
-        i++;
-    }
-    var_name = ft_substr(input, var_start, i - var_start);
-    var_value = get_env_variable(env_list, var_name);
-    if (!var_value)
-    {
-        var_value = ft_strdup("");
-    }
-    if (ft_strchr(var_value, ' '))
-    {
-        t_token *expanded_tokens = tokenize_input(var_value, env_list);
-        t_token *current = expanded_tokens;
-        while (current)
-        {
-            add_token(tokens, create_token(current->value, TYPE_WORD, 1));
-            current = current->next;
-        }
-        free_tokens(expanded_tokens);
+        // Pas de nom de variable valide après '$', on traite '$' comme un caractère littéral
+        add_token(tokens, create_token("$", TYPE_WORD, 1)); // expand peut être 1 ou 0 selon ta gestion
+        return i; // Retourne la position actuelle
     }
     else
     {
+        int var_start = i;
+        while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+        {
+            i++;
+        }
+        var_name = ft_substr(input, var_start, i - var_start);
+        var_value = get_env_variable(env_list, var_name);
+        if (!var_value)
+        {
+            var_value = ft_strdup("");
+        }
+        // Ajoute la valeur de la variable aux tokens
         add_token(tokens, create_token(var_value, TYPE_WORD, 1));
+
+        free(var_name);
+        free(var_value);
+
+        return i;
     }
-
-    free(var_name);
-    free(var_value);
-
-    return i;
 }
+
