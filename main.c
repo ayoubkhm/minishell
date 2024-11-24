@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/24 16:42:57 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:19:09 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
 
         if (cmd_list)
         {
-            // print_commands(cmd_list);
+            //print_commands(cmd_list);
             (void)data;
             initpipe(cmd_list);
             ft_exec(cmd_list, data, env_list);
