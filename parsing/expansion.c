@@ -23,19 +23,30 @@ char *expand_variable(char *arg, int *i, t_env *env_list, char *result)
     {
         *i = *i + 1;
     }
+
     var_name = ft_strndup(&arg[var_start], *i - var_start);
     var_value = get_env_variable(env_list, var_name);
-    if (var_value)
+    free(var_name);
+
+    if (!var_value)
+        var_value = ft_strdup("");
+
+    temp = result;
+    result = ft_strjoin(result, var_value);
+    free(temp);
+    free(var_value);
+
+    // Si le caractère suivant est '%', on l'ajoute directement
+    if (arg[*i] == '%')
     {
         temp = result;
-        result = ft_strjoin(result, var_value);
+        result = append_character_main(result, '%');
         free(temp);
+        (*i)++;
     }
-    // Si la variable n'existe pas, on n'ajoute rien (comme Bash)
-    free(var_name);
+
     return result;
 }
-
 
 
 char	*append_character_main(char *result, char c)

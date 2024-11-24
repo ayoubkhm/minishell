@@ -161,24 +161,28 @@ int handle_operator(char *input, int i, t_token **tokens)
  */
 int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    char *var_name;
-    char *var_value;
+    char *var_name = NULL;
+    char *var_value = NULL;
 
     i++; // Avance après `$`
+
+    // Vérifie si `$?` est utilisé pour récupérer le dernier code d'erreur
     if (input[i] == '?')
     {
         var_value = ft_itoa(g_last_exit_status);
         add_token(tokens, create_token(var_value, TYPE_WORD, 1));
-        free(var_value);
+        free(var_value); // On peut libérer ici, car le token contient une copie
         return i + 1;
     }
 
+    // Si le caractère suivant n'est pas une variable valide
     if (!input[i] || (!ft_isalnum(input[i]) && input[i] != '_'))
     {
-        add_token(tokens, create_token("$", TYPE_WORD, 0));
+        add_token(tokens, create_token("$", TYPE_WORD, 1)); // `$` littéral
         return i;
     }
 
+    // Extraction du nom de la variable
     int var_start = i;
     while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
         i++;
@@ -186,15 +190,19 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     var_name = ft_substr(input, var_start, i - var_start);
     var_value = get_env_variable(env_list, var_name);
 
+    // Si la variable n'existe pas, on crée un token vide
     if (!var_value)
-        var_value = ft_strdup("");
+        var_value = ft_strdup(""); // Crée une chaîne vide
 
     add_token(tokens, create_token(var_value, TYPE_WORD, 1));
+
+    // Libère `var_name` et `var_value` car elles ne sont plus nécessaires
     free(var_name);
     free(var_value);
 
     return i;
 }
+
 
 /**
  * Parcourt l'entrée et génère les tokens.
