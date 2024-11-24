@@ -7,20 +7,17 @@ char *expand_variable(char *arg, int *i, t_env *env_list, char *result)
     char *var_value;
     char *temp;
 
-    *i = *i + 1;
+    *i = *i + 1; // Avance après '$'
 
-    if (arg[*i] == '?')
+    // Vérifie si le caractère suivant est valide
+    if (!arg[*i] || !(isalnum((unsigned char)arg[*i]) || arg[*i] == '_'))
     {
-        var_value = ft_itoa(g_last_exit_status);
-
-        temp = result;
-        result = ft_strjoin(result, var_value);
-        free(temp);
-        free(var_value);
-
-        *i = *i + 1;
+        // Pas de nom de variable valide, on ajoute '$' au résultat
+        result = append_character_main(result, '$');
         return result;
     }
+
+    // Début de l'extraction du nom de variable
     var_start = *i;
     while (arg[*i] && (isalnum((unsigned char)arg[*i]) || arg[*i] == '_'))
     {
@@ -34,10 +31,11 @@ char *expand_variable(char *arg, int *i, t_env *env_list, char *result)
         result = ft_strjoin(result, var_value);
         free(temp);
     }
-
+    // Si la variable n'existe pas, on n'ajoute rien (comme Bash)
     free(var_name);
     return result;
 }
+
 
 
 char	*append_character_main(char *result, char c)
@@ -68,17 +66,18 @@ char *expand_variables(char *arg, t_env *env_list)
             // Vérification pour $?
             if (arg[i + 1] == '?')
             {
-                char *status_str = ft_itoa(g_last_exit_status);
-                char *temp = result;
-                result = ft_strjoin(result, status_str);
-                free(temp);
-                free(status_str);
-                i += 2; // Avancer après "$?"
-                continue;
+                // Gère $?
             }
-
-            // Expansion classique des variables
-            result = expand_variable(arg, &i, env_list, result);
+            else if (!arg[i + 1] || !(isalnum((unsigned char)arg[i + 1]) || arg[i + 1] == '_'))
+            {
+                // Le caractère suivant n'est pas valide, on ajoute '$' au résultat
+                result = append_character_main(result, arg[i++]);
+            }
+            else
+            {
+                // Expansion classique des variables
+                result = expand_variable(arg, &i, env_list, result);
+            }
         }
         else
         {
@@ -89,3 +88,4 @@ char *expand_variables(char *arg, t_env *env_list)
 
     return result;
 }
+
