@@ -46,6 +46,52 @@ int	allocate_command_args(t_cmd_list *current_cmd, int arg_count)
 	return (0);
 }
 
+void remove_empty_arguments(t_cmd_list *current_cmd)
+{
+    if (!current_cmd || !current_cmd->cmd_args)
+        return;
+
+    int arg_count = 0;
+    int new_arg_count = 0;
+
+    // Comptez les arguments non vides
+    while (current_cmd->cmd_args[arg_count])
+    {
+        if (current_cmd->cmd_args[arg_count][0] != '\0')
+            new_arg_count++;
+        arg_count++;
+    }
+
+    // Si tous les arguments sont valides, rien à faire
+    if (new_arg_count == arg_count)
+        return;
+
+    // Créez une nouvelle liste pour les arguments valides
+    char **new_cmd_args = malloc(sizeof(char *) * (new_arg_count + 1));
+    if (!new_cmd_args)
+        return;
+
+    int j = 0;
+    for (int i = 0; i < arg_count; i++)
+    {
+        if (current_cmd->cmd_args[i][0] != '\0')
+        {
+            new_cmd_args[j] = current_cmd->cmd_args[i];
+            j++;
+        }
+        else
+        {
+            free(current_cmd->cmd_args[i]); // Libérez les arguments vides
+        }
+    }
+    new_cmd_args[j] = NULL; // Terminez avec NULL
+
+    // Remplacez l'ancienne liste par la nouvelle
+    free(current_cmd->cmd_args);
+    current_cmd->cmd_args = new_cmd_args;
+}
+
+
 void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 {
     if (current_cmd->cmd_args && current_cmd->cmd_args[0])
@@ -61,24 +107,31 @@ void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
             handle_export(current_cmd, env_list);
         }
     }
+
+    // Supprime les arguments vides
+    remove_empty_arguments(current_cmd);
 }
+
 
 
 void print_commands(t_cmd_list *cmd_list)
 {
     t_cmd_list *current_cmd = cmd_list;
-    int i;
 
     while (current_cmd)
     {
+        // Affichage de la commande
         printf("Commande : %s\n", current_cmd->cmd ? current_cmd->cmd : "NULL");
 
+        // Affichage des arguments
         printf("Arguments :\n");
         if (current_cmd->cmd_args)
         {
-            for (i = 0; current_cmd->cmd_args[i]; i++)
+            int i = 0;
+            while (current_cmd->cmd_args[i])
             {
                 printf("  arg[%d]: %s\n", i, current_cmd->cmd_args[i]);
+                i++;
             }
         }
         else
@@ -86,24 +139,15 @@ void print_commands(t_cmd_list *cmd_list)
             printf("  Aucun argument\n");
         }
 
+        // Affichage des fichiers de redirection simplifié
         printf("Fichiers de redirection :\n");
         if (current_cmd->files_list && current_cmd->files_count > 0)
         {
-            for (i = 0; i < current_cmd->files_count; i++)
+            for (int i = 0; i < current_cmd->files_count; i++)
             {
-                char *type_str;
-                if (current_cmd->files_type[i] == TYPE_REDIR_IN)
-                    type_str = "Entrée";
-                else if (current_cmd->files_type[i] == TYPE_REDIR_OUT)
-                    type_str = "Sortie";
-                else if (current_cmd->files_type[i] == TYPE_REDIR_APPEND)
-                    type_str = "Append";
-                else if (current_cmd->files_type[i] == TYPE_HEREDOC)
-                    type_str = "Heredoc";
-                else
-                    type_str = "Inconnu";
-
-                printf("  file[%d]: %s (type: %s)\n", i, current_cmd->files_list[i], type_str);
+                printf("  file[%d]: %s\n",
+                       i,
+                       current_cmd->files_list[i] ? current_cmd->files_list[i] : "NULL");
             }
         }
         else
@@ -111,22 +155,26 @@ void print_commands(t_cmd_list *cmd_list)
             printf("  Aucun fichier de redirection\n");
         }
 
-        if (current_cmd->heredoc_delimiter)
-            printf("Heredoc delimiter: %s\n", current_cmd->heredoc_delimiter);
+        // Affichage des descripteurs last_in et last_out
+        printf("last_in: %d, last_out: %d\n",
+               current_cmd->last_in,
+               current_cmd->last_out);
 
-        if (current_cmd->heredoc_content)
-            printf("Heredoc content:\n%s\n", current_cmd->heredoc_content);
-
-        printf("last_in: %d, last_out: %d\n", current_cmd->last_in, current_cmd->last_out);
-
+        // Affichage des pointeurs
         printf("prev: %p, current: %p, next: %p\n",
-               (void *)current_cmd->prev, (void *)current_cmd, (void *)current_cmd->next);
+               (void *)current_cmd->prev,
+               (void *)current_cmd,
+               (void *)current_cmd->next);
 
         printf("---------------------\n");
 
+        // Passage au prochain noeud
         current_cmd = current_cmd->next;
     }
 }
+
+
+
 
 
 

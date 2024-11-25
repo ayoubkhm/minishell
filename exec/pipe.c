@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/20 10:25:35 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/25 21:56:43 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	ft_execpipe(list);
-	ft_exec1(list); // Prépare l'exécution
-	ft_exec2(list, data, env_list); // Exécute réellement
+	ft_exec1(list, data, env_list);
+	ft_exec2(list, data, env_list);
 	return (0);
 }
