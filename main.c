@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/24 15:25:41 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/25 21:30:29 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     t_cmd_list *cmd_list;
 
     tokens = tokenize_input(input, *env_list);
-    //print_tokens(tokens);
+    print_tokens(tokens);
     free(input);
 
     if (check_syntax(tokens) == 0)
@@ -111,7 +111,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
 
         if (cmd_list)
         {
-            // print_commands(cmd_list);
+            //print_commands(cmd_list);
             (void)data;
             initpipe(cmd_list);
             ft_exec(cmd_list, data, env_list);

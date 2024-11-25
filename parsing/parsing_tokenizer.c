@@ -1,5 +1,73 @@
 #include "parsing.h"
 
+int handle_backslash(char *input, int i, char **current_value)
+{
+    if (!input[i + 1]) // Vérifie si le backslash est à la fin
+    {
+        fprintf(stderr, "minishell: syntax error: backslash at end of input\n");
+        return -1;
+    }
+
+    // Préparer le caractère échappé
+    char escaped_char[2] = {input[i + 1], '\0'};
+    char *temp = *current_value;
+    *current_value = ft_strjoin(*current_value, escaped_char);
+    free(temp);
+    i += 2; // Avance après le backslash et le caractère suivant
+
+    // Continuer à collecter les caractères littéraux suivants
+    while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
+    {
+        char literal_char[2] = {input[i], '\0'};
+        temp = *current_value;
+        *current_value = ft_strjoin(*current_value, literal_char);
+        free(temp);
+        i++;
+    }
+
+    return i; // Retourne l'index après les caractères littéraux collectés
+}
+
+
+int handle_brackets(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    int start = ++i; // Avance après le crochet ouvrant '['
+    char *value;
+
+    while (input[i] && input[i] != ']') // Recherche le crochet fermant ']'
+        i++;
+
+    // Extrait le contenu entre les crochets
+    value = ft_strndup(&input[start], i - start);
+
+    // Effectue l'expansion des variables sur le contenu
+    char *expanded_value = expand_variables(value, env_list);
+    free(value);
+
+    char *token_value;
+
+    if (input[i] == ']') // Si un crochet fermant existe
+    {
+        // Reconstruit le token avec les crochets inclus
+        char *temp = ft_strjoin("[", expanded_value);
+        token_value = ft_strjoin(temp, "]");
+        free(temp);
+    }
+    else // Sinon, garde uniquement le contenu entre crochets
+    {
+        token_value = ft_strjoin("[", expanded_value);
+    }
+
+    free(expanded_value);
+
+    // Ajoute le token
+    add_token(tokens, create_token(token_value, TYPE_WORD, 0));
+    free(token_value);
+
+    return input[i] == ']' ? i + 1 : i; // Avance après le crochet fermant si présent
+}
+
+
 int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_list)
 {
     int start = i;
@@ -60,6 +128,7 @@ void remove_last_token(t_token **tokens)
     {
         free(current->value);  // Libère la valeur du token
         free(current);         // Libère la structure du token
+        printf("Le Free a eu lieu là\n");
         *tokens = NULL;        // Met à jour la tête de la liste
         return;
     }
@@ -73,40 +142,56 @@ void remove_last_token(t_token **tokens)
     // Libère le dernier token
     free(current->next->value);
     free(current->next);
+    printf("Le Free a eu lieu ici\n");
     current->next = NULL; // Met à jour le pointeur du dernier élément
 }
 
 
 int process_token(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    int initial_token_count = count_tokens(*tokens); // Compte initial des tokens
+    char *current_value = NULL; // Initialiser à NULL pour éviter les allocations inutiles
 
     if (input[i] == '$')
     {
-        return (handle_variable_reference(input, i, tokens, env_list));
+        return handle_variable_reference(input, i, tokens, env_list);
     }
     else if (is_operator(input[i]))
     {
-        return (handle_operator(input, i, tokens));
+        return handle_operator(input, i, tokens);
     }
     else if (input[i] == '\'' || input[i] == '"')
     {
-        return (handle_quotes_in_word(input, i, tokens, input[i], input[i] == '"'));
+        return handle_quotes_in_word(input, i, tokens, input[i], input[i] == '"');
+    }
+    else if (input[i] == '[')
+    {
+        return handle_brackets(input, i, tokens, env_list);
+    }
+    else if (input[i] == '\\') // Gérer le backslash
+    {
+        current_value = ft_strdup(""); // Allouer seulement ici si nécessaire
+        if (!current_value)
+            return -1;
+
+        int result = handle_backslash(input, i, &current_value);
+        if (result == -1)
+        {
+            free(current_value);
+            return -1;
+        }
+
+        add_token(tokens, create_token(current_value, TYPE_WORD, 0));
+        free(current_value);
+        return result;
     }
     else
     {
-        return (handle_word(input, i, tokens, env_list));
-    }
-
-    if (count_tokens(*tokens) > initial_token_count)
-    {
-        t_token *last_token = get_last_token(*tokens);
-        if (last_token && last_token->value && last_token->value[0] == '\0')
-        {
-            remove_last_token(tokens);
-        }
+        return handle_word(input, i, tokens, env_list);
     }
 }
+
+
+
 
 
 t_token *tokenize_input(char *input, t_env *env_list)
@@ -229,47 +314,55 @@ int handle_word(char *input, int i, t_token **tokens, t_env *env_list)
     }
 }
 
+
+
+
+
 int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    char *var_name;
-    char *var_value;
+    char *dollar_sequence = NULL;
+    int dollar_count = 0;
 
-    i++; // Avance après le symbole '$'
-    if (input[i] == '?')
+    // Vérifier si le $ est échappé par un backslash
+    if (i > 0 && input[i - 1] == '\\')
     {
-        // Gère la variable spéciale $?
-        var_value = ft_itoa(g_last_exit_status);
-        add_token(tokens, create_token(var_value, TYPE_WORD, 1));
-        free(var_value);
-        i++; // Avance après '?'
+        // Fusionner le $ avec les caractères suivants littéraux
+        int start = i;
+        while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
+            i++;
+
+        char *escaped_value = ft_substr(input, start, i - start);
+        add_token(tokens, create_token(escaped_value, TYPE_WORD, 0));
+        free(escaped_value);
+
         return i;
     }
-    else if (!input[i] || (!ft_isalnum(input[i]) && input[i] != '_'))
+
+    // Accumuler les '$' successifs
+    int new_i = accumulate_dollars(input, i, &dollar_sequence, &dollar_count);
+    if (new_i == -1)
+        return -1;
+
+    i = new_i;
+
+    // Vérifier si c'est une variable spéciale (comme $? ou $$)
+    int result = handle_special_variable(input, i, dollar_count, dollar_sequence, tokens);
+    if (result != -2) // Si un cas spécial est géré, on retourne
+        return result;
+
+    // Gestion des variables numériques (ex. $1, $9)
+    if (input[i] && ft_isdigit(input[i]))
     {
-        // Pas de nom de variable valide après '$', on traite '$' comme un caractère littéral
-        add_token(tokens, create_token("$", TYPE_WORD, 1)); // expand peut être 1 ou 0 selon ta gestion
-        return i; // Retourne la position actuelle
+        return handle_positional_variable(input, i, tokens, env_list);
+    }
+    // Gestion des variables alphanumériques classiques (ex. $HOME)
+    else if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+    {
+        return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
     }
     else
     {
-        int var_start = i;
-        while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
-        {
-            i++;
-        }
-        var_name = ft_substr(input, var_start, i - var_start);
-        var_value = get_env_variable(env_list, var_name);
-        if (!var_value)
-        {
-            var_value = ft_strdup("");
-        }
-        // Ajoute la valeur de la variable aux tokens
-        add_token(tokens, create_token(var_value, TYPE_WORD, 1));
-
-        free(var_name);
-        free(var_value);
-
-        return i;
+        // Si ce n'est ni un cas spécial ni une variable valide, traiter comme littéral
+        return handle_invalid_variable(input, i, dollar_sequence, tokens);
     }
 }
-
