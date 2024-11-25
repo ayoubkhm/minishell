@@ -106,13 +106,13 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
 
 t_token *get_last_token(t_token *tokens)
 {
-    if (!tokens) // Si la liste est vide
+    if (!tokens)
         return NULL;
 
-    while (tokens->next) // Parcourt jusqu'à la fin de la liste
+    while (tokens->next)
         tokens = tokens->next;
 
-    return tokens; // Retourne le dernier token
+    return tokens;
 }
 
 
@@ -122,56 +122,65 @@ void remove_last_token(t_token **tokens)
         return;
 
     t_token *current = *tokens;
-
-    // Si la liste ne contient qu'un seul token
     if (!current->next)
     {
-        free(current->value);  // Libère la valeur du token
-        free(current);         // Libère la structure du token
-        printf("Le Free a eu lieu là\n");
-        *tokens = NULL;        // Met à jour la tête de la liste
+        free(current->value);
+        free(current);
+        *tokens = NULL;
         return;
     }
-
-    // Parcourt la liste pour trouver l'avant-dernier token
     while (current->next && current->next->next)
     {
         current = current->next;
     }
-
-    // Libère le dernier token
     free(current->next->value);
     free(current->next);
-    printf("Le Free a eu lieu ici\n");
-    current->next = NULL; // Met à jour le pointeur du dernier élément
+    current->next = NULL;
 }
 
 
 int process_token(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    char *current_value = NULL; // Initialiser à NULL pour éviter les allocations inutiles
+    char *current_value = NULL;
 
     if (input[i] == '$')
     {
-        return handle_variable_reference(input, i, tokens, env_list);
+        return handle_variable_reference(input, i+1, tokens, env_list);
     }
-    else if (is_operator(input[i]))
+
+    // Cas 2 : Si c'est un opérateur
+    if (is_operator(input[i]))
     {
         return handle_operator(input, i, tokens);
     }
-    else if (input[i] == '\'' || input[i] == '"')
+
+    // Cas 3 : Si c'est une quote suivie d'un $
+    if ((input[i] == '\'' || input[i] == '"') && input[i + 1] == '$')
+    {
+        return handle_variable_reference(input, i, tokens, env_list);
+    }
+
+    // Cas 4 : Si c'est une quote simple ou double (non suivie d'un $)
+    if (input[i] == '\'' || input[i] == '"')
     {
         return handle_quotes_in_word(input, i, tokens, input[i], input[i] == '"');
     }
-    else if (input[i] == '[')
+
+    // Cas 5 : Si c'est un bracket [
+    if (input[i] == '[')
     {
         return handle_brackets(input, i, tokens, env_list);
     }
-    else if (input[i] == '\\') // Gérer le backslash
+
+    // Cas 6 : Si c'est un backslash
+    if (input[i] == '\\')
     {
-        current_value = ft_strdup(""); // Allouer seulement ici si nécessaire
+        current_value = ft_strdup("");
         if (!current_value)
+        {
+            fprintf(stderr, "minishell: memory allocation failed for current_value\n");
             return -1;
+        }
 
         int result = handle_backslash(input, i, &current_value);
         if (result == -1)
@@ -184,11 +193,12 @@ int process_token(char *input, int i, t_token **tokens, t_env *env_list)
         free(current_value);
         return result;
     }
-    else
-    {
-        return handle_word(input, i, tokens, env_list);
-    }
+
+    // Cas 7 : Tous les autres cas (mots classiques, etc.)
+    return handle_word(input, i, tokens, env_list);
 }
+
+
 
 
 
@@ -260,7 +270,7 @@ int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char,
     add_token(tokens, create_token(value, TYPE_WORD, expand));
     free(value);
 
-    return (i + 1); // Passe la quote fermante
+    return (i + 1);
 }
 
 
@@ -316,6 +326,102 @@ int handle_word(char *input, int i, t_token **tokens, t_env *env_list)
 
 
 
+int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    char *final_content = ft_strdup(""); // Initialise une chaîne vide pour concaténer les segments
+    if (!final_content)
+    {
+        fprintf(stderr, "minishell: memory allocation failed for final_content\n");
+        return -1;
+    }
+
+    while (input[i] == '\'' || input[i] == '"') // Traite toutes les quotes successives
+    {
+        char quote_type = input[i]; // Identifie le type de quote
+        int start = ++i;            // Avance après la quote ouvrante
+
+        // Parcourir jusqu'à la quote fermante
+        while (input[i] && input[i] != quote_type)
+            i++;
+
+        if (input[i] != quote_type) // Si la quote fermante est manquante
+        {
+            fprintf(stderr, "minishell: syntax error: unclosed quote\n");
+            free(final_content);
+            return -1;
+        }
+
+        // Extraire le contenu entre les quotes
+        char *quoted_content = ft_substr(input, start, i - start);
+        if (!quoted_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed in handle_variable_quotes\n");
+            free(final_content);
+            return -1;
+        }
+
+        char *expanded_content = NULL;
+
+        // Quotes simples : pas d'expansion
+        if (quote_type == '\'')
+        {
+            expanded_content = ft_strdup(quoted_content);
+        }
+        // Quotes doubles : expansion autorisée
+        else if (quote_type == '"')
+        {
+            expanded_content = expand_variables(quoted_content, env_list);
+        }
+        free(quoted_content);
+
+        if (!expanded_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed for expanded_content\n");
+            free(final_content);
+            return -1;
+        }
+
+        // Concaténer le contenu expandé au contenu final
+        char *temp = final_content;
+        final_content = ft_strjoin(temp, expanded_content);
+        free(temp);
+        free(expanded_content);
+
+        if (!final_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed during concatenation\n");
+            return -1;
+        }
+
+        i++; // Passe la quote fermante
+    }
+
+    // Vérifier s'il y a du texte adjacent
+    int adjacent_start = i;
+
+    while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
+        i++;
+
+    if (i > adjacent_start) // Si texte adjacent détecté
+    {
+        char *adjacent_text = ft_substr(input, adjacent_start, i - adjacent_start);
+        char *temp = final_content;
+        final_content = ft_strjoin(temp, adjacent_text); // Concaténer
+        free(temp);
+        free(adjacent_text);
+    }
+
+    // Ajouter le token complet
+    add_token(tokens, create_token(final_content, TYPE_WORD, 0));
+    free(final_content);
+
+    return i; // Retourne l'index après la quote et le texte collé
+}
+
+
+
+
+
 
 
 int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
@@ -323,46 +429,29 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     char *dollar_sequence = NULL;
     int dollar_count = 0;
 
-    // Vérifier si le $ est échappé par un backslash
-    if (i > 0 && input[i - 1] == '\\')
+    // Vérifier si un $ est entouré de quotes
+    if (i > 0 && (input[i] == '\'' || input[i] == '"'))
     {
-        // Fusionner le $ avec les caractères suivants littéraux
-        int start = i;
-        while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
-            i++;
-
-        char *escaped_value = ft_substr(input, start, i - start);
-        add_token(tokens, create_token(escaped_value, TYPE_WORD, 0));
-        free(escaped_value);
-
-        return i;
+        return handle_variable_quotes(input, i, tokens, env_list);
     }
-
-    // Accumuler les '$' successifs
     int new_i = accumulate_dollars(input, i, &dollar_sequence, &dollar_count);
     if (new_i == -1)
+    {
         return -1;
-
+    }
     i = new_i;
-
-    // Vérifier si c'est une variable spéciale (comme $? ou $$)
     int result = handle_special_variable(input, i, dollar_count, dollar_sequence, tokens);
-    if (result != -2) // Si un cas spécial est géré, on retourne
+    if (result != -2)
+    {
         return result;
-
-    // Gestion des variables numériques (ex. $1, $9)
+    }
     if (input[i] && ft_isdigit(input[i]))
     {
         return handle_positional_variable(input, i, tokens, env_list);
     }
-    // Gestion des variables alphanumériques classiques (ex. $HOME)
-    else if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+    if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
     {
         return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
     }
-    else
-    {
-        // Si ce n'est ni un cas spécial ni une variable valide, traiter comme littéral
-        return handle_invalid_variable(input, i, dollar_sequence, tokens);
-    }
+    return handle_invalid_variable(input, i, dollar_sequence, tokens);
 }
