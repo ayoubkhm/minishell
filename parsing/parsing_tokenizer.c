@@ -1,86 +1,5 @@
 #include "parsing.h"
 
-int handle_brackets(char *input, int i, t_token **tokens, t_env *env_list)
-{
-    int start = ++i; // Avance après le crochet ouvrant '['
-    char *value;
-
-    while (input[i] && input[i] != ']') // Recherche le crochet fermant ']'
-        i++;
-
-    // Si le crochet fermant n'est pas trouvé, traite tout comme un texte brut
-    if (!input[i])
-    {
-        fprintf(stderr, "minishell: unmatched '[' treated as text\n");
-        value = ft_strndup(&input[start - 1], i - start + 1); // Inclut '['
-    }
-    else
-    {
-        // Extrait la chaîne entre les crochets
-        value = ft_strndup(&input[start], i - start);
-
-        // Effectue l'expansion des variables sur le contenu
-        char *expanded_value = expand_variables(value, env_list);
-        free(value);
-
-        // Reconstruit le token avec les crochets inclus
-        value = ft_strjoin("[", expanded_value);
-        free(expanded_value);
-
-        char *temp = value;
-        value = ft_strjoin(value, "]");
-        free(temp);
-
-        i++; // Avance après le crochet fermant ']'
-    }
-
-    // Ajoute le token
-    add_token(tokens, create_token(value, TYPE_WORD, 0));
-    free(value);
-
-    return i;
-}
-
-
-
-
-/**
- * Gère les guillemets simples et doubles.
- */
-int handle_quotes(char *input, int i, t_token **tokens, t_env *env_list)
-{
-    char quote_char = input[i];
-    int start = ++i; // Avancer après le guillemet ouvrant
-    char *value;
-
-    while (input[i] && input[i] != quote_char)
-        i++;
-
-    if (!input[i]) // Si la quote fermante n'est pas trouvée
-    {
-        fprintf(stderr, "minishell: syntax error: unclosed quote\n");
-        return -1;
-    }
-
-    value = ft_strndup(&input[start], i - start);
-
-    // Gère l'expansion des variables dans les guillemets doubles uniquement
-    if (quote_char == '"')
-    {
-        char *expanded_value = expand_variables(value, env_list);
-        free(value);
-        value = expanded_value;
-    }
-
-    add_token(tokens, create_token(value, TYPE_WORD, quote_char == '"'));
-    free(value);
-
-    return i + 1;
-}
-
-/**
- * Gère les caractères échappés avec un backslash.
- */
 int handle_backslash(char *input, int i, char **current_value)
 {
     if (!input[i + 1]) // Vérifie si le backslash est à la fin
@@ -89,124 +8,202 @@ int handle_backslash(char *input, int i, char **current_value)
         return -1;
     }
 
+    // Préparer le caractère échappé
     char escaped_char[2] = {input[i + 1], '\0'};
     char *temp = *current_value;
     *current_value = ft_strjoin(*current_value, escaped_char);
     free(temp);
+    i += 2; // Avance après le backslash et le caractère suivant
 
-    return i + 2; // Avance après le backslash et le caractère suivant
-}
-
-/**
- * Gère une séquence de caractères normaux jusqu'à un opérateur ou espace.
- */
-int handle_regular_characters(char *input, int i, t_token **tokens)
-{
-    char *current_value = ft_strdup("");
-    if (!current_value)
-        return -1;
-
+    // Continuer à collecter les caractères littéraux suivants
     while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
     {
-        if (input[i] == '\\') // Gère le backslash
-        {
-            i = handle_backslash(input, i, &current_value);
-            if (i == -1)
-            {
-                free(current_value);
-                return -1;
-            }
-        }
-        else if (input[i] == '$') // Interrompt pour gérer les variables
-        {
-            break; // Le traitement du `$` sera géré ailleurs
-        }
-        else // Ajoute le caractère au token courant
-        {
-            char temp_str[2] = {input[i], '\0'};
-            char *temp = current_value;
-            current_value = ft_strjoin(current_value, temp_str);
-            free(temp);
-            i++;
-        }
+        char literal_char[2] = {input[i], '\0'};
+        temp = *current_value;
+        *current_value = ft_strjoin(*current_value, literal_char);
+        free(temp);
+        i++;
     }
 
-    if (*current_value) // Ajoute le token s'il n'est pas vide
-        add_token(tokens, create_token(current_value, TYPE_WORD, 0));
-    free(current_value);
-
-    return i;
+    return i; // Retourne l'index après les caractères littéraux collectés
 }
 
-/**
- * Gère les opérateurs comme '|', '>' ou '<'.
- */
-int handle_operator(char *input, int i, t_token **tokens)
+
+int handle_brackets(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    char *operator_str;
-    int operator_type;
-    int shift = detect_operator(input, i, &operator_str, &operator_type);
+    int start = ++i; // Avance après le crochet ouvrant '['
+    char *value;
 
-    if (shift > 0)
-    {
-        add_token(tokens, create_token(operator_str, operator_type, 0));
-        return i + shift;
-    }
-
-    return i;
-}
-
-/**
- * Gère les variables référencées par `$`.
- */
-int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
-{
-    char *var_name = NULL;
-    char *var_value = NULL;
-
-    i++; // Avance après `$`
-
-    // Vérifie si `$?` est utilisé pour récupérer le dernier code d'erreur
-    if (input[i] == '?')
-    {
-        var_value = ft_itoa(g_last_exit_status);
-        add_token(tokens, create_token(var_value, TYPE_WORD, 1));
-        free(var_value); // On peut libérer ici, car le token contient une copie
-        return i + 1;
-    }
-
-    // Si le caractère suivant n'est pas une variable valide
-    if (!input[i] || (!ft_isalnum(input[i]) && input[i] != '_'))
-    {
-        add_token(tokens, create_token("$", TYPE_WORD, 1)); // `$` littéral
-        return i;
-    }
-
-    // Extraction du nom de la variable
-    int var_start = i;
-    while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+    while (input[i] && input[i] != ']') // Recherche le crochet fermant ']'
         i++;
 
-    var_name = ft_substr(input, var_start, i - var_start);
-    var_value = get_env_variable(env_list, var_name);
+    // Extrait le contenu entre les crochets
+    value = ft_strndup(&input[start], i - start);
 
-    // Si la variable n'existe pas, on crée un token vide
-    if (!var_value)
-        var_value = ft_strdup(""); // Crée une chaîne vide
+    // Effectue l'expansion des variables sur le contenu
+    char *expanded_value = expand_variables(value, env_list);
+    free(value);
 
-    add_token(tokens, create_token(var_value, TYPE_WORD, 1));
+    char *token_value;
 
-    // Libère `var_name` et `var_value` car elles ne sont plus nécessaires
-    free(var_name);
-    free(var_value);
+    if (input[i] == ']') // Si un crochet fermant existe
+    {
+        // Reconstruit le token avec les crochets inclus
+        char *temp = ft_strjoin("[", expanded_value);
+        token_value = ft_strjoin(temp, "]");
+        free(temp);
+    }
+    else // Sinon, garde uniquement le contenu entre crochets
+    {
+        token_value = ft_strjoin("[", expanded_value);
+    }
+
+    free(expanded_value);
+
+    // Ajoute le token
+    add_token(tokens, create_token(token_value, TYPE_WORD, 0));
+    free(token_value);
+
+    return input[i] == ']' ? i + 1 : i; // Avance après le crochet fermant si présent
+}
+
+
+int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    int start = i;
+    while (input[i] && !isspace(input[i]) && !is_operator(input[i]) && input[i] != '\'' && input[i] != '"' && input[i] != '$')
+    {
+        i++;
+    }
+
+    char *prefix = NULL;
+    if (start < i)
+    {
+        prefix = ft_substr(input, start, i - start);
+    }
+
+    if (input[i] == '$')
+    {
+        char *var_value;
+        i = handle_variable_reference(input, i, tokens, env_list);
+        var_value = (*tokens)->value;
+        if (prefix && *prefix) // Ajout condition pour ignorer les prefixes vides
+        {
+            char *combined = ft_strjoin(prefix, var_value);
+            free(prefix);
+            free(var_value);
+            (*tokens)->value = combined;
+        }
+    }
+    else if (prefix && *prefix) // Ignore les tokens vides
+    {
+        add_token(tokens, create_token(prefix, TYPE_WORD, 1));
+        free(prefix);
+    }
 
     return i;
 }
 
+t_token *get_last_token(t_token *tokens)
+{
+    if (!tokens)
+        return NULL;
 
-/**
- * Parcourt l'entrée et génère les tokens.
- */
+    while (tokens->next)
+        tokens = tokens->next;
+
+    return tokens;
+}
+
+
+void remove_last_token(t_token **tokens)
+{
+    if (!tokens || !*tokens)
+        return;
+
+    t_token *current = *tokens;
+    if (!current->next)
+    {
+        free(current->value);
+        free(current);
+        *tokens = NULL;
+        return;
+    }
+    while (current->next && current->next->next)
+    {
+        current = current->next;
+    }
+    free(current->next->value);
+    free(current->next);
+    current->next = NULL;
+}
+
+
+int process_token(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    char *current_value = NULL;
+
+    if (input[i] == '$')
+    {
+        return handle_variable_reference(input, i+1, tokens, env_list);
+    }
+
+    // Cas 2 : Si c'est un opérateur
+    if (is_operator(input[i]))
+    {
+        return handle_operator(input, i, tokens);
+    }
+
+    // Cas 3 : Si c'est une quote suivie d'un $
+    if ((input[i] == '\'' || input[i] == '"') && input[i + 1] == '$')
+    {
+        return handle_variable_reference(input, i, tokens, env_list);
+    }
+
+    // Cas 4 : Si c'est une quote simple ou double (non suivie d'un $)
+    if (input[i] == '\'' || input[i] == '"')
+    {
+        return handle_quotes_in_word(input, i, tokens, input[i], input[i] == '"');
+    }
+
+    // Cas 5 : Si c'est un bracket [
+    if (input[i] == '[')
+    {
+        return handle_brackets(input, i, tokens, env_list);
+    }
+
+    // Cas 6 : Si c'est un backslash
+    if (input[i] == '\\')
+    {
+        current_value = ft_strdup("");
+        if (!current_value)
+        {
+            fprintf(stderr, "minishell: memory allocation failed for current_value\n");
+            return -1;
+        }
+
+        int result = handle_backslash(input, i, &current_value);
+        if (result == -1)
+        {
+            free(current_value);
+            return -1;
+        }
+
+        add_token(tokens, create_token(current_value, TYPE_WORD, 0));
+        free(current_value);
+        return result;
+    }
+
+    // Cas 7 : Tous les autres cas (mots classiques, etc.)
+    return handle_word(input, i, tokens, env_list);
+}
+
+
+
+
+
+
+
 t_token *tokenize_input(char *input, t_env *env_list)
 {
     int i = 0;
@@ -214,43 +211,232 @@ t_token *tokenize_input(char *input, t_env *env_list)
 
     while (input[i])
     {
-        if (isspace(input[i])) // Ignore les espaces
+        if (isspace(input[i]))
         {
             i++;
             continue;
         }
-        else if (input[i] == '\'') // Gère les guillemets simples
-        {
-            i = handle_quotes(input, i, &tokens, env_list);
-        }
-        else if (input[i] == '"') // Gère les guillemets doubles
-        {
-            i = handle_quotes(input, i, &tokens, env_list);
-        }
-        else if (input[i] == '$') // Gère les variables
-        {
-            i = handle_variable_reference(input, i, &tokens, env_list);
-        }
-        else if (input[i] == '[') // Gère les crochets
-        {
-            i = handle_brackets(input, i, &tokens, env_list);
-        }
-        else if (is_operator(input[i])) // Gère les opérateurs
-        {
-            i = handle_operator(input, i, &tokens);
-        }
-        else // Gère les caractères normaux
-        {
-            i = handle_regular_characters(input, i, &tokens);
-        }
-
-        if (i == -1) // Erreur détectée
+        i = process_token(input, i, &tokens, env_list);
+        if (i == -1)
         {
             free_tokens(tokens);
             return NULL;
         }
     }
-
     return tokens;
 }
 
+
+int handle_operator(char *input, int i, t_token **tokens)
+{
+    char *operator_str;
+    int operator_type;
+    int shift;
+
+    shift = detect_operator(input, i, &operator_str, &operator_type);
+    if (shift > 0)
+    {
+        add_token(tokens, create_token(operator_str, operator_type, 0));
+        return (i + shift);
+    }
+    return i;
+}
+
+int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand)
+{
+    int start;
+    char *value;
+
+    i++;
+    start = i;
+
+    while (input[i] && input[i] != quote_char)
+    {
+        i++;
+    }
+
+    if (input[i] != quote_char)
+    {
+        fprintf(stderr, "minishell: syntax error: unclosed %c quote\n", quote_char);
+        return -1;
+    }
+
+    if (i == start)
+    {
+        return (i + 1);
+    }
+
+    value = ft_substr(input, start, i - start);
+    add_token(tokens, create_token(value, TYPE_WORD, expand));
+    free(value);
+
+    return (i + 1);
+}
+
+
+int handle_word(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    int start = i;
+
+    while (input[i] && !isspace(input[i]) && input[i] != '=')
+    {
+        i++;
+    }
+
+    if (input[i] == '=' && input[i + 1] == '"')
+    {
+        i++;
+        i++;
+
+        int value_start = i;
+        while (input[i] && input[i] != '"')
+        {
+            i++;
+        }
+
+        if (input[i] == '"')
+        {
+            char *name = ft_substr(input, start, value_start - start - 2);
+            char *value = ft_substr(input, value_start, i - value_start);
+
+            char *final_variable = ft_strjoin(name, "=");
+            char *result = ft_strjoin(final_variable, value);
+
+            free(name);
+            free(value);
+            free(final_variable);
+
+            add_token(tokens, create_token(result, TYPE_WORD, 1));
+            free(result);
+
+            i++;
+            return i;
+        }
+        else
+        {
+            fprintf(stderr, "minishell: syntax error: unclosed quote\n");
+            return -1;
+        }
+    }
+    else
+    {
+        return handle_regular_characters(input, start, tokens, env_list);
+    }
+}
+
+
+
+int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    char *final_content = ft_strdup("");
+    if (!final_content)
+    {
+        fprintf(stderr, "minishell: memory allocation failed for final_content\n");
+        return -1;
+    }
+
+    while (input[i] == '\'' || input[i] == '"')
+    {
+        char quote_type = input[i];
+        int start = ++i;
+
+        while (input[i] && input[i] != quote_type)
+            i++;
+
+        if (input[i] != quote_type)
+        {
+            fprintf(stderr, "minishell: syntax error: unclosed quote\n");
+            free(final_content);
+            return -1;
+        }
+        char *quoted_content = ft_substr(input, start, i - start);
+        if (!quoted_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed in handle_variable_quotes\n");
+            free(final_content);
+            return -1;
+        }
+
+        char *expanded_content = NULL;
+        if (quote_type == '\'')
+        {
+            expanded_content = ft_strdup(quoted_content);
+        }
+        else if (quote_type == '"')
+        {
+            expanded_content = expand_variables(quoted_content, env_list);
+        }
+        free(quoted_content);
+
+        if (!expanded_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed for expanded_content\n");
+            free(final_content);
+            return -1;
+        }
+        char *temp = final_content;
+        final_content = ft_strjoin(temp, expanded_content);
+        free(temp);
+        free(expanded_content);
+
+        if (!final_content)
+        {
+            fprintf(stderr, "minishell: memory allocation failed during concatenation\n");
+            return -1;
+        }
+
+        i++;
+    }
+    int adjacent_start = i;
+
+    while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
+        i++;
+
+    if (i > adjacent_start)
+    {
+        char *adjacent_text = ft_substr(input, adjacent_start, i - adjacent_start);
+        char *temp = final_content;
+        final_content = ft_strjoin(temp, adjacent_text);
+        free(temp);
+        free(adjacent_text);
+    }
+
+    add_token(tokens, create_token(final_content, TYPE_WORD, 0));
+    free(final_content);
+
+    return i;
+}
+
+
+
+
+
+
+
+int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    char *dollar_sequence = NULL;
+    int dollar_count = 0;
+
+    if (i > 0 && (input[i] == '\'' || input[i] == '"'))
+    {
+        return handle_variable_quotes(input, i, tokens, env_list);
+    }
+    int new_i = accumulate_dollars(input, i, &dollar_sequence, &dollar_count);
+    if (new_i == -1)
+    {
+        return -1;
+    }
+    i = new_i;
+    int result = handle_special_variable(input, i, dollar_count, dollar_sequence, tokens);
+    if (result != -2)
+    {
+        return result;
+    }
+    if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+    {
+        return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
+    }
+    int initial_index = i - ft_strlen(dollar_sequence) - 1;
+    return handle_invalid_variable(input, initial_index, dollar_sequence, tokens);
+}

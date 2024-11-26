@@ -3,21 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/21 19:56:54 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/25 21:55:58 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
 
-int	ft_exec1(t_cmd_list *list)
+int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
 {
     list->open[0] = STDIN_FILENO;
     list->open[1] = STDOUT_FILENO;
     if (ft_openall(list) == -1)
+    {
+        cleanup_resources(data, env_list, list);
         exit(1);
+    }
     if (list->open[0] != STDIN_FILENO)
     {
         dup2(list->open[0], STDIN_FILENO);
@@ -29,7 +32,10 @@ int	ft_exec1(t_cmd_list *list)
         close(list->open[1]);
     }
     if (!list->cmd_args[0])
+    {
+        cleanup_resources(data, env_list, list);
         exit(g_last_exit_status);
+    }
     return (0);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 19:25:17 by akhamass          #+#    #+#             */
-/*   Updated: 2023/11/18 19:25:26 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/25 20:47:34 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,6 @@ char	*ft_strcpy(char *dst, const char *src)
 	}
 	*dst = 0;
 	return (saved);
-}
-
-char	*ft_strcat(char *dest, const char *src)
-{
-	char	*ptr;
-
-	ptr = dest + ft_strlen(dest);
-	while (*src != '\0')
-	{
-		*ptr++ = *src++;
-	}
-	*ptr = '\0';
-	return (dest);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
