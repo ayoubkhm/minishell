@@ -328,30 +328,27 @@ int handle_word(char *input, int i, t_token **tokens, t_env *env_list)
 
 int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list)
 {
-    char *final_content = ft_strdup(""); // Initialise une chaîne vide pour concaténer les segments
+    char *final_content = ft_strdup("");
     if (!final_content)
     {
         fprintf(stderr, "minishell: memory allocation failed for final_content\n");
         return -1;
     }
 
-    while (input[i] == '\'' || input[i] == '"') // Traite toutes les quotes successives
+    while (input[i] == '\'' || input[i] == '"')
     {
-        char quote_type = input[i]; // Identifie le type de quote
-        int start = ++i;            // Avance après la quote ouvrante
+        char quote_type = input[i];
+        int start = ++i;
 
-        // Parcourir jusqu'à la quote fermante
         while (input[i] && input[i] != quote_type)
             i++;
 
-        if (input[i] != quote_type) // Si la quote fermante est manquante
+        if (input[i] != quote_type)
         {
             fprintf(stderr, "minishell: syntax error: unclosed quote\n");
             free(final_content);
             return -1;
         }
-
-        // Extraire le contenu entre les quotes
         char *quoted_content = ft_substr(input, start, i - start);
         if (!quoted_content)
         {
@@ -361,13 +358,10 @@ int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list
         }
 
         char *expanded_content = NULL;
-
-        // Quotes simples : pas d'expansion
         if (quote_type == '\'')
         {
             expanded_content = ft_strdup(quoted_content);
         }
-        // Quotes doubles : expansion autorisée
         else if (quote_type == '"')
         {
             expanded_content = expand_variables(quoted_content, env_list);
@@ -380,8 +374,6 @@ int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list
             free(final_content);
             return -1;
         }
-
-        // Concaténer le contenu expandé au contenu final
         char *temp = final_content;
         final_content = ft_strjoin(temp, expanded_content);
         free(temp);
@@ -393,29 +385,26 @@ int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list
             return -1;
         }
 
-        i++; // Passe la quote fermante
+        i++;
     }
-
-    // Vérifier s'il y a du texte adjacent
     int adjacent_start = i;
 
     while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
         i++;
 
-    if (i > adjacent_start) // Si texte adjacent détecté
+    if (i > adjacent_start)
     {
         char *adjacent_text = ft_substr(input, adjacent_start, i - adjacent_start);
         char *temp = final_content;
-        final_content = ft_strjoin(temp, adjacent_text); // Concaténer
+        final_content = ft_strjoin(temp, adjacent_text);
         free(temp);
         free(adjacent_text);
     }
 
-    // Ajouter le token complet
     add_token(tokens, create_token(final_content, TYPE_WORD, 0));
     free(final_content);
 
-    return i; // Retourne l'index après la quote et le texte collé
+    return i;
 }
 
 
@@ -429,7 +418,6 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     char *dollar_sequence = NULL;
     int dollar_count = 0;
 
-    // Vérifier si un $ est entouré de quotes
     if (i > 0 && (input[i] == '\'' || input[i] == '"'))
     {
         return handle_variable_quotes(input, i, tokens, env_list);
@@ -445,13 +433,10 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     {
         return result;
     }
-    if (input[i] && ft_isdigit(input[i]))
-    {
-        return handle_positional_variable(input, i, tokens, env_list);
-    }
     if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
     {
         return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
     }
-    return handle_invalid_variable(input, i, dollar_sequence, tokens);
+    int initial_index = i - ft_strlen(dollar_sequence) - 1;
+    return handle_invalid_variable(input, initial_index, dollar_sequence, tokens);
 }
