@@ -31,96 +31,57 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
 {
     int arg_index = 0;
 
-    // Vérifier que le token courant est un nom de commande valide
-    if (*tokens && ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR))
-    {
-        char *cmd_name;
-
-        // Expansion si nécessaire
-        if ((*tokens)->expand)
-            cmd_name = expand_variables((*tokens)->value, env_list);
-        else
-            cmd_name = ft_strdup((*tokens)->value);
-
-        if (!cmd_name)
-            return -1;
-
-        curr_cmd->cmd_args[arg_index++] = cmd_name; // Ajoute le nom de la commande à cmd_args[0]
-        *tokens = (*tokens)->next;
-    }
-    else
-    {
-        // Pas de commande trouvée
-        fprintf(stderr, "minishell: syntax error: no command found\n");
-        return -1;
-    }
-
-    // Traiter les arguments restants
     while (*tokens && (*tokens)->type != TYPE_PIPE)
     {
+        // Si le token est un argument à ajouter à `cmd_args`
         if ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR)
         {
-            char *arg_value = ft_strdup("");
+            char *arg_value;
+
+            // Expansion uniquement si le token est marqué pour cela
+            if ((*tokens)->expand)
+                arg_value = expand_variables((*tokens)->value, env_list);
+            else
+                arg_value = ft_strdup((*tokens)->value);
+
+            // Vérifier l'allocation
             if (!arg_value)
-                return -1;
+                return (-1);
 
-            // Boucle pour concaténer les tokens adjacents de type WORD, QUOTED ou ENV_VAR
-            while (*tokens && ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR))
-            {
-                char *temp_value;
-
-                // Expansion si nécessaire
-                if ((*tokens)->expand)
-                    temp_value = expand_variables((*tokens)->value, env_list);
-                else
-                    temp_value = ft_strdup((*tokens)->value);
-
-                if (!temp_value)
-                {
-                    free(arg_value);
-                    return -1;
-                }
-
-                // Concatène temp_value à arg_value
-                char *temp = arg_value;
-                arg_value = ft_strjoin(arg_value, temp_value);
-                free(temp_value);
-                free(temp);
-
-                // Avancer le pointeur tokens
-                *tokens = (*tokens)->next;
-            }
-
-            // Ajouter arg_value à cmd_args
+            // Ajouter l'argument à `cmd_args` et gérer l'indexation
             curr_cmd->cmd_args[arg_index++] = arg_value;
+
+            // Avancer le pointeur tokens
+            *tokens = (*tokens)->next;
         }
-        else if ((*tokens)->type == TYPE_REDIR_IN || (*tokens)->type == TYPE_REDIR_OUT ||
+        else if ((*tokens)->type == TYPE_REDIR_IN || (*tokens)->type == TYPE_REDIR_OUT || 
                  (*tokens)->type == TYPE_REDIR_APPEND || (*tokens)->type == TYPE_HEREDOC)
         {
-            // Gestion des redirections
+            // Gestion spécifique pour heredocs
             if ((*tokens)->type == TYPE_HEREDOC)
             {
                 if (process_heredoc(tokens, curr_cmd) == -1)
-                    return -1;
+                    return (-1);
             }
             else
             {
+                // Si c'est une redirection classique, appeler `process_redirections`
                 if (process_redirections(tokens, curr_cmd) == -1)
-                    return -1;
+                    return (-1);
             }
-            // Les fonctions de redirection doivent avancer le pointeur tokens
         }
         else
         {
-            // Avancer le pointeur tokens pour éviter une boucle infinie
+            // Si le token n'est ni un argument ni une redirection, on avance simplement
             *tokens = (*tokens)->next;
         }
     }
 
     // Terminer la liste des arguments avec NULL
     curr_cmd->cmd_args[arg_index] = NULL;
-    return 0;
+    return (0);
 }
+
 
 
 
