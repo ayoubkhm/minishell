@@ -1,32 +1,119 @@
 #include "parsing.h"
 
-int	handle_single_quotes(char *input, int i, t_token **tokens)
+int parse_input(char *input, t_token **tokens, t_env *env_list)
 {
-	int		start;
-	char	*value;
+    int i = 0;
 
-	start = i + 1; // Commence après la quote ouvrante
-	while (input[i] && input[i] != '\'')
-	{
-		i++;
-	}
-	if (input[i] != '\'')
-	{
-		// Si la quote fermante n'est pas trouvée, signale une erreur
-		fprintf(stderr, "minishell: syntax error: unclosed single quote\n");
-		return i; // Retourne sans créer de token
-	}
+    while (input[i])
+    {
+        if (isspace(input[i]))
+        {
+            i++;
+            continue;
+        }
 
-	// Extrait le contenu entre les quotes simples
-	value = ft_substr(input, start, i - start);
+        // Analyser un mot
+        int new_i = parse_word(input, i, tokens, env_list);
+        if (new_i == -1)
+        {
+            // Gestion de l'erreur
+            fprintf(stderr, "minishell: Error in parse_word\n");
+            return -1;
+        }
 
-	// Ajoute le token tel quel sans expansion et sans quote fermante
-	add_token(tokens, create_token(value, TYPE_QUOTED, 0)); // expand = 0 pour single quotes
-	free(value);
-
-	// Retourne la position juste après la quote fermante
-	return (i + 1);
+        i = new_i;
+    }
+    return 0;
 }
+
+
+int parse_word(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    char *value = ft_strdup(""); // Accumule le contenu du mot
+    char *temp = NULL;
+
+    if (!value)
+    {
+        fprintf(stderr, "minishell: memory allocation failed\n");
+        return -1;
+    }
+    while (input[i] && !isspace(input[i]))
+    {
+        if (input[i] == '\'') // Si c'est une quote simple
+        {
+            temp = handle_single_quotes(input, &i);
+        }
+        else if (input[i] == '"') // Si c'est une quote double
+        {
+            temp = handle_double_quotes(input, &i, tokens, env_list);
+        }
+        else // Si c'est un caractère normal
+        {
+            temp = ft_substr(input, i, 1); // Extraire le caractère
+            i++;
+        }
+
+        if (!temp)
+        {
+            fprintf(stderr, "minishell: Error in handle_quotes or ft_substr\n");
+            free(value);
+            return -1;
+        }
+
+        // Concaténer la partie extraite avec la valeur accumulée
+        char *new_value = ft_strjoin(value, temp);
+        free(value);
+        free(temp);
+
+        if (!new_value)
+        {
+            fprintf(stderr, "minishell: memory allocation failed\n");
+            return -1;
+        }
+
+        value = new_value;
+    }
+
+    add_token(tokens, create_token(value, TYPE_WORD, 1));
+    free(value);
+    return i;
+}
+
+
+
+
+
+
+
+
+char *handle_single_quotes(char *input, int *i)
+{
+    int start = *i + 1;
+    int j = start;
+
+    while (input[j] && input[j] != '\'')
+    {
+        j++;
+    }
+
+    if (input[j] != '\'')
+    {
+        fprintf(stderr, "minishell: syntax error: unclosed single quote\n");
+        return NULL;
+    }
+
+    // Extraire la chaîne entre les quotes simples
+    char *quoted_part = ft_substr(input, start, j - start);
+    if (!quoted_part)
+    {
+        fprintf(stderr, "minishell: memory allocation failed\n");
+        return NULL;
+    }
+
+    *i = j + 1; // Mettre à jour l'index après la quote fermante
+    return quoted_part;
+}
+
 
 char	*append_variable_value(char *value, char *inp, int *i, t_token **tok, t_env *env_list)
 {
@@ -68,21 +155,32 @@ char	*build_double_quoted_string(char *input, int *i, t_token **tokens, t_env *e
     return (value);
 }
 
-int	handle_double_quotes(char *input, int i, t_token **tokens, t_env *env_list)
+char *handle_double_quotes(char *input, int *i, t_token **tokens, t_env *env_list)
 {
-	char	*value;
+    int start = *i + 1;
+    char *value = ft_strdup("");
 
-	// Saute la quote ouvrante
-	i = i + 1;
-	value = build_double_quoted_string(input, &i, tokens, env_list);
+    *i = start;
+    while (input[*i] && input[*i] != '"')
+    {
+        if (input[*i] == '$')
+        {
+            value = append_variable_value(value, input, i, tokens, env_list);
+        }
+        else
+        {
+            value = append_character(value, input[*i]);
+            (*i)++;
+        }
+    }
 
-	// Vérifie si une quote fermante est manquante
-	if (!value) {
-		fprintf(stderr, "Error: build_double_quoted_string returned NULL\n");
-		return i;
-	}
+    if (input[*i] != '"')
+    {
+        fprintf(stderr, "minishell: syntax error: unclosed double quote\n");
+        free(value);
+        return NULL;
+    }
 
-	add_token(tokens, create_token(value, TYPE_QUOTED, 1)); // expand = 1 pour double quotes
-	free(value);
-	return i;
+    (*i)++;
+    return value;
 }

@@ -163,7 +163,6 @@ int append_special_chars(char *input, int i, char **combined_value)
 int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens, t_env *env_list)
 {
     char *var_value = extract_variable_value(input, &i, env_list);
-    printf("var_value = %s\n", var_value);
     if (!var_value)
         return i;
 
