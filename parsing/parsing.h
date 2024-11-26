@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/20 15:51:38 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/25 21:03:57 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,5 +92,14 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd);
 char *get_heredoc(char *delimiter);
 
 
+
+int accumulate_dollars(char *input, int i, char **dollar_sequence, int *dollar_count);
+int handle_special_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens);
+int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens, t_env *env_list);
+int handle_invalid_variable(char *input, int i, char *dollar_sequence, t_token **tokens);
+
+char *get_positional_argument(int index, t_env *env_list);
+char *ft_strjoin_multi(int count, ...);
+int handle_positional_variable(char *input, int i, t_token **tokens, t_env *env_list);
 
 #endif

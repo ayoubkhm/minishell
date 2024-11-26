@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/24 14:19:42 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:59:53 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 		signal(SIGQUIT, SIG_DFL);
 		if(list->next || list->prev)
 			ft_execpipe(list);
-		ft_exec1(list);
+		ft_exec1(list, data, env_list);
     		ft_exec2(list, data, env_list);
 	}
 	if(pid > 0)
@@ -110,7 +110,7 @@ int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 	{
 		// perror("execve");
 		free(path);
-        	cleanup_resources(data, env_list, list);
+        cleanup_resources(data, env_list, list);
 		g_last_exit_status = 1;
 		exit(g_last_exit_status);
 	}

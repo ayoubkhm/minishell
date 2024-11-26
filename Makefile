@@ -43,6 +43,8 @@ SRCS        =   exec/builtins/cd.c \
                 parsing/operator_detection.c \
                 parsing/init_env.c \
                 parsing/heredoc.c \
+                parsing/variable_reference_handler.c \
+                parsing/positional_utils.c \
                 signals/signals.c \
 
 
