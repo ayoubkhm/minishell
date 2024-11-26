@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:09:47 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/24 19:13:52 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/10/27 12:09:50 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,20 @@ void	set_env_variable(t_env **env_list, char *name, char *value)
 	*env_list = new_var;
 }
 
-char *get_env_variable(t_env *env_list, char *name)
+char	*get_env_variable(t_env *env_list, char *name)
 {
-    t_env *current = env_list;
+	t_env	*current;
 
-    while (current)
-    {
-        if (strcmp(current->name, name) == 0)
-        {
-            return ft_strdup(current->value); // Retourne une copie pour éviter les problèmes de double `free`.
-        }
-        current = current->next;
-    }
-    return ft_strdup(""); // Retourne une chaîne vide si la variable n'existe pas.
+	current = env_list;
+	while (current)
+	{
+		if (strcmp(current->name, name) == 0)
+		{
+			return (current->value);
+		}
+		current = current->next;
+	}
+	return (NULL);
 }
 
 void	add_env_variable(char *arg, t_env **env_list)
