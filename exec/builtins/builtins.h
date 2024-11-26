@@ -15,7 +15,7 @@ void ft_exit(t_data *data, t_env **env_list, t_cmd_list *list);
 char	**ft_export(char **envp, char *str);
 int		ft_parsexport(t_data *data, t_cmd_list *list);
 int		ft_envexport(char **envp);
-int     ft_pwd(t_data *data);
+int	ft_pwd(t_data *data, t_cmd_list *list);
 char	**ft_unset(char **envp, char *str);
 int		ft_parsunset(t_data *data, t_cmd_list *list);
 
