@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/26 08:59:53 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/26 21:03:35 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 	int	status;
 
 	if(!list)
-		return(data->exit);
+		return(g_last_exit_status);
 	if(list->next)
 		makeapipe(list->pipe);
     if (list->cmd_args[0] && parsebi(list, data, env_list) == 0 && !list->next)
@@ -52,7 +52,7 @@ int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 			while (waitpid(-1, &status, 0) > 0)
 			{
 				if (WIFEXITED(status))
-					data->exit = WEXITSTATUS(status);
+					g_last_exit_status = WEXITSTATUS(status);
 			}
 		}
 	}

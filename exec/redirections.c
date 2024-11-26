@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/25 21:55:58 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/26 21:03:54 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
     if (ft_openall(list) == -1)
     {
         cleanup_resources(data, env_list, list);
+
         exit(1);
     }
     if (list->open[0] != STDIN_FILENO)
