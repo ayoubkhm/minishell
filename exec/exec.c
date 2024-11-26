@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/26 21:03:35 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/26 22:14:21 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,21 @@
 
 int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
-	pid_t   pid;
-	int	status;
-
 	if(!list)
 		return(g_last_exit_status);
 	if(list->next)
 		makeapipe(list->pipe);
-    if (list->cmd_args[0] && parsebi(list, data, env_list) == 0 && !list->next)
+	
+    	if (list->cmd_args[0] && parsebi(list, data, env_list) == 0 && !list->next)
 			return(0);
+	ft_exechild(list,data, env_list);
+	return(0);
+}
+
+int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
+{
+	pid_t   pid;
+	
 	pid = fork();
 	if(pid == -1)
 	{
@@ -48,15 +54,20 @@ int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 			ft_exec(list->next,data,env_list);
 		}
 		else
-		{
-			while (waitpid(-1, &status, 0) > 0)
-			{
-				if (WIFEXITED(status))
-					g_last_exit_status = WEXITSTATUS(status);
-			}
-		}
+			ft_waitall();
 	}
-	return(0);
+	return (0);
+}
+
+void ft_waitall()
+{
+	int	status;
+
+	while (waitpid(-1, &status, 0) > 0)
+	{
+		if (WIFEXITED(status))
+			g_last_exit_status = WEXITSTATUS(status);
+	}
 }
 
 void	initpipe(t_cmd_list *list)
