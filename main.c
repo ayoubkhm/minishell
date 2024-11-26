@@ -107,6 +107,11 @@ void    process_input(char *input, t_data *data, t_env **env_list)
             free_cmd_list(cmd_list);
         }
     }
+    else
+    {
+        g_last_exit_status = 2;
+        free_tokens(tokens);
+    }
 }
 
 
