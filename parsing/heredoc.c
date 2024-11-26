@@ -1,22 +1,48 @@
 #include "parsing.h"
 
-// Crée un fichier temporaire pour stocker le contenu du heredoc
 char *create_temp_file(char *content)
 {
-    char *filename = strdup("/tmp/heredocXXXXXX");
-    int fd = mkstemp(filename);
+    char *base_filename = "/tmp/heredoc";
+    char *filename;
+    int fd;
+    int suffix = 0;
 
-    if (fd == -1)
+    filename = malloc(strlen(base_filename) + 10);
+    if (!filename)
     {
-        perror("Erreur de création du fichier temporaire");
+        perror("Erreur d'allocation de mémoire pour le nom du fichier");
+        return (NULL);
+    }
+
+    while (1)
+    {
+        sprintf(filename, "%s%d", base_filename, suffix);
+        fd = open(filename, O_CREAT | O_EXCL | O_RDWR, 0600);
+        if (fd != -1)
+            break;
+
+        if (errno != EEXIST)
+        {
+            perror("Erreur de création du fichier temporaire");
+            free(filename);
+            return (NULL);
+        }
+        suffix++;
+    }
+
+    if (write(fd, content, strlen(content)) == -1)
+    {
+        perror("Erreur d'écriture dans le fichier temporaire");
+        close(fd);
+        unlink(filename);
         free(filename);
         return (NULL);
     }
 
-    write(fd, content, strlen(content));
     close(fd);
     return (filename);
 }
+
 
 // Concatène deux chaînes avec un saut de ligne entre elles
 char *strjoin_with_newline(char *s1, char *s2)
@@ -45,7 +71,6 @@ char *strjoin_with_newline(char *s1, char *s2)
     return (result);
 }
 
-// Récupère le contenu d'un heredoc en lisant jusqu'au délimiteur
 char *get_heredoc(char *delimiter)
 {
     char *content = NULL;
@@ -67,61 +92,71 @@ char *get_heredoc(char *delimiter)
     return (content);
 }
 
-// Traite un token heredoc et met à jour la structure `t_cmd_list`
 int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
 {
-    // Vérifier qu'il y a un délimiteur après le token heredoc
-    if (!(*tokens)->next || (*tokens)->next->type != TYPE_WORD)
+    t_token *current = *tokens;
+
+    while (current && current->type == TYPE_HEREDOC)
     {
-        fprintf(stderr, "Syntax error: missing heredoc delimiter\n");
-        return (-1);
+        // Vérifier qu'il y a un délimiteur après le token heredoc
+        if (!current->next || current->next->type != TYPE_WORD)
+        {
+            fprintf(stderr, "Syntax error: missing heredoc delimiter\n");
+            return (-1);
+        }
+
+        // Stocker le délimiteur
+        char *heredoc_delimiter = ft_strdup(current->next->value);
+        if (!heredoc_delimiter)
+        {
+            fprintf(stderr, "Error: failed to allocate heredoc delimiter\n");
+            return (-1);
+        }
+
+        // Récupérer le contenu du heredoc
+        char *heredoc_content = get_heredoc(heredoc_delimiter);
+        free(heredoc_delimiter);
+        if (!heredoc_content)
+        {
+            fprintf(stderr, "Error: failed to read heredoc content\n");
+            return (-1);
+        }
+
+        // Créer un fichier temporaire pour le heredoc
+        char *temp_filename = create_temp_file(heredoc_content);
+        free(heredoc_content);
+        if (!temp_filename)
+        {
+            fprintf(stderr, "Error: failed to create heredoc temp file\n");
+            return (-1);
+        }
+
+        // Ajouter le fichier temporaire aux fichiers de redirection
+        char **new_files_list = realloc(curr_cmd->files_list, sizeof(char *) * (curr_cmd->files_count + 1));
+        int *new_files_type = realloc(curr_cmd->files_type, sizeof(int) * (curr_cmd->files_count + 1));
+
+        if (!new_files_list || !new_files_type)
+        {
+            free(temp_filename);
+            fprintf(stderr, "Error: failed to allocate memory for files list\n");
+            return (-1);
+        }
+
+        curr_cmd->files_list = new_files_list;
+        curr_cmd->files_type = new_files_type;
+
+        curr_cmd->files_list[curr_cmd->files_count] = temp_filename;
+        curr_cmd->files_type[curr_cmd->files_count] = TYPE_HEREDOC;
+        curr_cmd->files_count++;
+
+        // Avancer au prochain token
+        current = current->next->next;
     }
 
-    // Stocker le délimiteur dans heredoc_delimiter
-    curr_cmd->heredoc_delimiter = ft_strdup((*tokens)->next->value);
-    if (!curr_cmd->heredoc_delimiter)
-    {
-        fprintf(stderr, "Error: failed to allocate heredoc delimiter\n");
-        return (-1);
-    }
-
-    // Récupérer le contenu du heredoc en demandant à l'utilisateur
-    curr_cmd->heredoc_content = get_heredoc(curr_cmd->heredoc_delimiter);
-    if (!curr_cmd->heredoc_content)
-    {
-        fprintf(stderr, "Error: failed to read heredoc content\n");
-        free(curr_cmd->heredoc_delimiter);
-        return (-1);
-    }
-
-    // Optionnel : Créer un fichier temporaire pour le heredoc et l'ajouter aux redirections
-    char *temp_filename = create_temp_file(curr_cmd->heredoc_content);
-    if (!temp_filename)
-    {
-        free(curr_cmd->heredoc_content);
-        free(curr_cmd->heredoc_delimiter);
-        return (-1);
-    }
-
-    // Ajouter le fichier temporaire aux fichiers de redirection
-    curr_cmd->files_list = realloc(curr_cmd->files_list, sizeof(char *) * (curr_cmd->files_count + 1));
-    curr_cmd->files_type = realloc(curr_cmd->files_type, sizeof(int) * (curr_cmd->files_count + 1));
-
-    if (!curr_cmd->files_list || !curr_cmd->files_type)
-    {
-        free(temp_filename);
-        free(curr_cmd->heredoc_content);
-        free(curr_cmd->heredoc_delimiter);
-        return (-1);
-    }
-
-    curr_cmd->files_list[curr_cmd->files_count] = temp_filename;
-    curr_cmd->files_type[curr_cmd->files_count] = TYPE_HEREDOC;
-    curr_cmd->files_count++;
-
-    // Avancer au prochain token après le heredoc
-    *tokens = (*tokens)->next->next;
+    // Mettre à jour le pointeur des tokens
+    *tokens = current;
 
     return (0);
 }
+
 
