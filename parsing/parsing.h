@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/25 21:03:57 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/26 15:06:24 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ extern int g_status;
 
 t_token	*tokenize_input(char *input, t_env *env_list);
 char *append_character(char *value, char c);
-int			handle_single_quotes(char *input, int i, t_token **tokens);
-int	handle_double_quotes(char *input, int i, t_token **tokens, t_env *env_list);
+char *handle_single_quotes(char *input, int *i);
+char *handle_double_quotes(char *input, int *i, t_token **tokens, t_env *env_list);
 char	*handle_variable_expansion(char *input, int *i, int in_quotes, t_token **tokens, t_env *env_list);
 int			handle_operator(char *input, int i, t_token **tokens);
 int handle_word(char *input, int i, t_token **tokens, t_env *env_list);
@@ -76,7 +76,7 @@ int			detect_operator(char *input, int i,
 void		extract_name_value(char *env_var, char **name, char **value);
 t_env		*create_env_node(char *name, char *value);
 t_env		*init_env(char **envp);
-int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand);
+int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand, t_env *env_list);
 
 int	process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list);
 char *append_string(char *original, char *addition);
@@ -101,5 +101,10 @@ int handle_invalid_variable(char *input, int i, char *dollar_sequence, t_token *
 char *get_positional_argument(int index, t_env *env_list);
 char *ft_strjoin_multi(int count, ...);
 int handle_positional_variable(char *input, int i, t_token **tokens, t_env *env_list);
+
+
+int parse_input(char *input, t_token **tokens, t_env *env_list);
+int parse_word(char *input, int i, t_token **tokens, t_env *env_list);
+
 
 #endif

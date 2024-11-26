@@ -163,7 +163,13 @@ int process_token(char *input, int i, t_token **tokens, t_env *env_list)
     // Cas 4 : Si c'est une quote simple ou double (non suivie d'un $)
     if (input[i] == '\'' || input[i] == '"')
     {
-        return handle_quotes_in_word(input, i, tokens, input[i], input[i] == '"');
+        int new_i = parse_word(input, i, tokens, env_list);
+        if (new_i == -1)
+        {
+            fprintf(stderr, "minishell: Error in parse_word\n");
+            return -1;
+        }
+        return new_i; // Retourner le nouvel index avancé après les quotes
     }
 
     // Cas 5 : Si c'est un bracket [
@@ -240,37 +246,6 @@ int handle_operator(char *input, int i, t_token **tokens)
         return (i + shift);
     }
     return i;
-}
-
-int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand)
-{
-    int start;
-    char *value;
-
-    i++;
-    start = i;
-
-    while (input[i] && input[i] != quote_char)
-    {
-        i++;
-    }
-
-    if (input[i] != quote_char)
-    {
-        fprintf(stderr, "minishell: syntax error: unclosed %c quote\n", quote_char);
-        return -1;
-    }
-
-    if (i == start)
-    {
-        return (i + 1);
-    }
-
-    value = ft_substr(input, start, i - start);
-    add_token(tokens, create_token(value, TYPE_WORD, expand));
-    free(value);
-
-    return (i + 1);
 }
 
 
