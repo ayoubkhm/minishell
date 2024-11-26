@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/26 22:14:21 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/26 23:18:01 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,21 @@
 
 int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
+	int	resbi;
 	if(!list)
 		return(g_last_exit_status);
 	if(list->next)
 		makeapipe(list->pipe);
 	
-    	if (list->cmd_args[0] && parsebi(list, data, env_list) == 0 && !list->next)
-			return(0);
+    	if (list->cmd_args[0])
+	{
+		resbi = parsebi(list, data, env_list);
+		if(resbi != 256)
+		{
+			g_last_exit_status = resbi;
+			return(g_last_exit_status);
+		}
+	}
 	ft_exechild(list,data, env_list);
 	return(0);
 }
@@ -139,10 +147,10 @@ int parsebi(t_cmd_list *list, t_data *data, t_env **env_list)
         if(ft_strcmp(list->cmd_args[0],"exit") == 0)
 	        ft_exit(data, env_list, list);
         if(ft_strcmp(list->cmd_args[0],"pwd") == 0)
-                return(ft_pwd(data));
+                return(ft_pwd(data,list));
         if(ft_strcmp(list->cmd_args[0],"unset") == 0)
                 return(ft_parsunset(data,list));
         if(ft_strcmp(list->cmd_args[0],"export") == 0)
                 return(ft_parsexport(data,list));
-        return(1);
+        return(256);
 }
