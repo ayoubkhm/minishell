@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/27 12:08:58 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/26 16:22:37 by akhamass         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 #include <termios.h>
 
@@ -101,7 +89,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     t_cmd_list *cmd_list;
 
     tokens = tokenize_input(input, *env_list);
-    print_tokens(tokens);
+    //print_tokens(tokens);
     free(input);
 
     if (check_syntax(tokens) == 0)
@@ -149,6 +137,6 @@ int main(int argc, char **argv, char **envp)
         }
         process_input(input, &data, &env_list);
     }
-    return (0);
+    return (g_last_exit_status);
 }
 
