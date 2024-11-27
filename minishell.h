@@ -50,6 +50,7 @@ typedef struct s_cmd_list {
 	int         last_out;
 	int         files_count;
 	int         open[2];
+	int         save_std[2];
 	char        **cmd_args;
 	int         pipe[2];
 	char        *cmd;

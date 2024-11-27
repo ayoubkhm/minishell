@@ -7,6 +7,8 @@ t_cmd_list	*create_cmd_node(void)
 	new_node = malloc(sizeof(t_cmd_list));
 	if (!new_node)
 		return (NULL);
+    new_node->save_std[0] = -1;
+    new_node->save_std[1] = -1;
 	new_node->cmd_args = NULL;
 	new_node->cmd = NULL;
 	new_node->files_list = NULL;

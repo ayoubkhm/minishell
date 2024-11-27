@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/26 21:03:54 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/27 17:47:28 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
     if (ft_openall(list) == -1)
     {
         cleanup_resources(data, env_list, list);
-
         exit(1);
     }
     if (list->open[0] != STDIN_FILENO)
@@ -37,6 +36,29 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
         cleanup_resources(data, env_list, list);
         exit(g_last_exit_status);
     }
+    return (0);
+}
+
+int	ft_exec1par(t_cmd_list *list)
+{
+    list->open[0] = STDIN_FILENO;
+    list->open[1] = STDOUT_FILENO;
+    if (ft_openall(list) == -1)
+        return(g_last_exit_status = 1, 1);
+    if (list->open[0] != STDIN_FILENO)
+    {
+        list->save_std[0] = dup(STDIN_FILENO);
+        dup2(list->open[0], STDIN_FILENO);
+        close(list->open[0]);
+    }
+    if (list->open[1] != STDOUT_FILENO)
+    {
+        list->save_std[1] = dup(STDOUT_FILENO);
+        dup2(list->open[1], STDOUT_FILENO);
+        close(list->open[1]);
+    }
+    // if (!list->cmd_args[0])
+    //     return(g_last_exit_status);
     return (0);
 }
 
