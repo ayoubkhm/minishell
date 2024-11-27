@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/26 23:18:01 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/27 17:51:02 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,60 @@
 
 int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
-	int	resbi;
 	if(!list)
 		return(g_last_exit_status);
-	if(list->next)
-		makeapipe(list->pipe);
-	
-    	if (list->cmd_args[0])
-	{
-		resbi = parsebi(list, data, env_list);
-		if(resbi != 256)
+	if(!list->next && !list->prev)
+	{	
+		if(checkbi(list) == 0)
 		{
-			g_last_exit_status = resbi;
+			ft_exec1par(list);
+			ft_resbi(list, data, env_list, 0);
+		}
+		else
+			ft_exechild(list, data, env_list);
+	}
+	else
+		ft_exechild(list,data, env_list);
+	return(0);
+}
+
+int	ft_resbi(t_cmd_list *list, t_data *data, t_env **env_list, int	i)
+{
+	int	resbi;
+	
+	resbi = parsebi(list, data, env_list);
+	if (list->save_std[0] != -1)
+	{
+		dup2(list->save_std[0], STDIN_FILENO);
+		close(list->save_std[0]);
+		list->save_std[0] = -1;
+	}
+	if (list->save_std[1] != -1)
+	{
+		dup2(list->save_std[1], STDOUT_FILENO);
+		close(list->save_std[1]);
+		list->save_std[1] = -1;
+	}
+	if(resbi != 256)
+	{
+		g_last_exit_status = resbi;
+		if(i == 0)
 			return(g_last_exit_status);
+		if(i == 1)
+		{
+			cleanup_resources(data, env_list, list);
+			exit(g_last_exit_status);
 		}
 	}
-	ft_exechild(list,data, env_list);
 	return(0);
 }
 
 int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	pid_t   pid;
-	
+
+	if(list->next)
+		makeapipe(list->pipe);
 	pid = fork();
 	if(pid == -1)
 	{
@@ -45,12 +76,16 @@ int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
 	}
 	if (pid == 0)
 	{
+		// printf("here\n");
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		if(list->next || list->prev)
 			ft_execpipe(list);
 		ft_exec1(list, data, env_list);
-    		ft_exec2(list, data, env_list);
+		if(checkbi(list) == 0)
+			ft_resbi(list, data, env_list, 1);
+		else
+			ft_exec2(list, data, env_list);
 	}
 	if(pid > 0)
 	{
@@ -152,5 +187,24 @@ int parsebi(t_cmd_list *list, t_data *data, t_env **env_list)
                 return(ft_parsunset(data,list));
         if(ft_strcmp(list->cmd_args[0],"export") == 0)
                 return(ft_parsexport(data,list));
+        return(256);
+}
+
+int checkbi(t_cmd_list *list)
+{
+        if(ft_strcmp(list->cmd_args[0],"cd") == 0)
+                return(0);
+        if(ft_strcmp(list->cmd_args[0],"echo") == 0)
+                return(0);
+        if(ft_strcmp(list->cmd_args[0],"env") == 0)
+                return(0);
+        if(ft_strcmp(list->cmd_args[0],"exit") == 0)
+	        return(0);
+        if(ft_strcmp(list->cmd_args[0],"pwd") == 0)
+                return(0);
+        if(ft_strcmp(list->cmd_args[0],"unset") == 0)
+                return(0);
+        if(ft_strcmp(list->cmd_args[0],"export") == 0)
+                return(0);
         return(256);
 }
