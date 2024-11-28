@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/27 17:51:02 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/27 23:40:34 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,8 @@ int parsebi(t_cmd_list *list, t_data *data, t_env **env_list)
 
 int checkbi(t_cmd_list *list)
 {
+	if(!list->cmd_args[0])
+		return(1);
         if(ft_strcmp(list->cmd_args[0],"cd") == 0)
                 return(0);
         if(ft_strcmp(list->cmd_args[0],"echo") == 0)
