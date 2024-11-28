@@ -43,7 +43,6 @@ char *create_temp_file(char *content)
     return (filename);
 }
 
-
 // Concatène deux chaînes avec un saut de ligne entre elles
 char *strjoin_with_newline(char *s1, char *s2)
 {
@@ -132,7 +131,8 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         }
 
         // Ajouter le fichier temporaire aux fichiers de redirection
-        char **new_files_list = realloc(curr_cmd->files_list, sizeof(char *) * (curr_cmd->files_count + 1));
+        // +1 pour le nouveau fichier, +1 pour le pointeur NULL à la fin
+        char **new_files_list = realloc(curr_cmd->files_list, sizeof(char *) * (curr_cmd->files_count + 2));
         int *new_files_type = realloc(curr_cmd->files_type, sizeof(int) * (curr_cmd->files_count + 1));
 
         if (!new_files_list || !new_files_type)
@@ -145,8 +145,14 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         curr_cmd->files_list = new_files_list;
         curr_cmd->files_type = new_files_type;
 
+        // Ajouter le fichier temporaire à la liste
         curr_cmd->files_list[curr_cmd->files_count] = temp_filename;
         curr_cmd->files_type[curr_cmd->files_count] = TYPE_HEREDOC;
+
+        // Terminer la liste par NULL
+        curr_cmd->files_list[curr_cmd->files_count + 1] = NULL;
+
+        // Incrémenter le compteur
         curr_cmd->files_count++;
 
         // Avancer au prochain token
@@ -158,5 +164,3 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
 
     return (0);
 }
-
-
