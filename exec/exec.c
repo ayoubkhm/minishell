@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/28 21:15:18 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/30 00:42:21 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 	{	
 		if(checkbi(list) == 0)
 		{
-			printf("here\n");
 			ft_exec1par(list);
 			ft_resbi(list, data, env_list, 0);
 		}
