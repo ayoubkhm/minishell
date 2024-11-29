@@ -85,6 +85,18 @@ void	ft_freetab(char **tab)
 	free(tab);
 }
 
+void	ft_freetabi(char **tab, int i)
+{
+	int j;
+
+	if (!tab)
+		return ;
+	j = 0;
+	while (j < i)
+		free(tab[j++]);
+	free(tab);
+}
+
 int	ft_printab(char **tab)
 {
 	int	i;

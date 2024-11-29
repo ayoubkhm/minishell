@@ -26,16 +26,19 @@ char	**ft_unset(char **envp, char *str)
 	{
 		if (ft_strncmp(envp[i], str, ft_strlen(str)) != 0)
 		{
-			tabret[j] = envp[i];
+			tabret[j] = ft_strdup(envp[i]);
 			j++;
 		}
 		else
 			free(envp[i]);
 		i++;
 	}
-	tabret[j] = NULL;
-	free(envp);
-	return (tabret);
+	free(str);
+	if(i != j)
+		tabret[j] = NULL;
+	else
+		return(ft_freetabi(tabret,i),envp);
+	return (free(envp),tabret);
 }
 
 int	ft_parsunset(t_data *data, t_cmd_list *list)
