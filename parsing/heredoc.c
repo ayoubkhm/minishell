@@ -87,7 +87,6 @@ char *get_heredoc(char *delimiter)
         free(line);
         printf("> ");
     }
-
     return (content);
 }
 
@@ -158,7 +157,6 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         // Avancer au prochain token
         current = current->next->next;
     }
-
     // Mettre à jour le pointeur des tokens
     *tokens = current;
 
