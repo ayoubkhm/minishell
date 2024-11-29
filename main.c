@@ -99,7 +99,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
 
         if (cmd_list)
         {
-            //print_commands(cmd_list);
+            // print_commands(cmd_list);
             (void)data;
             initpipe(cmd_list);
             ft_exec(cmd_list, data, env_list);

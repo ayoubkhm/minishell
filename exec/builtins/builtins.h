@@ -23,6 +23,7 @@ int		ft_parsunset(t_data *data, t_cmd_list *list);
 char	*ft_addstr(char *str1, char *str2);
 void	ft_freedata(t_data *data);
 void	ft_freetab(char **tab);
+void	ft_freetabi(char **tab, int i);
 char	**ft_copytab(char **tab);
 char	**ft_copyntab(char **tab, int n);
 int	ft_printab(char **tab);
