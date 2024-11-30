@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 21:37:22 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/25 20:40:27 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/30 01:12:52 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdarg.h>
 # include <limits.h>
 # include <stdbool.h>
+# include <stddef.h> 
 
 typedef struct s_list
 {
@@ -68,31 +69,24 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
 char	*ft_strndup(const char *s, size_t n);
-
-
 int		ft_printf(const char *__format, ...);
 int		prt_str(char const *str);
 int		prt_ptr(void *ptr_addr);
 int		prt_int(int n);
 int		prt_unsigned(unsigned int nbr);
 int		prt_hexa(unsigned int nbr, bool upper_case);
-
-
-t_list				*ft_lstnew(void *content);
-void				ft_lstadd_front(t_list **lst, t_list *new);
-int					ft_lstsize(t_list *lst);
-t_list				*ft_lstlast(t_list *lst);
-void				ft_lstiter(t_list *lst, void (*f)(void *));
-void				ft_lstadd_back(t_list **lst, t_list *new);
-void				ft_lstdelone(t_list *lst, void (*del)(void *));
-t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
-						void (*del)(void *));
-void				ft_lstclear(t_list **lst, void (*del)(void *));
-
-
-char *ft_strcat(char *dest, const char *src);
-void free_split(char **split);
-
-
+t_list	*ft_lstnew(void *content);
+void	ft_lstadd_front(t_list **lst, t_list *new);
+int		ft_lstsize(t_list *lst);
+t_list	*ft_lstlast(t_list *lst);
+void	ft_lstiter(t_list *lst, void (*f)(void *));
+void	ft_lstadd_back(t_list **lst, t_list *new);
+void	ft_lstdelone(t_list *lst, void (*del)(void *));
+t_list	*ft_lstmap(t_list *lst, void *(*f)(void *),
+			void (*del)(void *));
+void	ft_lstclear(t_list **lst, void (*del)(void *));
+char	*ft_strcat(char *dest, const char *src);
+void	free_split(char **split);
+void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 
 #endif

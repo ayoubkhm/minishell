@@ -43,13 +43,19 @@ char *create_temp_file(char *content)
     return (filename);
 }
 
-// Concatène deux chaînes avec un saut de ligne entre elles
 char *strjoin_with_newline(char *s1, char *s2)
 {
     char *result;
-    size_t len1 = s1 ? strlen(s1) : 0;
-    size_t len2 = s2 ? strlen(s2) : 0;
-    size_t total_len = len1 + len2 + 2; // +2 pour le saut de ligne et '\0'
+    size_t len1 = 0;
+    size_t len2 = 0;
+    size_t total_len;
+
+    if (s1)
+        len1 = strlen(s1);
+    if (s2)
+        len2 = strlen(s2);
+
+    total_len = len1 + len2 + 2; // +2 pour le '\n' et le '\0'
 
     result = malloc(total_len);
     if (!result)
@@ -69,6 +75,7 @@ char *strjoin_with_newline(char *s1, char *s2)
     free(s1);
     return (result);
 }
+
 
 char *get_heredoc(char *delimiter)
 {
@@ -90,75 +97,97 @@ char *get_heredoc(char *delimiter)
     return (content);
 }
 
+char *get_heredoc_delimiter(t_token *current)
+{
+    if (!current->next || current->next->type != TYPE_WORD)
+    {
+        fprintf(stderr, "Syntax error: missing heredoc delimiter\n");
+        return (NULL);
+    }
+    char *delimiter = ft_strdup(current->next->value);
+    if (!delimiter)
+    {
+        fprintf(stderr, "Error: failed to allocate heredoc delimiter\n");
+    }
+    return (delimiter);
+}
+
+char *create_temp_file_with_content(char *content)
+{
+    if (!content)
+    {
+        content = strdup("");
+        if (!content)
+        {
+            fprintf(stderr, "Error: failed to allocate memory for empty heredoc content\n");
+            return (NULL);
+        }
+    }
+    char *filename = create_temp_file(content);
+    if (!filename)
+    {
+        fprintf(stderr, "Error: failed to create heredoc temp file\n");
+    }
+    return (filename);
+}
+
+int add_temp_file_to_cmd(t_cmd_list *curr_cmd, char *temp_filename)
+{
+    size_t old_files_size = sizeof(char *) * (curr_cmd->files_count + 1);
+    size_t new_files_size = sizeof(char *) * (curr_cmd->files_count + 2);
+    char **new_files_list = ft_realloc(curr_cmd->files_list, old_files_size, new_files_size);
+    int *new_files_type = ft_realloc(curr_cmd->files_type, old_types_size, new_types_size);
+
+    if (!new_files_list)
+    {
+        free(temp_filename);
+        return (-1);
+    }
+    if (!new_files_type)
+    {
+        free(temp_filename);
+        free(new_files_list);
+        return (-1);
+    }
+    curr_cmd->files_list = new_files_list;
+    curr_cmd->files_type = new_files_type;
+    curr_cmd->files_list[curr_cmd->files_count] = temp_filename;
+    curr_cmd->files_type[curr_cmd->files_count] = TYPE_HEREDOC;
+    curr_cmd->files_list[curr_cmd->files_count + 1] = NULL;
+    curr_cmd->files_count++;
+    return (0);
+}
+
+
 int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
 {
     t_token *current = *tokens;
 
     while (current && current->type == TYPE_HEREDOC)
     {
-        // Vérifier qu'il y a un délimiteur après le token heredoc
-        if (!current->next || current->next->type != TYPE_WORD)
-        {
-            fprintf(stderr, "Syntax error: missing heredoc delimiter\n");
-            return (-1);
-        }
-
-        // Stocker le délimiteur
-        char *heredoc_delimiter = ft_strdup(current->next->value);
+        // Étape 1 : Récupérer le délimiteur
+        char *heredoc_delimiter = get_heredoc_delimiter(current);
         if (!heredoc_delimiter)
-        {
-            fprintf(stderr, "Error: failed to allocate heredoc delimiter\n");
             return (-1);
-        }
 
-        // Récupérer le contenu du heredoc
+        // Étape 2 : Récupérer le contenu du heredoc
         char *heredoc_content = get_heredoc(heredoc_delimiter);
         free(heredoc_delimiter);
-        if (!heredoc_content)
-        {
-            fprintf(stderr, "Error: failed to read heredoc content\n");
-            return (-1);
-        }
 
-        // Créer un fichier temporaire pour le heredoc
-        char *temp_filename = create_temp_file(heredoc_content);
+        // Étape 3 : Créer un fichier temporaire
+        char *temp_filename = create_temp_file_with_content(heredoc_content);
         free(heredoc_content);
         if (!temp_filename)
-        {
-            fprintf(stderr, "Error: failed to create heredoc temp file\n");
             return (-1);
-        }
 
-        // Ajouter le fichier temporaire aux fichiers de redirection
-        // +1 pour le nouveau fichier, +1 pour le pointeur NULL à la fin
-        char **new_files_list = realloc(curr_cmd->files_list, sizeof(char *) * (curr_cmd->files_count + 2));
-        int *new_files_type = realloc(curr_cmd->files_type, sizeof(int) * (curr_cmd->files_count + 1));
-
-        if (!new_files_list || !new_files_type)
-        {
-            free(temp_filename);
-            fprintf(stderr, "Error: failed to allocate memory for files list\n");
+        // Étape 4 : Ajouter le fichier temporaire aux redirections
+        if (add_temp_file_to_cmd(curr_cmd, temp_filename) == -1)
             return (-1);
-        }
-
-        curr_cmd->files_list = new_files_list;
-        curr_cmd->files_type = new_files_type;
-
-        // Ajouter le fichier temporaire à la liste
-        curr_cmd->files_list[curr_cmd->files_count] = temp_filename;
-        curr_cmd->files_type[curr_cmd->files_count] = TYPE_HEREDOC;
-
-        // Terminer la liste par NULL
-        curr_cmd->files_list[curr_cmd->files_count + 1] = NULL;
-
-        // Incrémenter le compteur
-        curr_cmd->files_count++;
 
         // Avancer au prochain token
         current = current->next->next;
     }
-    // Mettre à jour le pointeur des tokens
-    *tokens = current;
 
+    *tokens = current;
     return (0);
 }

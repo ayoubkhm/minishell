@@ -50,30 +50,33 @@ int	allocate_command_args(t_cmd_list *current_cmd, int arg_count)
 
 void remove_empty_arguments(t_cmd_list *current_cmd)
 {
+
+    int arg_count;
+    int new_arg_count;
+    char **new_cmd_args;
+    int j;
+
+
+    arg_count = 0;
+    new_arg_count = 0;
     if (!current_cmd || !current_cmd->cmd_args)
         return;
 
-    int arg_count = 0;
-    int new_arg_count = 0;
 
-    // Comptez les arguments non vides
+
     while (current_cmd->cmd_args[arg_count])
     {
         if (current_cmd->cmd_args[arg_count][0] != '\0')
             new_arg_count++;
         arg_count++;
     }
-
-    // Si tous les arguments sont valides, rien à faire
     if (new_arg_count == arg_count)
         return;
-
-    // Créez une nouvelle liste pour les arguments valides
-    char **new_cmd_args = malloc(sizeof(char *) * (new_arg_count + 1));
+    new_cmd_args = malloc(sizeof(char *) * (new_arg_count + 1));
     if (!new_cmd_args)
         return;
 
-    int j = 0;
+    j = 0;
     for (int i = 0; i < arg_count; i++)
     {
         if (current_cmd->cmd_args[i][0] != '\0')
@@ -83,12 +86,11 @@ void remove_empty_arguments(t_cmd_list *current_cmd)
         }
         else
         {
-            free(current_cmd->cmd_args[i]); // Libérez les arguments vides
+            free(current_cmd->cmd_args[i]);
         }
     }
-    new_cmd_args[j] = NULL; // Terminez avec NULL
+    new_cmd_args[j] = NULL;
 
-    // Remplacez l'ancienne liste par la nouvelle
     free(current_cmd->cmd_args);
     current_cmd->cmd_args = new_cmd_args;
 }
@@ -98,7 +100,7 @@ void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 {
     if (current_cmd->cmd_args && current_cmd->cmd_args[0])
     {
-        if (current_cmd->cmd) // Libère l'ancienne commande si elle existe
+        if (current_cmd->cmd)
         {
             free(current_cmd->cmd);
             current_cmd->cmd = NULL;
