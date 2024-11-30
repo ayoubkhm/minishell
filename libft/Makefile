@@ -56,6 +56,7 @@ SRCS =		ft_atoi.c\
 		ft_lstdelone.c \
 		ft_lstiter.c \
 		ft_realloc.c \
+		ft_strcpy.c \
 		ft_strndup.c \
 
 OBJS= $(SRCS:.c=.o)

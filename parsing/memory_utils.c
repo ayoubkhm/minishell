@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/19 10:44:38 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/11/30 10:12:04 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	free_cmd_args(char **cmd_args)
 	i = 0;
 	if (cmd_args)
 	{
-		while (cmd_args[i])
+		while (cmd_args[i]) // On s'arrête dès qu'on atteint un pointeur NULL
 		{
 			free(cmd_args[i]);
 			i++;
@@ -27,6 +27,7 @@ void	free_cmd_args(char **cmd_args)
 		free(cmd_args);
 	}
 }
+
 
 void	free_files_list(char **files_list, int files_count)
 {
