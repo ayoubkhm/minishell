@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/19 10:44:38 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/01 00:34:04 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,6 @@ void free_cmd_list(t_cmd_list *cmd_list)
         free_cmd_node(tmp);
         free(tmp);
     }
+	// if(cmd_list)
+        //         cmd_list = NULL;
 }
