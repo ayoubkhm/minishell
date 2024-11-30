@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/21 21:23:04 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/30 22:29:12 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,11 @@ char	**ft_get_path(char **envp)
 		i++;
 	}
 	if (!envp[i])
-		return(NULL); ///check leaks
+	{
+		write(2,"minishell : No such file or directory\n",39);
+		g_last_exit_status = 127;
+		return(NULL);
+	}
 	split = ft_split(&envp[i][5], ':');
 	tab = ft_copyntab(split,1);
 	if (!tab)

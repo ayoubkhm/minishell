@@ -19,7 +19,11 @@ char	*ft_addstr(char *str1, char *str2)
 	int i;
 	char *stret;
 
-	stret = malloc((strlen(str1) + strlen(str2) + 1) * sizeof(char));
+	if(!str1)
+		return(str2);
+	if(!str2)
+		return(str1);
+	stret = malloc((ft_strlen(str1) + ft_strlen(str2) + 1) * sizeof(char));
 	if (!stret)
 		return (NULL);
 	i = -1;
