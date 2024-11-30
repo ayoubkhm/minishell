@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/30 00:42:21 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/11/30 22:25:12 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 	char	*path;
 
 	path = ft_get_command_path(list->cmd_args[0], data);
-	if (!path)
+	if (!path || path == NULL)
 	{
 		free(path);
         	cleanup_resources(data, env_list, list);

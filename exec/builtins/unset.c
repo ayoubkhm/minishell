@@ -20,6 +20,8 @@ char	**ft_unset(char **envp, char *str)
 
 	i = 0;
 	j = 0;
+	if(!str)
+		return(envp);
 	str = ft_addstr(str, "=");
 	tabret = malloc((ft_tabstrlen(envp)) * sizeof(char *));
 	while (envp[i])
@@ -29,8 +31,6 @@ char	**ft_unset(char **envp, char *str)
 			tabret[j] = ft_strdup(envp[i]);
 			j++;
 		}
-		else
-			free(envp[i]);
 		i++;
 	}
 	free(str);
@@ -38,7 +38,7 @@ char	**ft_unset(char **envp, char *str)
 		tabret[j] = NULL;
 	else
 		return(ft_freetabi(tabret,i),envp);
-	return (free(envp),tabret);
+	return (ft_freetab(envp),tabret);
 }
 
 int	ft_parsunset(t_data *data, t_cmd_list *list)
