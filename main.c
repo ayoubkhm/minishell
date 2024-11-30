@@ -30,6 +30,7 @@ void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
     if (list)
     {
         free_cmd_list(list);
+        // fprintf(stderr,"here\n");
         list = NULL;
     }
     while (*env_list)
@@ -103,7 +104,8 @@ void    process_input(char *input, t_data *data, t_env **env_list)
             (void)data;
             initpipe(cmd_list);
             ft_exec(cmd_list, data, env_list);
-            //cleanup_resources(data, env_list, cmd_list);
+            // cleanup_resources(data, env_list, cmd_list);
+            // fprintf(stderr,"here\n");
             free_cmd_list(cmd_list);
         }
     }
