@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:08:44 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/01 00:34:04 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/02 19:12:27 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ void free_cmd_list(t_cmd_list *cmd_list)
 {
     t_cmd_list *tmp;
 
+    while (cmd_list->prev != NULL)
+	cmd_list = cmd_list->prev;
     while (cmd_list)
     {
         tmp = cmd_list;
