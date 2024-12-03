@@ -9,7 +9,7 @@ void init_data(int argc, char **argv, char **envp, t_data *data)
 {
     data->ac = argc;
     data->av = ft_copytab(argv);
-    data->envp = ft_copytab(envp);
+    data->envp = ft_updateshlvl(envp);
     data->cwd = malloc(4096);
     data->exit = 0;
     data->nodenb = 0;
@@ -30,7 +30,6 @@ void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
     if (list)
     {
         free_cmd_list(list);
-        // fprintf(stderr,"here\n");
         list = NULL;
     }
     while (*env_list)
@@ -83,6 +82,7 @@ char	*get_user_input(void)
     return input;
 }
 
+// t_env   ft_update_env();
 
 void    process_input(char *input, t_data *data, t_env **env_list)
 {
@@ -90,7 +90,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     t_cmd_list *cmd_list;
 
     tokens = tokenize_input(input, *env_list);
-    print_tokens(tokens);
+    // print_tokens(tokens);
     free(input);
 
     if (check_syntax(tokens) == 0)

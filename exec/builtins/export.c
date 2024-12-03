@@ -69,7 +69,8 @@ int	ft_envexport(char **envp)
 			write(1, &envp[i][j], 1);
 			j++;
 		}
-		if (envp[i][j])
+		if (envp[i][j]) ///rajouter 2e export
+				///erreur export ""=4, signal 1
 		{
 			write(1, &envp[i][j], 1);
 			write(1, "\"", 1);
