@@ -166,7 +166,6 @@ int process_token(char *input, int i, t_token **tokens, t_env *env_list)
         int new_i = parse_word(input, i, tokens, env_list);
         if (new_i == -1)
         {
-            fprintf(stderr, "minishell: Error in parse_word\n");
             return -1;
         }
         return new_i; // Retourner le nouvel index avancé après les quotes

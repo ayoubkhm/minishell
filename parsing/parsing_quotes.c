@@ -17,7 +17,6 @@ int parse_input(char *input, t_token **tokens, t_env *env_list)
         if (new_i == -1)
         {
             // Gestion de l'erreur
-            fprintf(stderr, "minishell: Error in parse_word\n");
             return -1;
         }
 
@@ -55,7 +54,6 @@ int parse_word(char *input, int i, t_token **tokens, t_env *env_list)
 
         if (!temp)
         {
-            fprintf(stderr, "minishell: Error in handle_quotes or ft_substr\n");
             free(value);
             return -1;
         }

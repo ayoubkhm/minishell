@@ -40,13 +40,16 @@ t_cmd_list *init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd)
 }
 
 
-int	allocate_command_args(t_cmd_list *current_cmd, int arg_count)
+int allocate_command_args(t_cmd_list *current_cmd, int arg_count)
 {
-	current_cmd->cmd_args = malloc(sizeof(char *) * (arg_count + 1));
-	if (!current_cmd->cmd_args)
-		return (-1);
-	return (0);
+    current_cmd->cmd_args = malloc(sizeof(char *) * (arg_count + 1));
+    if (!current_cmd->cmd_args)
+        return (-1);
+    for (int i = 0; i <= arg_count; i++)
+        current_cmd->cmd_args[i] = NULL;
+    return (0);
 }
+
 
 void remove_empty_arguments(t_cmd_list *current_cmd)
 {
@@ -223,35 +226,46 @@ void print_commands(t_cmd_list *cmd_list)
 
 t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
 {
-    t_cmd_list *cmd_list;
-    t_cmd_list *current_cmd;
+    t_cmd_list *cmd_list = NULL;  // Liste principale des commandes
+    t_cmd_list *current_cmd = NULL;  // Commande courante
     int arg_count;
-    int ret; // Variable pour stocker le retour de process_token_cmd
+    int ret;
 
-    cmd_list = NULL;
-    current_cmd = NULL;
     while (tokens)
     {
         current_cmd = init_command_node(&cmd_list, &current_cmd);
+        if (!current_cmd)
+        {
+            free_cmd_list(cmd_list); // Libérer toute la liste en cas d'erreur
+            return (NULL);
+        }
+
         arg_count = count_arguments(tokens);
         if (allocate_command_args(current_cmd, arg_count) == -1)
+        {
+            free_cmd_list(cmd_list); // Libérer toute la liste
             return (NULL);
-        
-        ret = process_token_cmd(&tokens, current_cmd, *env_list);        
+        }
+
+        ret = process_token_cmd(&tokens, current_cmd, *env_list);
         if (ret == -1)
+        {
+            free_cmd_list(cmd_list); // Libérer toute la liste
             return (NULL);
+        }
 
         post_process_command(current_cmd, env_list);
 
         if (tokens && tokens->type == TYPE_PIPE)
-        {
             tokens = tokens->next;
-        }
     }
+
+    // Libérer `current_cmd->cmd` si nécessaire (bonnes pratiques)
     if (current_cmd && current_cmd->cmd)
     {
         free(current_cmd->cmd);
         current_cmd->cmd = NULL;
     }
+
     return cmd_list;
 }
