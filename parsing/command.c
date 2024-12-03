@@ -94,6 +94,42 @@ void remove_empty_arguments(t_cmd_list *current_cmd)
 }
 
 
+void remove_env_variable(char *var_name, t_env **env_list)
+{
+    t_env *current = *env_list;
+    t_env *prev = NULL;
+
+    while (current)
+    {
+        if (strcmp(current->name, var_name) == 0)
+        {
+            if (prev)
+                prev->next = current->next;
+            else
+                *env_list = current->next;
+
+            free(current->name);
+            free(current->value);
+            free(current);
+            return; // Sort dès qu'on trouve la variable
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+
+
+void handle_unset(t_cmd_list *cmd, t_env **env_list)
+{
+    int i = 1;
+    while (cmd->cmd_args[i])
+    {
+        remove_env_variable(cmd->cmd_args[i], env_list);
+        i++;
+    }
+}
+
+
 void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 {
     if (current_cmd->cmd_args && current_cmd->cmd_args[0])
@@ -104,9 +140,14 @@ void post_process_command(t_cmd_list *current_cmd, t_env **env_list)
             current_cmd->cmd = NULL;
         }
         current_cmd->cmd = strdup(current_cmd->cmd_args[0]);
+
         if (strcmp(current_cmd->cmd, "export") == 0)
         {
             handle_export(current_cmd, env_list);
+        }
+        else if (strcmp(current_cmd->cmd, "unset") == 0)
+        {
+            handle_unset(current_cmd, env_list);
         }
     }
 
