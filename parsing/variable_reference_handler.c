@@ -162,26 +162,49 @@ int append_special_chars(char *input, int i, char **combined_value)
 
 int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens, t_env *env_list)
 {
-    char *var_value = extract_variable_value(input, &i, env_list);
+    char *var_value;
+    char **split_values;
+    char *token_value;
+    int j;
+
+    var_value = extract_variable_value(input, &i, env_list);
     if (!var_value)
         return i;
-
-    char *combined_value = build_combined_value(dollar_count, dollar_sequence, var_value);
+    split_values = ft_split(var_value, ' ');
     free(var_value);
-    if (!combined_value)
+    if (!split_values)
         return i;
+    j = 0;
+    while (split_values[j])
+    {
+        if (j == 0)
+            token_value = build_combined_value(dollar_count, dollar_sequence, split_values[j]);
+        else
+            token_value = ft_strdup(split_values[j]);
+        if (!token_value)
+        {
+            j++;
+            continue;
+        }
+        add_token(tokens, create_token(token_value, TYPE_WORD, 1));
+        free(token_value);
+        if (j == 0)
+        {
+            free(dollar_sequence);
+            dollar_sequence = NULL;
+        }
 
-    i = append_special_chars(input, i, &combined_value);
-
-    add_token(tokens, create_token(combined_value, TYPE_WORD, 1));
-    free(combined_value);
-    free(dollar_sequence);
-
+        j++;
+    }
+    j = 0;
+    while (split_values[j])
+    {
+        free(split_values[j]);
+        j++;
+    }
+    free(split_values);
     return i;
 }
-
-
-
 
 
 
