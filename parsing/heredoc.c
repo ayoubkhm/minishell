@@ -99,7 +99,7 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         // Vérifier qu'il y a un délimiteur après le token heredoc
         if (!current->next || current->next->type != TYPE_WORD)
         {
-            fprintf(stderr, "Syntax error: missing heredoc delimiter\n");
+            fprintf(stderr, "syntax error near unexpected token 'newline'\n");
             return (-1);
         }
 

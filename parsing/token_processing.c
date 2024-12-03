@@ -61,7 +61,10 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
             if ((*tokens)->type == TYPE_HEREDOC)
             {
                 if (process_heredoc(tokens, curr_cmd) == -1)
+                {
+                    printf("caca\n");
                     return (-1);
+                }
             }
             else
             {
