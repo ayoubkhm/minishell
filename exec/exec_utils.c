@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/30 22:29:12 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/03 21:05:48 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,4 +171,82 @@ void	ft_free_inlist(t_cmd_list *list)
 	ft_freetab(list->cmd_args);
 	free(list->cmd);
 	free(list);
+}
+
+
+char	**ft_updateshlvl(char **tab)
+{
+	char	**tabret;
+	int		i;
+	int		len;
+
+	len = 0;
+	while (tab[len])
+		len++;
+	tabret = malloc((len + 1) * sizeof(char *));
+	if (!tabret)
+		exit(1);
+	i = 0;
+	while (tab[i])
+	{
+		if (strncmp(tab[i], "SHLVL=", 6) == 0)
+			ifshlvl(tab[i],tabret,i);
+		else
+		{
+			tabret[i] = ft_strdup(tab[i]);
+			if (!tabret[i])
+				exit(1);
+		}
+		i++;
+	}
+	tabret[i] = NULL;
+	return (tabret);
+}
+
+void	ifshlvl(char *tab, char **tabret, int i)
+{
+	int		shlvl_value;
+	char	*shlvl_str;
+	int		shlvl_len;
+	char	*new_value;
+
+	shlvl_str = tab + 6;
+	shlvl_value = ft_atoi(shlvl_str) + 1;
+	shlvl_str = ft_itoa(shlvl_value);
+	shlvl_len = ft_strlen("SHLVL=") + ft_strlen(shlvl_str);
+	new_value = malloc(shlvl_len + 1);
+	if (!new_value)
+		exit(1);
+	ft_strcpy(new_value, "SHLVL=");
+	ft_strcat(new_value, shlvl_str);
+	free(shlvl_str);
+	tabret[i] = new_value;
+}
+
+
+#include <stdlib.h>
+
+char	*ft_copystrfromn(char *str, int n)
+{
+	char	*newstr;
+	int		i;
+	int		len;
+	int		new_len;
+
+	if (!str)
+		return (NULL);
+	len = 0;
+	while (str[len])
+		len++;
+	if (n >= len)
+		return (strdup(""));
+	new_len = len - n;
+	newstr = (char *)malloc(sizeof(char) * (new_len + 1));
+	if (!newstr)
+		return (NULL);
+	i = 0;
+	while (str[n])
+		newstr[i++] = str[n++];
+	newstr[i] = '\0';
+	return (newstr);
 }

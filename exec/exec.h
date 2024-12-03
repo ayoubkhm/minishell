@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/27 17:31:03 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/03 21:02:16 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ void	ft_close_pipes(int pipefd[2]);
 int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list);
 void	initpipe(t_cmd_list *list);
 
+void	ifshlvl(char *tab, char **tabret, int i);
+char	*ft_copystrfromn(char *str, int n);
+char **ft_updateshlvl(char **tab);
 int     ft_heredoc(t_cmd_list *list, char *str);
 void ft_waitall();
 int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list);
