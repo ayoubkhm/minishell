@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 18:19:15 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 19:02:53 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ft_access(char **tab, char *avi, char **path)
 	return (-1);
 }
 
-char	**ft_get_path(char **envp)
+char	**ft_get_path(char **envp, t_data *data)
 {
 	char	**tab;
 	int		i;
@@ -90,7 +90,7 @@ char	**ft_get_path(char **envp)
 	if (!envp[i])
 	{
 		write(2,"minishell : No such file or directory\n",39);
-		g_last_exit_status = 127;
+		data->exit = 127;
 		return(NULL);
 	}
 	split = ft_split(&envp[i][5], ':');

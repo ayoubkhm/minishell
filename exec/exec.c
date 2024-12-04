@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 18:26:29 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 19:04:00 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 int ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	if(!list)
-		return(g_last_exit_status);
+		return(data->exit);
 	if(!list->next && !list->prev)
 	{	
 		if(checkbi(list) == 0)
 		{
-			ft_exec1par(list);
+			ft_exec1par(list, data);
 			ft_resbi(list, data, env_list, 0);
 		}
 		else
@@ -50,13 +50,13 @@ int	ft_resbi(t_cmd_list *list, t_data *data, t_env **env_list, int	i)
 	}
 	if(resbi != 256)
 	{
-		g_last_exit_status = resbi;
+		data->exit = resbi;
 		if(i == 0)
-			return(g_last_exit_status);
+			return(data->exit);
 		if(i == 1)
 		{
 			cleanup_resources(data, env_list, list);
-			exit(g_last_exit_status);
+			exit(data->exit);
 		}
 	}
 	return(0);
@@ -97,19 +97,19 @@ int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
 			ft_exec(list->next,data,env_list);
 		}
 		else
-			ft_waitall();
+			ft_waitall(data);
 	}
 	return (0);
 }
 
-void ft_waitall()
+void ft_waitall(t_data *data)
 {
 	int	status;
 
 	while (waitpid(-1, &status, 0) > 0)
 	{
 		if (WIFEXITED(status))
-			g_last_exit_status = WEXITSTATUS(status);
+			data->exit = WEXITSTATUS(status);
 	}
 }
 
@@ -138,7 +138,7 @@ char	*ft_get_command_path(char *cmd, t_data *data)
 	path = NULL;
 	if (ft_is_absolute_path(cmd))
 		return (ft_strdup(cmd));
-	tab = ft_get_path(data->envp);
+	tab = ft_get_path(data->envp, data);
 	if(!tab)
 		return(ft_freetab(tab),NULL);
 	if (ft_access(tab, cmd, &path) == -1)
@@ -157,16 +157,16 @@ int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 	{
 		free(path);
         	cleanup_resources(data, env_list, list);
-		g_last_exit_status = 127;
-		exit(g_last_exit_status);
+		data->exit = 127;
+		exit(data->exit);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
 		// perror("execve");
 		free(path);
         cleanup_resources(data, env_list, list);
-		g_last_exit_status = 1;
-		exit(g_last_exit_status);
+		data->exit = 1;
+		exit(data->exit);
 	}
 	return (0);
 }

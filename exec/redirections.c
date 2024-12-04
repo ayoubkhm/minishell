@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/30 00:35:56 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 19:01:59 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,17 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
     if (!list->cmd_args[0])
     {
         cleanup_resources(data, env_list, list);
-        exit(g_last_exit_status);
+        exit(data->exit);
     }
     return (0);
 }
 
-int	ft_exec1par(t_cmd_list *list)
+int	ft_exec1par(t_cmd_list *list, t_data *data)
 {
     list->open[0] = STDIN_FILENO;
     list->open[1] = STDOUT_FILENO;
     if (ft_openall(list) == -1)
-        return(g_last_exit_status = 1, 1);
+        return(data->exit = 1, 1);
     if (list->open[0] != STDIN_FILENO)
     {
         list->save_std[0] = dup(STDIN_FILENO);
@@ -58,7 +58,7 @@ int	ft_exec1par(t_cmd_list *list)
         close(list->open[1]);
     }
     // if (!list->cmd_args[0])
-    //     return(g_last_exit_status);
+    //     return(data->exit);
     return (0);
 }
 

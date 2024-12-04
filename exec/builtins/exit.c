@@ -66,12 +66,12 @@ void	ft_exit(t_data *data, t_env **env_list, t_cmd_list *list)
 		if (list->error == 2)
 		{
 			write(2, "exit: too many arguments\n", 26);
-			g_last_exit_status = 1;
+			data->exit = 1;
 			return ;
 		}
 		cleanup_resources(data, env_list, list);
 		exit(exit_code % 256);
 	}
 	cleanup_resources(data, env_list, list);
-	exit(g_last_exit_status);
+	exit(data->exit);
 }

@@ -58,7 +58,7 @@ int	ft_parsexport(t_data *data, t_cmd_list *list)
 		write(2,"export : `",11);
 		ft_putstr_fd(list->cmd_args[i],2);
 		write(2,"': not a valid identifier\n",27);
-		g_last_exit_status = 1;
+		data->exit = 1;
 	}
 	return (0);
 }
