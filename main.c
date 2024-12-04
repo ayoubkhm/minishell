@@ -111,7 +111,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     }
     else
     {
-        g_last_exit_status = 2;
+        data->exit = 2;
         free_tokens(tokens);
     }
 }
@@ -144,6 +144,6 @@ int main(int argc, char **argv, char **envp)
         }
         process_input(input, &data, &env_list);
     }
-    return (g_last_exit_status);
+    return (data.exit);
 }
 
