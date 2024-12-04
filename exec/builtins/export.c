@@ -50,7 +50,7 @@ int	ft_parsexport(t_data *data, t_cmd_list *list)
 	while(list->cmd_args[i] && list && ft_checkexport(list->cmd_args[i]) == 0)
 	{
 		if(ft_dblexport(data->envp,list->cmd_args[i]) == 0)
-			data->envp = ft_export(data->envp, list->cmd_args[1]);
+			data->envp = ft_export(data->envp, list->cmd_args[i]);
 		i++;
 	}
 	if(list->cmd_args[i])
