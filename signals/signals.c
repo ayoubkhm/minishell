@@ -8,12 +8,13 @@ void display_prompt(void)
     rl_on_new_line();
     rl_replace_line("", 0);
     rl_redisplay();
-    g_status = 0; // Réinitialise l'état d'interruption pour le prompt
+    g_status = 0;
 }
 
 void sigint_handler(int signum)
 {
     g_received_signal = signum;
+    g_last_exit_status = 130;
     write(1, "\n", 1);
 
     struct termios term;
@@ -21,18 +22,18 @@ void sigint_handler(int signum)
 
     if (!(term.c_lflag & ICANON))
     {
-        // Si un processus est en cours, on ne redessine pas le prompt
     }
     else
     {
-        display_prompt();  // Affiche le prompt si aucun processus n’est en cours
+        display_prompt();
     }
 }
 
 void sigquit_handler(int signum)
 {
     (void)signum;
-    write(1, "Quit\n", 5);  // Affiche "Quit" suivi d'une nouvelle ligne
-    rl_replace_line("", 0); // Efface le buffer en cours
-    rl_redisplay();         // Redessine le prompt
+    write(1, "Quit\n", 5);
+    g_last_exit_status = 131;
+    rl_replace_line("", 0);
+    rl_redisplay();
 }

@@ -167,27 +167,43 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     char *token_value;
     int j;
 
+    // Extraction de la valeur de la variable
     var_value = extract_variable_value(input, &i, env_list);
-    if (!var_value)
-        return i;
+    if (!var_value || var_value[0] == '\0') // Cas où la variable n'existe pas
+    {
+        free(var_value); // Libère var_value même si elle est vide
+        free(dollar_sequence); // Libère dollar_sequence
+        return i; // Retourne l'index
+    }
+
+    // Scinder la valeur en parties
     split_values = ft_split(var_value, ' ');
     free(var_value);
     if (!split_values)
+    {
+        free(dollar_sequence);
         return i;
+    }
+
     j = 0;
     while (split_values[j])
     {
+        // Construction de la valeur du token
         if (j == 0)
             token_value = build_combined_value(dollar_count, dollar_sequence, split_values[j]);
         else
             token_value = ft_strdup(split_values[j]);
+
         if (!token_value)
         {
             j++;
             continue;
         }
+
         add_token(tokens, create_token(token_value, TYPE_WORD, 1));
         free(token_value);
+
+        // Libérer dollar_sequence après le premier token
         if (j == 0)
         {
             free(dollar_sequence);
@@ -196,6 +212,8 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
 
         j++;
     }
+
+    // Libérer la mémoire des valeurs scindées
     j = 0;
     while (split_values[j])
     {
@@ -203,8 +221,12 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
         j++;
     }
     free(split_values);
+
     return i;
 }
+
+
+
 
 
 
