@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/03 21:02:16 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 17:46:33 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	ft_exec1par(t_cmd_list *list);
 int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list);
 char	*ft_get_command_path(char *cmd, t_data *data);
 int	ft_is_absolute_path(char *cmd);
+int	ft_iscinstr(char *str,char c);
 
 
 int	ft_openall(t_cmd_list *list);
@@ -43,6 +44,8 @@ void	ft_close_pipes(int pipefd[2]);
 int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list);
 void	initpipe(t_cmd_list *list);
 
+char	**ft_updateshlvl(char **tab);
+char *ft_atoishlvl(char *str);
 void	ifshlvl(char *tab, char **tabret, int i);
 char	*ft_copystrfromn(char *str, int n);
 char **ft_updateshlvl(char **tab);

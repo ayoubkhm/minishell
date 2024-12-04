@@ -193,3 +193,19 @@ int	ft_isainnum(char *str)
 	}
 	return (0);
 }
+
+int	ft_checkexport(char *str)
+{
+	int	i;
+
+	if (!str || !str[0])
+		return (1);
+	if (!ft_isalpha(str[0]))
+		return (1);
+	i = 1;
+	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+		i++;
+	if (str[i] && str[i] != '=')
+		return (1);
+	return (0);
+}

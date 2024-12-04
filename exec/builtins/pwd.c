@@ -14,9 +14,6 @@
 
 int	ft_pwd(t_data *data, t_cmd_list *list)
 {
-	int	i;
-
-	i = 0;
 	if(list->cmd_args[1] && list->cmd_args[1][0] == '-')
 	{
 		if(list->cmd_args[1][1] != 'P' && list->cmd_args[1][1] != 'L' && list->cmd_args[1][2] != ' ')
@@ -25,11 +22,6 @@ int	ft_pwd(t_data *data, t_cmd_list *list)
 			return(g_last_exit_status = 2, 2);
 		}
 	}
-	while(data->cwd[i])
-	{
-		write(1,&data->cwd[i],1);
-		i++;
-	}
-	write(1,"\n",1);
+	printf("%s\n",data->cwd);
 	return (0);
 }

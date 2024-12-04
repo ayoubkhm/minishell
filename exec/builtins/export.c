@@ -42,11 +42,48 @@ char	**ft_export(char **envp, char *str)
 
 int	ft_parsexport(t_data *data, t_cmd_list *list)
 {
+	int	i;
+
+	i = 1;
 	if (!list->cmd_args[1])
 		ft_envexport(data->envp);
-	else
-		data->envp = ft_export(data->envp, list->cmd_args[1]);
-	// ft_printab(data->envp);
+	while(list->cmd_args[i] && list && ft_checkexport(list->cmd_args[i]) == 0)
+	{
+		if(ft_dblexport(data->envp,list->cmd_args[i]) == 0)
+			data->envp = ft_export(data->envp, list->cmd_args[1]);
+		i++;
+	}
+	if(list->cmd_args[i])
+	{
+		write(2,"export : `",11);
+		ft_putstr_fd(list->cmd_args[i],2);
+		write(2,"': not a valid identifier\n",27);
+		g_last_exit_status = 1;
+	}
+	return (0);
+}
+
+int	ft_dblexport(char **envp, char *str)
+{
+	int	i;
+	int	c;
+
+	if (!envp || !str)
+		return (0);
+	i = 0;
+	c = ft_strlkforc(str, '=');
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], str, c) == 0 && envp[i][c] == '=')
+		{
+			free(envp[i]);
+			envp[i] = ft_strdup(str);
+			if (!envp[i])
+				return (-1);
+			return (1);
+		}
+		i++;
+	}
 	return (0);
 }
 
@@ -83,3 +120,4 @@ int	ft_envexport(char **envp)
 	}
 	return (0);
 }
+
