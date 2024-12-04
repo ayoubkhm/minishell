@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:35:19 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/03 21:05:48 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 18:19:15 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ char	**ft_get_path(char **envp)
 	return (tab);
 }
 
-int	ft_strlkforc(char *str,char c)
+int	ft_iscinstr(char *str,char c)
 {
 	while(*str)
 	{
@@ -129,6 +129,20 @@ int	ft_strlkforc(char *str,char c)
 		str++;
 	}
 	return (0);
+}
+
+int	ft_strlkforc(char *str,char c)
+{
+	int	i;
+	
+	i = 0;
+	while(str[i])
+	{
+		if(str[i] == c)
+			return(i);
+		i++;
+	}
+	return (i);
 }
 
 char	*rmstrbfc(char *str, char c)
@@ -174,74 +188,70 @@ void	ft_free_inlist(t_cmd_list *list)
 }
 
 
-char	**ft_updateshlvl(char **tab)
+char **ft_updateshlvl(char **tab)
 {
-	char	**tabret;
-	int		i;
-	int		len;
 
-	len = 0;
-	while (tab[len])
-		len++;
-	tabret = malloc((len + 1) * sizeof(char *));
+	char **tabret;
+	int i;
+	char *temp;
+
+	i = -1;
+	tabret = malloc((ft_tabstrlen(tab) + 1) * sizeof(char *));
 	if (!tabret)
 		exit(1);
-	i = 0;
-	while (tab[i])
+	while (tab[++i])
 	{
-		if (strncmp(tab[i], "SHLVL=", 6) == 0)
-			ifshlvl(tab[i],tabret,i);
-		else
+		if(ft_strncmp(tab[i], "SHLVL=", 6) == 0)
 		{
-			tabret[i] = ft_strdup(tab[i]);
-			if (!tabret[i])
-				exit(1);
+			temp = ft_atoishlvl(tab[i]);
+			tabret[i] = ft_strdup(temp);
+			free(temp);
 		}
-		i++;
+		else
+			tabret[i] = ft_strdup(tab[i]);
+		
 	}
 	tabret[i] = NULL;
 	return (tabret);
+
 }
 
-void	ifshlvl(char *tab, char **tabret, int i)
+char	*ft_atoishlvl(char *str)
 {
+	char	*newstr;
+	char	*temp;
+	char	*temp1;
 	int		shlvl_value;
-	char	*shlvl_str;
-	int		shlvl_len;
-	char	*new_value;
 
-	shlvl_str = tab + 6;
-	shlvl_value = ft_atoi(shlvl_str) + 1;
-	shlvl_str = ft_itoa(shlvl_value);
-	shlvl_len = ft_strlen("SHLVL=") + ft_strlen(shlvl_str);
-	new_value = malloc(shlvl_len + 1);
-	if (!new_value)
-		exit(1);
-	ft_strcpy(new_value, "SHLVL=");
-	ft_strcat(new_value, shlvl_str);
-	free(shlvl_str);
-	tabret[i] = new_value;
+	temp1 = ft_copystrfromn(str, 6);
+	shlvl_value = ft_atoi(temp1) + 1;
+	temp = ft_itoa(shlvl_value);
+	free(temp1);
+	if (!temp)
+		return (NULL);
+	newstr = malloc(sizeof(char) * (ft_strlen("SHLVL=") + ft_strlen(temp) + 1));
+	if (!newstr)
+	{
+		free(temp);
+		return (NULL);
+	}
+	ft_strlcpy(newstr, "SHLVL=", 7);
+	ft_strlcat(newstr, temp, ft_strlen("SHLVL=") + ft_strlen(temp) + 1);
+	free(temp);
+	return (newstr);
 }
 
-
-#include <stdlib.h>
 
 char	*ft_copystrfromn(char *str, int n)
 {
 	char	*newstr;
-	int		i;
 	int		len;
-	int		new_len;
+	int		i;
 
-	if (!str)
-		return (NULL);
-	len = 0;
-	while (str[len])
-		len++;
+	len = ft_strlen(str);
 	if (n >= len)
-		return (strdup(""));
-	new_len = len - n;
-	newstr = (char *)malloc(sizeof(char) * (new_len + 1));
+		return (ft_strdup(""));
+	newstr = malloc(sizeof(char) * (len - n + 1));
 	if (!newstr)
 		return (NULL);
 	i = 0;
@@ -250,3 +260,4 @@ char	*ft_copystrfromn(char *str, int n)
 	newstr[i] = '\0';
 	return (newstr);
 }
+

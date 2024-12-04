@@ -20,6 +20,8 @@ char	**ft_unset(char **envp, char *str);
 int		ft_parsunset(t_data *data, t_cmd_list *list);
 
 // UTILS
+int	ft_dblexport(char **envp, char *str);
+int	ft_checkexport(char *str);
 char	*ft_addstr(char *str1, char *str2);
 void	ft_freedata(t_data *data);
 void	ft_freetab(char **tab);

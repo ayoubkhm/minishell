@@ -82,6 +82,7 @@ char	*get_user_input(void)
     return input;
 }
 
+// t_env   ft_update_env();
 
 void    process_input(char *input, t_data *data, t_env **env_list)
 {
@@ -89,7 +90,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     t_cmd_list *cmd_list;
 
     tokens = tokenize_input(input, *env_list);
-    //print_tokens(tokens);
+    // print_tokens(tokens);
     free(input);
 
     if (check_syntax(tokens) == 0)

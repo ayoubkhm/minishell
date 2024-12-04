@@ -21,11 +21,8 @@ int	ft_env(char **envp)
 		return (1);
 	while (envp[i])
 	{
-		if(ft_strlkforc(envp[i],'=') == 1)
-		{
-			write(1, envp[i], ft_strlen(envp[i]));
-			write(1, "\n", 1);
-		}
+		if(ft_iscinstr(envp[i],'=') == 1)
+			printf("%s\n",envp[i]);
 		i++;
 	}
 	return (0);
