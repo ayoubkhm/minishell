@@ -19,6 +19,8 @@ int	ft_cd(t_cmd_list *list, t_data *data)
 {
 	char *path;
 
+	if(list->cmd_args[2])
+		return(printf("cd: too many arguments\n"), data->exit = 1);
 	path = list->cmd_args[1];
 	ft_update_env(data, "OLDPWD");
 	if (path == NULL || strlen(path) == 0)
