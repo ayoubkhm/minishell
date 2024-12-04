@@ -2,11 +2,11 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
+/*                                                    +:+ +:+
 	+:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+      
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+
 	+#+        */
-/*                                                +#+#+#+#+#+  
+/*                                                +#+#+#+#+#+
 	+#+           */
 /*   Created: 2024/10/19 21:32:34 by gtraiman          #+#    #+#             */
 /*   Updated: 2024/10/19 21:32:34 by gtraiman         ###   ########.fr       */
@@ -15,12 +15,11 @@
 
 #include "builtins.h"
 
-
 long long	ft_exatoi(t_cmd_list *list)
 {
-	unsigned long long atoied;
-	int s;
-	char *str;
+	unsigned long long	atoied;
+	int					s;
+	char				*str;
 
 	str = list->cmd_args[1];
 	atoied = 0;
@@ -47,7 +46,7 @@ long long	ft_exatoi(t_cmd_list *list)
 
 void	ft_exit(t_data *data, t_env **env_list, t_cmd_list *list)
 {
-	long long exit_code;
+	long long	exit_code;
 
 	write(1, "exit\n", 5);
 	exit_code = 0;
@@ -57,9 +56,7 @@ void	ft_exit(t_data *data, t_env **env_list, t_cmd_list *list)
 		exit_code = ft_exatoi(list);
 		if (list->error == 1)
 		{
-			write(2, "exit: ", 6);
-			write(2, list->cmd_args[1], ft_strlen(list->cmd_args[1]));
-			write(2, ": numeric argument required\n", 29);
+			printf("exit: %s: numeric argument required\n", list->cmd_args[1]);
 			cleanup_resources(data, env_list, list);
 			exit(2);
 		}

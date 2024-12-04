@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2024/09/23 19:45:58 by gtraiman          #+#    #+#             */
 /*   Updated: 2024/09/23 19:45:58 by gtraiman         ###   ########.fr       */
 /*                                                                            */
@@ -21,8 +24,8 @@ int	ft_env(char **envp)
 		return (1);
 	while (envp[i])
 	{
-		if(ft_iscinstr(envp[i],'=') == 1)
-			printf("%s\n",envp[i]);
+		if (ft_iscinstr(envp[i], '=') == 1)
+			printf("%s\n", envp[i]);
 		i++;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 16:25:00 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/10/23 18:58:52 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/04 23:23:59 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,18 @@ bool	is_n_option(char *arg)
 	return (false);
 }
 
-int	ft_parsecho(t_cmd_list *list,t_data *data)
+int	ft_parsecho(t_cmd_list *list, t_data *data)
 {
-	(void)data;
 	bool	newline;
 	bool	first_arg;
-	int	i;
+	int		i;
 
+	(void)data;
 	i = 1;
 	newline = true;
 	first_arg = true;
-	while (list->cmd_args && list->cmd_args[i] && is_n_option(list->cmd_args[i]))
+	while (list->cmd_args && list->cmd_args[i]
+		&& is_n_option(list->cmd_args[i]))
 	{
 		newline = false;
 		i++;
@@ -66,4 +67,3 @@ int	ft_parsecho(t_cmd_list *list,t_data *data)
 		write(1, "\n", 1);
 	return (0);
 }
-
