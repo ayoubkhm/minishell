@@ -392,25 +392,69 @@ int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_l
     char *dollar_sequence = NULL;
     int dollar_count = 0;
 
+    // Vérification pour les quotes
     if (i > 0 && (input[i] == '\'' || input[i] == '"'))
     {
         return handle_variable_quotes(input, i, tokens, env_list);
     }
+
+    // Accumulation des '$'
     int new_i = accumulate_dollars(input, i, &dollar_sequence, &dollar_count);
     if (new_i == -1)
     {
         return -1;
     }
     i = new_i;
-    int result = handle_special_variable(input, i, dollar_count, dollar_sequence, tokens);
-    if (result != -2)
+
+    // Gestion des variables spéciales comme $? (code de retour)
+    if (input[i] == '?')
     {
-        return result;
+        char *exit_status = ft_itoa(g_last_exit_status); // Remplace g_last_exit_status par la variable correspondante
+        add_token(tokens, create_token(exit_status, TYPE_WORD, 0));
+        free(exit_status);
+        free(dollar_sequence);
+        return i + 1; // Passe au caractère suivant après '?'
     }
+
+    // Gestion des variables numériques ($9, etc.)
+    if (input[i] && ft_isdigit(input[i]))
+    {
+        char var_name[2] = {input[i], '\0'}; // Nom de variable "9"
+        char *var_value = get_env_variable(env_list, var_name);
+
+        // Initialisation du token avec la valeur de la variable ou une chaîne vide
+        char *token_value = var_value ? ft_strdup(var_value) : ft_strdup("");
+
+        i++; // Avance après le chiffre
+
+        // Inclusion des caractères spéciaux immédiatement après
+        while (input[i] && !isspace(input[i]) && !ft_isalnum(input[i]) && input[i] != '_')
+        {
+            char temp[2] = {input[i], '\0'};
+            char *new_token = ft_strjoin(token_value, temp);
+            free(token_value);
+            token_value = new_token;
+            i++;
+        }
+
+        add_token(tokens, create_token(token_value, TYPE_WORD, 0));
+        free(token_value);
+        free(dollar_sequence);
+        return i;
+    }
+
+    // Gestion des variables alphanumériques valides
     if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
     {
         return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
     }
+
+    // Gestion des variables invalides
     int initial_index = i - ft_strlen(dollar_sequence) - 1;
     return handle_invalid_variable(input, initial_index, dollar_sequence, tokens);
 }
+
+
+
+
+

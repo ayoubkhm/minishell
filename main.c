@@ -82,7 +82,6 @@ char	*get_user_input(void)
     return input;
 }
 
-// t_env   ft_update_env();
 
 void    process_input(char *input, t_data *data, t_env **env_list)
 {
