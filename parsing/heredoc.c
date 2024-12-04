@@ -1,4 +1,20 @@
 #include "parsing.h"
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+// Signal handler for heredoc (Ctrl+C)
+void heredoc_signal_handler(int signum)
+{
+    (void)signum;
+    g_last_exit_status = -42;
+    // Write a newline to move to the next prompt line
+    write(1, "\n", 1);
+    // Close stdin to make readline return NULL
+    close(0);
+}
 
 char *create_temp_file(char *content)
 {
@@ -57,14 +73,15 @@ char *strjoin_with_newline(char *s1, char *s2)
 
     if (s1)
         strcpy(result, s1);
+    else
+        result[0] = '\0';
 
     if (s2)
     {
         strcpy(result + len1, s2);
         result[len1 + len2] = '\n';
+        result[len1 + len2 + 1] = '\0';
     }
-
-    result[total_len - 1] = '\0';
 
     free(s1);
     return (result);
@@ -74,10 +91,31 @@ char *get_heredoc(char *delimiter)
 {
     char *content = NULL;
     char *line = NULL;
+    struct sigaction sa;
+    struct sigaction old_sa;
 
-    printf("> ");
-    while ((line = readline(NULL)))
+    // Configurer le gestionnaire de signal pour Ctrl+C
+    sa.sa_handler = heredoc_signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGINT, &sa, &old_sa);
+
+    while (1)
     {
+        line = readline("> ");
+        if (g_last_exit_status == -42)
+        {
+            // Interrompu par Ctrl+C
+            free(line);
+            break;
+        }
+
+        if (line == NULL)
+        {
+            // EOF (Ctrl+D) ou erreur
+            break;
+        }
+
         if (strcmp(line, delimiter) == 0)
         {
             free(line);
@@ -85,8 +123,18 @@ char *get_heredoc(char *delimiter)
         }
         content = strjoin_with_newline(content, line);
         free(line);
-        printf("> ");
     }
+
+    // Restaurer le gestionnaire de signal précédent
+    sigaction(SIGINT, &old_sa, NULL);
+
+    // Vérifier si le heredoc a été interrompu
+    if (g_last_exit_status == -42)
+    {
+        free(content);
+        return NULL;
+    }
+
     return (content);
 }
 
@@ -104,7 +152,7 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         }
 
         // Stocker le délimiteur
-        char *heredoc_delimiter = ft_strdup(current->next->value);
+        char *heredoc_delimiter = strdup(current->next->value);
         if (!heredoc_delimiter)
         {
             fprintf(stderr, "Error: failed to allocate heredoc delimiter\n");
@@ -114,8 +162,16 @@ int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd)
         // Récupérer le contenu du heredoc
         char *heredoc_content = get_heredoc(heredoc_delimiter);
         free(heredoc_delimiter);
+
         if (!heredoc_content)
         {
+            if (g_last_exit_status == -42)
+            {
+                // Gérer l'interruption par Ctrl+C
+                fprintf(stderr, "\nHeredoc interrompu par Ctrl+C\n");
+                g_last_exit_status = 130; // Réinitialiser pour les prochains heredocs
+                return (-1);
+            }
             fprintf(stderr, "Error: failed to read heredoc content\n");
             return (-1);
         }

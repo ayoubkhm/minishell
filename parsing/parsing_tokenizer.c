@@ -71,23 +71,35 @@ int handle_brackets(char *input, int i, t_token **tokens, t_env *env_list)
 int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_list)
 {
     int start = i;
-    while (input[i] && !isspace(input[i]) && !is_operator(input[i]) && input[i] != '\'' && input[i] != '"' && input[i] != '$')
+
+    // Avancer jusqu'à un caractère spécial ou espace
+    while (input[i] && !isspace(input[i]) && !is_operator(input[i]) && 
+           input[i] != '\'' && input[i] != '"' && input[i] != '$')
     {
         i++;
     }
-
     char *prefix = NULL;
     if (start < i)
     {
         prefix = ft_substr(input, start, i - start);
     }
 
+    // Gérer une variable si '$' est rencontré
     if (input[i] == '$')
     {
-        char *var_value;
         i = handle_variable_reference(input, i, tokens, env_list);
-        var_value = (*tokens)->value;
-        if (prefix && *prefix) // Ajout condition pour ignorer les prefixes vides
+
+        // Vérification pour éviter les lectures invalides
+        if (*tokens == NULL || (*tokens)->value == NULL)
+        {
+            fprintf(stderr, "minishell: command not found\n");
+            free(prefix);
+            return i;
+        }
+
+        // Combiner le préfixe et la valeur de la variable si nécessaire
+        char *var_value = (*tokens)->value;
+        if (prefix && *prefix) // Vérifie que le préfixe n'est pas vide
         {
             char *combined = ft_strjoin(prefix, var_value);
             free(prefix);
@@ -95,7 +107,7 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
             (*tokens)->value = combined;
         }
     }
-    else if (prefix && *prefix) // Ignore les tokens vides
+    else if (prefix && *prefix) // Si un préfixe existe, le traiter comme un mot
     {
         add_token(tokens, create_token(prefix, TYPE_WORD, 1));
         free(prefix);
@@ -103,6 +115,7 @@ int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_l
 
     return i;
 }
+
 
 t_token *get_last_token(t_token *tokens)
 {

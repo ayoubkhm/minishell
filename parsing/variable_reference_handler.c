@@ -160,6 +160,7 @@ int append_special_chars(char *input, int i, char **combined_value)
     return i;
 }
 
+
 int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens, t_env *env_list)
 {
     char *var_value;
@@ -167,22 +168,36 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     char *token_value;
     int j;
 
+    printf("[DEBUG] Entering handle_valid_variable at index %d, char: '%c'\n", i, input[i]);
+
     // Extraction de la valeur de la variable
     var_value = extract_variable_value(input, &i, env_list);
     if (!var_value || var_value[0] == '\0') // Cas où la variable n'existe pas
     {
-        free(var_value); // Libère var_value même si elle est vide
-        free(dollar_sequence); // Libère dollar_sequence
-        return i; // Retourne l'index
+        printf("[DEBUG] Variable not found or empty\n");
+        free(var_value);
+        free(dollar_sequence);
+        return i;
     }
+
+    printf("[DEBUG] Extracted variable value: '%s'\n", var_value);
 
     // Scinder la valeur en parties
     split_values = ft_split(var_value, ' ');
     free(var_value);
     if (!split_values)
     {
+        printf("[DEBUG] Failed to split variable value\n");
         free(dollar_sequence);
         return i;
+    }
+
+    printf("[DEBUG] Split variable value into parts:\n");
+    j = 0;
+    while (split_values[j])
+    {
+        printf("  [DEBUG] Part %d: '%s'\n", j, split_values[j]);
+        j++;
     }
 
     j = 0;
@@ -196,10 +211,42 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
 
         if (!token_value)
         {
+            printf("[DEBUG] Failed to build token value for part %d\n", j);
             j++;
             continue;
         }
 
+        // Vérifier si des caractères immédiatement après la variable doivent être inclus
+        if (j == 0 && input[i] == '"')
+        {
+            i++; // Passer le guillemet ouvrant
+            printf("[DEBUG] Detected double quotes after variable\n");
+
+            // Ajouter les caractères jusqu'à la fermeture des guillemets
+            while (input[i] && input[i] != '"')
+            {
+                char temp[2] = {input[i], '\0'};
+                char *new_token_value = ft_strjoin(token_value, temp);
+                free(token_value);
+                token_value = new_token_value;
+                i++;
+            }
+
+            if (input[i] == '"')
+            {
+                printf("[DEBUG] Closing double quotes found\n");
+                i++; // Passer le guillemet fermant
+            }
+            else
+            {
+                fprintf(stderr, "minishell: syntax error: unclosed double quotes\n");
+                free(token_value);
+                free(dollar_sequence);
+                return -1; // Erreur de syntaxe
+            }
+        }
+
+        printf("[DEBUG] Adding token: '%s'\n", token_value);
         add_token(tokens, create_token(token_value, TYPE_WORD, 1));
         free(token_value);
 
@@ -214,6 +261,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     }
 
     // Libérer la mémoire des valeurs scindées
+    printf("[DEBUG] Freeing split values\n");
     j = 0;
     while (split_values[j])
     {
@@ -222,11 +270,9 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     }
     free(split_values);
 
+    printf("[DEBUG] Exiting handle_valid_variable at index %d\n", i);
     return i;
 }
-
-
-
 
 
 
