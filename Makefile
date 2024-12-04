@@ -18,6 +18,8 @@ SRCS        =   exec/builtins/cd.c \
                 exec/builtins/pwd.c \
                 exec/builtins/unset.c \
                 exec/builtins/builtins_utils.c \
+                exec/builtins/builtins_utils2.c \
+                exec/builtins/builtins_utils3.c \
                 exec/exec.c \
                 exec/pipe.c \
                 exec/redirections.c \
