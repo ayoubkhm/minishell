@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 19:03:44 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 00:10:59 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,10 @@ void	ft_close_pipes(int pipefd[2]);
 int	ft_execute_child(t_cmd_list *list, t_data *data, t_env **env_list);
 void	initpipe(t_cmd_list *list);
 
+
+char	**ft_get_path(char **envp, t_data *data);
+char	**ft_extract_path(char **envp, t_data *data);
+char	*ft_get_current_dir(void);
 char	**ft_updateshlvl(char **tab);
 char *ft_atoishlvl(char *str);
 void	ifshlvl(char *tab, char **tabret, int i);

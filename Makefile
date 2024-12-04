@@ -24,6 +24,9 @@ SRCS        =   exec/builtins/cd.c \
                 exec/pipe.c \
                 exec/redirections.c \
                 exec/exec_utils.c \
+                exec/exec_utils2.c \
+                exec/exec_utils3.c \
+                exec/exec_utils4.c \
                 main.c \
                 parsing/parsing_tokenizer.c \
                 parsing/parsing_quotes.c \
