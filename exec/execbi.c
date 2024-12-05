@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:36:39 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 18:40:38 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:19:51 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int	checkbi(t_cmd_list *list)
 {
 	if (!list->cmd_args[0])
 		return (1);
+	// if (ft_strcmp(list->cmd_args[0], "[") == 0)
+	// 	return (0);
 	if (ft_strcmp(list->cmd_args[0], ":") == 0)
 		return (0);
 	if (ft_strcmp(list->cmd_args[0], "!") == 0)
