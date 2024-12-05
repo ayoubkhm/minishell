@@ -3,27 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:30:45 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/11/25 21:56:43 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:49:44 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
 
-int ft_execpipe(t_cmd_list *list)
+int	ft_execpipe(t_cmd_list *list)
 {
-	if(list->prev)
+	if (list->prev)
 	{
-		dup2(list->prev->pipe[0],STDIN_FILENO);
+		dup2(list->prev->pipe[0], STDIN_FILENO);
 		close(list->prev->pipe[0]);
 	}
 	if (list->next)
 	{
 		dup2(list->pipe[1], STDOUT_FILENO);
 		close(list->pipe[1]);
-        	close(list->pipe[0]);
+		close(list->pipe[0]);
 	}
 	return (0);
 }
