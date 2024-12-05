@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 19:41:11 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:26:52 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
 {
+	int	test;
+
 	list->open[0] = STDIN_FILENO;
 	list->open[1] = STDOUT_FILENO;
-	if (ft_openall(list) == -1)
-	{
-		cleanup_resources(data, env_list, list);
-		exit(1);
-	}
+	test = ft_openall(list);
+	if (test == -1)
+		return (cleanup_resources(data, env_list, list), exit(1), 0);
+	else if (test == -2)
+		return (cleanup_resources(data, env_list, list), exit(0), 0);
 	if (list->open[0] != STDIN_FILENO)
 	{
 		dup2(list->open[0], STDIN_FILENO);
@@ -65,6 +67,7 @@ int	ft_openall(t_cmd_list *list)
 	int	i;
 	int	fd_in;
 	int	fd_out;
+	int	test;
 
 	i = 0;
 	list->open[0] = STDIN_FILENO;
@@ -73,8 +76,11 @@ int	ft_openall(t_cmd_list *list)
 		return (0);
 	while (list->files_list[i])
 	{
-		if (fdinout(list, &fd_in, &fd_out, i) == -1)
+		test = fdinout(list, &fd_in, &fd_out, i);
+		if (test == -1)
 			return (perror("open"), -1);
+		if (test == -2)
+			return (perror("open"), -2);
 		i++;
 	}
 	return (0);
@@ -86,7 +92,7 @@ int	fdinout(t_cmd_list *list, int *fd_in, int *fd_out, int i)
 	{
 		*fd_in = open(list->files_list[i], O_RDONLY);
 		if (*fd_in == -1)
-			return (-1);
+			return (-2);
 		if (list->open[0] != STDIN_FILENO)
 			close(list->open[0]);
 		list->open[0] = *fd_in;
