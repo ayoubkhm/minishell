@@ -90,79 +90,82 @@ char *remove_quotes(const char *input)
     return cleaned;
 }
 
-
-int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_list)
+int handle_character_iteration(char *input, int i)
 {
-    // printf("DEBUG: Début de handle_regular_characters, position initiale: %d, caractère: '%c'\n", i, input[i]);
-
-    int start = i;
-
-    // Avancer jusqu'à un caractère spécial ou espace
     while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
     {
         if (input[i] == '\'' || input[i] == '"') // Ignorer les quotes
-        {
-            // printf("DEBUG: Ignorer le caractère quote '%c' à la position %d\n", input[i], i);
             i++;
-            continue;
-        }
-
-        // printf("DEBUG: Parcours de input[%d]: '%c'\n", i, input[i]);
-        i++;
+        else
+            i++;
     }
+    return i;
+}
 
-    char *prefix = NULL;
+char *extract_prefix(char *input, int start, int i)
+{
     if (start < i)
+        return ft_substr(input, start, i - start);
+    return NULL;
+}
+
+int handle_variable2(char *input, int i, t_token **tokens, t_env *env_list, char **prefix)
+{
+    i = handle_variable_reference(input, i, tokens, env_list);
+
+    if (*tokens == NULL || (*tokens)->value == NULL) // Vérifier les erreurs
     {
-        prefix = ft_substr(input, start, i - start);
-        // printf("DEBUG: Préfixe extrait: '%s'\n", prefix);
+        fprintf(stderr, "minishell: command not found\n");
+        free(*prefix);
+        *prefix = NULL;
+        return i;
     }
+
+    if (*prefix && **prefix) // Combiner le préfixe avec la valeur de la variable
+    {
+        char *var_value = (*tokens)->value;
+        char *combined = ft_strjoin(*prefix, var_value);
+        free(*prefix);
+        free(var_value);
+        (*tokens)->value = combined;
+    }
+    return i;
+}
+
+void process_prefix_as_word(char *prefix, t_token **tokens)
+{
+    if (prefix && *prefix) // Si un préfixe existe
+    {
+        char *cleaned_prefix = remove_quotes(prefix); // Supprimer les quotes
+        free(prefix); // Libérer l'ancien préfixe
+        add_token(tokens, create_token(cleaned_prefix, TYPE_WORD, 1));
+        free(cleaned_prefix);
+    }
+}
+
+int handle_regular_characters(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    int start = i;
+
+    // Avancer jusqu'à un caractère spécial ou espace
+    i = handle_character_iteration(input, i);
+
+    // Extraire le préfixe
+    char *prefix = extract_prefix(input, start, i);
 
     // Gérer une variable si '$' est rencontré
     if (input[i] == '$')
     {
-        // printf("DEBUG: Détection de la variable avec '$' à la position %d\n", i);
-        i = handle_variable_reference(input, i, tokens, env_list);
-
-        // Vérification pour éviter les lectures invalides
-        if (*tokens == NULL || (*tokens)->value == NULL)
-        {
-            fprintf(stderr, "minishell: command not found\n");
-            free(prefix);
-            return i;
-        }
-
-        // Combiner le préfixe et la valeur de la variable si nécessaire
-        char *var_value = (*tokens)->value;
-        // printf("DEBUG: Valeur de la variable référencée: '%s'\n", var_value);
-
-        if (prefix && *prefix) // Vérifie que le préfixe n'est pas vide
-        {
-            // printf("DEBUG: Combinaison du préfixe '%s' avec la variable '%s'\n", prefix, var_value);
-            char *combined = ft_strjoin(prefix, var_value);
-            free(prefix);
-            free(var_value);
-            (*tokens)->value = combined;
-            // printf("DEBUG: Valeur combinée: '%s'\n", combined);
-        }
+        i = handle_variable2(input, i, tokens, env_list, &prefix);
     }
-    else if (prefix && *prefix) // Si un préfixe existe, le traiter comme un mot
+    else // Sinon, traiter le préfixe comme un mot
     {
-        // printf("DEBUG: Nettoyage des quotes dans le préfixe: '%s'\n", prefix);
-
-        char *cleaned_prefix = remove_quotes(prefix); // Supprimer les quotes
-        free(prefix); // Libérer l'ancien préfixe non nettoyé
-
-        // printf("DEBUG: Préfixe après suppression des quotes: '%s'\n", cleaned_prefix);
-        // printf("DEBUG: Ajout du préfixe comme token: '%s'\n", cleaned_prefix);
-
-        add_token(tokens, create_token(cleaned_prefix, TYPE_WORD, 1));
-        free(cleaned_prefix);
+        process_prefix_as_word(prefix, tokens);
     }
 
-    // printf("DEBUG: Fin de handle_regular_characters, position actuelle: %d\n", i);
     return i;
 }
+
 
 
 
@@ -572,105 +575,109 @@ int handle_variable_quotes(char *input, int i, t_token **tokens, t_env *env_list
 
 
 
+int check_and_handle_quotes(char *input, int i, t_token **tokens, t_env *env_list)
+{
+    if (i > 0 && (input[i] == '\'' || input[i] == '"'))
+        return handle_variable_quotes(input, i, tokens, env_list);
+    return -1;
+}
 
 
+int handle_special_variable(char *input, int i, t_token **tokens, t_env *env_list, char *dollar_sequence)
+{
+    char *exit_status = ft_itoa(env_list->exit_status);
+    if (!exit_status)
+    {
+        fprintf(stderr, "minishell: memory allocation failed for exit_status\n");
+        free(dollar_sequence);
+        return -1;
+    }
+
+    char *token_value = ft_strdup(exit_status);
+    free(exit_status);
+
+    while (input[i + 1] && !isspace(input[i + 1]) && !is_operator(input[i + 1]))
+    {
+        char temp[2] = {input[++i], '\0'};
+        char *new_token = ft_strjoin(token_value, temp);
+        free(token_value);
+        token_value = new_token;
+    }
+
+    add_token(tokens, create_token(token_value, TYPE_WORD, 0));
+    free(token_value);
+    free(dollar_sequence);
+    return i + 1;
+}
+
+int handle_numeric_variable(char *input, int i, t_token **tokens, t_env *env_list, char *dollar_sequence)
+{
+    char var_name[2] = {input[i], '\0'};
+    char *var_value = get_env_variable(env_list, var_name);
+
+    char *token_value = var_value ? ft_strdup(var_value) : ft_strdup("");
+
+    i++; // Avance après le chiffre
+
+    while (input[i] && !isspace(input[i]) && !ft_isalnum(input[i]) && input[i] != '_')
+    {
+        char temp[2] = {input[i], '\0'};
+        char *new_token = ft_strjoin(token_value, temp);
+        free(token_value);
+        token_value = new_token;
+        i++;
+    }
+
+    add_token(tokens, create_token(token_value, TYPE_WORD, 0));
+    free(token_value);
+    free(dollar_sequence);
+    return i;
+}
+int accumulate_dollars_sequence(char *input, int i, char **dollar_sequence, int *dollar_count)
+{
+    *dollar_sequence = NULL;
+    *dollar_count = 0;
+
+    int start = i;
+    while (input[i] == '$')
+    {
+        (*dollar_count)++;
+        i++;
+    }
+
+    *dollar_sequence = ft_substr(input, start, i - start);
+    if (!*dollar_sequence)
+        return -1; // Échec d'allocation
+    return i;
+}
 
 int handle_variable_reference(char *input, int i, t_token **tokens, t_env *env_list)
 {
     char *dollar_sequence = NULL;
     int dollar_count = 0;
 
-    // printf("DEBUG: Début de handle_variable_reference, input[%d]: '%c'\n", i, input[i]);
-
-    // Vérification pour les quotes
-    if (i > 0 && (input[i] == '\'' || input[i] == '"'))
-    {
-        // printf("DEBUG: Détection de quote '%c' à la position %d\n", input[i], i);
-        return handle_variable_quotes(input, i, tokens, env_list);
-    }
+    // Gestion des quotes
+    int result = check_and_handle_quotes(input, i, tokens, env_list);
+    if (result != -1)
+        return result;
 
     // Accumulation des '$'
-    int new_i = accumulate_dollars(input, i, &dollar_sequence, &dollar_count);
+    int new_i = accumulate_dollars_sequence(input, i, &dollar_sequence, &dollar_count);
     if (new_i == -1)
-    {
-        // printf("DEBUG: accumulate_dollars a échoué\n");
         return -1;
-    }
     i = new_i;
-    // printf("DEBUG: Sequence accumulée: '%s', dollar_count: %d, nouvelle position: %d\n", dollar_sequence, dollar_count, i);
 
-    // Gestion des variables spéciales comme $? (code de retour)
+    // Gestion des cas spécifiques
     if (input[i] == '?')
-    {
-        // printf("DEBUG: Détection de $? à la position %d\n", i);
-        char *exit_status = ft_itoa(env_list->exit_status);
-        if (!exit_status)
-        {
-            fprintf(stderr, "minishell: memory allocation failed for exit_status\n");
-            free(dollar_sequence);
-            return -1;
-        }
+        return handle_special_variable(input, i, tokens, env_list, dollar_sequence);
 
-        // Combinaison de l'expansion de `$?` avec les caractères suivants
-        char *token_value = ft_strdup(exit_status);
-        free(exit_status);
-
-        // Ajout des caractères immédiatement après `$?`
-        while (input[i + 1] && !isspace(input[i + 1]) && !is_operator(input[i + 1]))
-        {
-            char temp[2] = {input[++i], '\0'};
-            char *new_token = ft_strjoin(token_value, temp);
-            free(token_value);
-            token_value = new_token;
-        }
-
-        // printf("DEBUG: Token final après expansion de `$?` et concaténation: '%s'\n", token_value);
-        add_token(tokens, create_token(token_value, TYPE_WORD, 0));
-        free(token_value);
-        free(dollar_sequence);
-        return i + 1; // Passe au caractère suivant après le dernier caractère ajouté
-    }
-
-    // Gestion des variables numériques ($9, etc.)
     if (input[i] && ft_isdigit(input[i]))
-    {
-        // printf("DEBUG: Détection de variable numérique $%c à la position %d\n", input[i], i);
-        char var_name[2] = {input[i], '\0'};
-        char *var_value = get_env_variable(env_list, var_name);
-        // printf("DEBUG: Valeur de la variable $%c: '%s'\n", input[i], var_value ? var_value : "(null)");
+        return handle_numeric_variable(input, i, tokens, env_list, dollar_sequence);
 
-        char *token_value = var_value ? ft_strdup(var_value) : ft_strdup("");
-
-        i++; // Avance après le chiffre
-
-        // Inclusion des caractères spéciaux immédiatement après
-        while (input[i] && !isspace(input[i]) && !ft_isalnum(input[i]) && input[i] != '_')
-        {
-            // printf("DEBUG: Ajout du caractère spécial '%c' à la variable\n", input[i]);
-            char temp[2] = {input[i], '\0'};
-            char *new_token = ft_strjoin(token_value, temp);
-            free(token_value);
-            token_value = new_token;
-            i++;
-        }
-
-        add_token(tokens, create_token(token_value, TYPE_WORD, 0));
-        // printf("DEBUG: Token ajouté pour variable numérique avec la valeur '%s'\n", token_value);
-
-        free(token_value);
-        free(dollar_sequence);
-        return i;
-    }
-
-    // Gestion des variables alphanumériques valides
     if (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
-    {
-        // printf("DEBUG: Détection de variable alphanumérique valide à la position %d\n", i);
         return handle_valid_variable(input, i, dollar_count, dollar_sequence, tokens, env_list);
-    }
 
-    // Gestion des variables invalides
+    // Gestion des cas invalides
     int initial_index = i - ft_strlen(dollar_sequence) - 1;
-    // printf("DEBUG: Détection de variable invalide à partir de la position %d\n", initial_index);
     return handle_invalid_variable(input, initial_index, dollar_sequence, tokens);
 }

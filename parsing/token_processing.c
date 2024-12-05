@@ -27,7 +27,7 @@ int	process_redirections(t_token **tokens, t_cmd_list *current_cmd)
 }
 
 
-int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env **env_list, t_data *data)
+int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd)
 {
     int arg_index = 0;
 
@@ -60,7 +60,7 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env **env_list, 
             if ((*tokens)->type == TYPE_HEREDOC)
             {
                 // printf("DEBUG: Traitement d'un heredoc\n");
-                if (process_heredoc(tokens, curr_cmd, data, env_list) == -1)
+                if (process_heredoc(tokens, curr_cmd) == -1)
                 {
                     return (-1);
                 }

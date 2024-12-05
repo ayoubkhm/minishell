@@ -40,7 +40,7 @@ typedef struct s_data
 typedef struct s_env {
     char *name;
     char *value;
-	int             exit_status;
+	int  exit_status;
     struct s_env *next;
 } t_env;
 
@@ -62,18 +62,6 @@ typedef struct s_cmd_list {
 	struct s_cmd_list  *next;
     	struct s_cmd_list  *prev;
 } t_cmd_list;
-
-typedef struct s_signal_context
-{
-    t_token **tokens;
-    char *delimiter;
-    t_data *data;
-    t_env **env_list;
-    t_cmd_list *curr_cmd;
-    int pipefd_write; // Pour fermer le pipe si nécessaire
-} t_signal_context;
-
-extern t_signal_context *sig_status;
 
 
 # include <ctype.h>
