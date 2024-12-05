@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:06:46 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 18:36:07 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:53:36 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,19 @@ char	*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list)
 	return (path);
 }
 
-void	ft_waitall(t_data *data)
+void	ft_waitall(t_data *data, pid_t last_pid)
 {
-	int	status;
+	int		status;
+	pid_t	current_pid;
 
-	while (waitpid(-1, &status, 0) > 0)
+	current_pid = waitpid(-1, &status, 0);
+	while (current_pid > 0)
 	{
-		if (WIFEXITED(status))
+		if (current_pid == last_pid && WIFEXITED(status))
 			data->exit = WEXITSTATUS(status);
+		if (current_pid == last_pid && WIFSIGNALED(status))
+			data->exit = 128 + WTERMSIG(status);
+		current_pid = waitpid(-1, &status, 0);
 	}
 }
 
