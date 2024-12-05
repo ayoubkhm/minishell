@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 19:19:08 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 19:41:11 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ int	ft_openall(t_cmd_list *list)
 		return (0);
 	while (list->files_list[i])
 	{
-		if(fdinout(list, &fd_in, &fd_out, i) == -1)
-			return(ft_putstr_fd("permission denied:",2),-1);
+		if (fdinout(list, &fd_in, &fd_out, i) == -1)
+			return (perror("open"), -1);
 		i++;
 	}
 	return (0);
@@ -82,28 +82,28 @@ int	ft_openall(t_cmd_list *list)
 
 int	fdinout(t_cmd_list *list, int *fd_in, int *fd_out, int i)
 {
-		if (list->files_type[i] == 0 || list->files_type[i] == 4)
-		{
-			*fd_in = open(list->files_list[i], O_RDONLY);
-			if (*fd_in == -1)
-				return (-1);
-			if (list->open[0] != STDIN_FILENO)
-				close(list->open[0]);
-			list->open[0] = *fd_in;
-		}
-		else if (list->files_type[i] == 1 || list->files_type[i] == 2)
-		{
-			if(list->files_type[i] == 1)
-				*fd_out = open(list->files_list[i], O_WRONLY | O_CREAT | O_TRUNC,
-						0666);
-			else
-				*fd_out = open(list->files_list[i], O_WRONLY | O_CREAT | O_APPEND,
-						0666);
-			if (*fd_out == -1)
-				return (-1);
-			if (list->open[1] != STDOUT_FILENO)
-				close(list->open[1]);
-			list->open[1] = *fd_out;
-		}
-	return(0);
+	if (list->files_type[i] == 0 || list->files_type[i] == 4)
+	{
+		*fd_in = open(list->files_list[i], O_RDONLY);
+		if (*fd_in == -1)
+			return (-1);
+		if (list->open[0] != STDIN_FILENO)
+			close(list->open[0]);
+		list->open[0] = *fd_in;
+	}
+	else if (list->files_type[i] == 1 || list->files_type[i] == 2)
+	{
+		if (list->files_type[i] == 1)
+			*fd_out = open(list->files_list[i], O_WRONLY | O_CREAT | O_TRUNC,
+					0666);
+		else
+			*fd_out = open(list->files_list[i], O_WRONLY | O_CREAT | O_APPEND,
+					0666);
+		if (*fd_out == -1)
+			return (-1);
+		if (list->open[1] != STDOUT_FILENO)
+			close(list->open[1]);
+		list->open[1] = *fd_out;
+	}
+	return (0);
 }
