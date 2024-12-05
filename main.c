@@ -104,6 +104,9 @@ void    process_input(char *input, t_data *data, t_env **env_list)
             (void)data;
             initpipe(cmd_list);
             ft_exec(cmd_list, data, env_list);
+            (*env_list)->exit_status = data->exit;
+            //printf("exit status = %d\n", env_list->exit_status);
+            //printf("data.exit = %d\n", data->exit);
             // cleanup_resources(data, env_list, cmd_list);
             // fprintf(stderr,"here\n");
             free_cmd_list(cmd_list);
@@ -111,7 +114,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
     }
     else
     {
-        data->exit = 2;
+        (*env_list)->exit_status = 2;
         free_tokens(tokens);
     }
 }

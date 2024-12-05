@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/05 19:42:18 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:00:18 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ t_env	*create_env_node(char *name, char *value)
 		return (NULL);
 	new_var->name = name;
 	new_var->value = value;
-	new_var->exit_status = 0;
 	new_var->next = NULL;
+    new_var->exit_status = 0;
 	return (new_var);
 }
 
