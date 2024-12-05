@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 18:46:27 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:44:40 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,18 @@ int	ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	pid_t	pid;
+	int		lpid;
 
 	if (list->next)
 		makeapipe(list->pipe);
 	pid = fork();
 	if (pid == -1)
-	{
-		perror("fork");
-		return (-1);
-	}
+		return (perror("fork"), -1);
 	if (pid == 0)
 		ft_execinchild(list, data, env_list);
 	if (pid > 0)
 	{
+		lpid = pid;
 		if (list->prev)
 			close(list->prev->pipe[0]);
 		if (list->next)
@@ -55,7 +54,7 @@ int	ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list)
 			ft_exec(list->next, data, env_list);
 		}
 		else
-			ft_waitall(data);
+			ft_waitall(data, lpid);
 	}
 	return (0);
 }

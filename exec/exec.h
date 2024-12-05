@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 19:07:23 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:42:49 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void		ifshlvl(char *tab, char **tabret, int i);
 char		*ft_copystrfromn(char *str, int n);
 char		**ft_updateshlvl(char **tab);
 int			ft_heredoc(t_cmd_list *list, char *str);
-void		ft_waitall(t_data *data);
+void		ft_waitall(t_data *data, int lpid);
 int			ft_exechild(t_cmd_list *list, t_data *data, t_env **env_list);
 int			ft_resbi(t_cmd_list *list, t_data *data, t_env **env_list, int i);
 
