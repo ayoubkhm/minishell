@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 19:04:00 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 04:19:08 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,22 +123,20 @@ void	initpipe(t_cmd_list *list)
 	}
 }
 
-int	ft_is_absolute_path(char *cmd)
-{
-	if (!cmd || cmd[0] == '\0')
-		return (0);
-	return (cmd[0] == '/');
-}
+// int	ft_is_absolute_path(char *cmd)
+// {
+// 	if (!cmd || cmd[0] == '\0')
+// 		return (0);
+// 	return (cmd[0] == '/');
+// }
 
-char	*ft_get_command_path(char *cmd, t_data *data)
+char	*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list)
 {
 	char	*path;
 	char	**tab;
 
 	path = NULL;
-	if (ft_is_absolute_path(cmd))
-		return (ft_strdup(cmd));
-	tab = ft_get_path(data->envp, data);
+	tab = ft_get_path(data->envp, data , list);
 	if(!tab)
 		return(ft_freetab(tab),NULL);
 	if (ft_access(tab, cmd, &path) == -1)
@@ -152,17 +150,17 @@ int ft_exec2(t_cmd_list *list, t_data *data, t_env **env_list)
 {
 	char	*path;
 
-	path = ft_get_command_path(list->cmd_args[0], data);
+	path = ft_get_command_path(list->cmd_args[0], data, list);
 	if (!path || path == NULL)
 	{
 		free(path);
-        	cleanup_resources(data, env_list, list);
+        cleanup_resources(data, env_list, list);
 		data->exit = 127;
 		exit(data->exit);
 	}
 	if (execve(path, list->cmd_args, data->envp) == -1)
 	{
-		// perror("execve");
+		perror("execve");
 		free(path);
         cleanup_resources(data, env_list, list);
 		data->exit = 1;
