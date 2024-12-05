@@ -95,7 +95,7 @@ void    process_input(char *input, t_data *data, t_env **env_list)
 
     if (check_syntax(tokens) == 0)
     {
-        cmd_list = parse_commands(tokens, env_list);
+        cmd_list = parse_commands(tokens, env_list, data);
         free_tokens(tokens);
 
         if (cmd_list)

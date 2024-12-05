@@ -168,35 +168,35 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     char *token_value;
     int j;
 
-    printf("[DEBUG] Entering handle_valid_variable at index %d, char: '%c'\n", i, input[i]);
+    // printf("[DEBUG] Entering handle_valid_variable at index %d, char: '%c'\n", i, input[i]);
 
     // Extraction de la valeur de la variable
     var_value = extract_variable_value(input, &i, env_list);
     if (!var_value || var_value[0] == '\0') // Cas où la variable n'existe pas
     {
-        printf("[DEBUG] Variable not found or empty\n");
+        // printf("[DEBUG] Variable not found or empty\n");
         free(var_value);
         free(dollar_sequence);
         return i;
     }
 
-    printf("[DEBUG] Extracted variable value: '%s'\n", var_value);
+    // printf("[DEBUG] Extracted variable value: '%s'\n", var_value);
 
     // Scinder la valeur en parties
     split_values = ft_split(var_value, ' ');
     free(var_value);
     if (!split_values)
     {
-        printf("[DEBUG] Failed to split variable value\n");
+        // printf("[DEBUG] Failed to split variable value\n");
         free(dollar_sequence);
         return i;
     }
 
-    printf("[DEBUG] Split variable value into parts:\n");
+    // printf("[DEBUG] Split variable value into parts:\n");
     j = 0;
     while (split_values[j])
     {
-        printf("  [DEBUG] Part %d: '%s'\n", j, split_values[j]);
+        // printf("  [DEBUG] Part %d: '%s'\n", j, split_values[j]);
         j++;
     }
 
@@ -211,7 +211,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
 
         if (!token_value)
         {
-            printf("[DEBUG] Failed to build token value for part %d\n", j);
+            // printf("[DEBUG] Failed to build token value for part %d\n", j);
             j++;
             continue;
         }
@@ -220,7 +220,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
         if (j == 0 && input[i] == '"')
         {
             i++; // Passer le guillemet ouvrant
-            printf("[DEBUG] Detected double quotes after variable\n");
+            // printf("[DEBUG] Detected double quotes after variable\n");
 
             // Ajouter les caractères jusqu'à la fermeture des guillemets
             while (input[i] && input[i] != '"')
@@ -234,7 +234,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
 
             if (input[i] == '"')
             {
-                printf("[DEBUG] Closing double quotes found\n");
+                // printf("[DEBUG] Closing double quotes found\n");
                 i++; // Passer le guillemet fermant
             }
             else
@@ -246,7 +246,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
             }
         }
 
-        printf("[DEBUG] Adding token: '%s'\n", token_value);
+        // printf("[DEBUG] Adding token: '%s'\n", token_value);
         add_token(tokens, create_token(token_value, TYPE_WORD, 1));
         free(token_value);
 
@@ -261,7 +261,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     }
 
     // Libérer la mémoire des valeurs scindées
-    printf("[DEBUG] Freeing split values\n");
+    // printf("[DEBUG] Freeing split values\n");
     j = 0;
     while (split_values[j])
     {
@@ -270,7 +270,7 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
     }
     free(split_values);
 
-    printf("[DEBUG] Exiting handle_valid_variable at index %d\n", i);
+    // printf("[DEBUG] Exiting handle_valid_variable at index %d\n", i);
     return i;
 }
 

@@ -76,3 +76,7 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+
+tester: re
+	@if [ ! -d minishell_tester ]; then git clone https://github.com/LucasKuhn/minishell_tester.git; fi
+	@cd minishell_tester && ./tester #| grep -v "✅"
