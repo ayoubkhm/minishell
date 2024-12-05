@@ -31,60 +31,7 @@ int accumulate_dollars(char *input, int i, char **dollar_sequence, int *dollar_c
 
 
 
-int handle_special_variable(char *input, int i, int dollar_count, char *dollar_sequence, t_token **tokens)
-{
-    char *var_value = NULL;
-    if (input[i] == '?')
-    {
-        var_value = ft_itoa(g_last_exit_status);
-        if (!var_value)
-        {
-            free(dollar_sequence);
-            return -1;
-        }
-        char *temp = (dollar_count > 1) ? ft_substr(dollar_sequence, 0, dollar_count - 1) : ft_strdup("");
-        char *combined_value = ft_strjoin(temp, var_value);
-        free(temp);
-        free(var_value);
-        int j = i + 1;
-        while (input[j] && !isspace(input[j]) && !is_operator(input[j]) && !ft_isalnum(input[j]))
-            j++;
 
-        if (j > i + 1)
-        {
-            char *special_chars = ft_substr(input, i + 1, j - (i + 1));
-            temp = combined_value;
-            combined_value = ft_strjoin(combined_value, special_chars);
-            free(temp);
-            free(special_chars);
-        }
-
-        add_token(tokens, create_token(combined_value, TYPE_WORD, 1));
-        free(combined_value);
-        free(dollar_sequence);
-
-        return j;
-    }
-    else if (input[i] == '0')
-    {
-        var_value = ft_itoa(g_last_exit_status);
-        if (!var_value)
-        {
-            free(dollar_sequence);
-            return -1;
-        }
-        char *temp = ft_strjoin(dollar_sequence, var_value);
-        free(dollar_sequence);
-        free(var_value);
-        if (!temp)
-            return -1;
-        add_token(tokens, create_token(temp, TYPE_WORD, 1));
-        free(temp);
-
-        return i + 1;
-    }
-    return -2;
-}
 
 char *extract_variable_value(char *input, int *i, t_env *env_list)
 {

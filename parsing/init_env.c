@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 13:19:03 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/05 19:15:37 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_env	*create_env_node(char *name, char *value)
 		return (NULL);
 	new_var->name = name;
 	new_var->value = value;
+	new_var->exit_status = 0;
 	new_var->next = NULL;
 	return (new_var);
 }
