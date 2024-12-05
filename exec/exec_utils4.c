@@ -6,11 +6,11 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:06:46 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 04:18:19 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:36:07 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
 char	**ft_get_path(char **envp, t_data *data, t_cmd_list *list)
 {
@@ -25,18 +25,54 @@ char	**ft_get_path(char **envp, t_data *data, t_cmd_list *list)
 		i++;
 	if (!envp[i])
 	{
-		write(2,"minishell : No such file or directory\n",39);
-		return(data->exit = 127,NULL);
+		write(2, "minishell : No such file or directory\n", 39);
+		return (data->exit = 127, NULL);
 	}
 	split = ft_split(&envp[i][5], ':');
-	tab = ft_copyntab(split,1);
+	tab = ft_copyntab(split, 1);
 	if (!tab)
-		return (perror("ft_split"),NULL);
+		return (perror("ft_split"), NULL);
 	i = 0;
-	while(tab[i])
+	while (tab[i])
 		i++;
 	tab[i] = ft_strdup(list->cmd_args[0]);
 	tab[i + 1] = NULL;
 	ft_freetab(split);
 	return (tab);
+}
+
+char	*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list)
+{
+	char	*path;
+	char	**tab;
+
+	path = NULL;
+	tab = ft_get_path(data->envp, data, list);
+	if (!tab)
+		return (ft_freetab(tab), NULL);
+	if (ft_access(tab, cmd, &path) == -1)
+		return (ft_freetab(tab), NULL);
+	ft_freetab(tab);
+	return (path);
+}
+
+void	ft_waitall(t_data *data)
+{
+	int	status;
+
+	while (waitpid(-1, &status, 0) > 0)
+	{
+		if (WIFEXITED(status))
+			data->exit = WEXITSTATUS(status);
+	}
+}
+
+void	initpipe(t_cmd_list *list)
+{
+	while (list)
+	{
+		list->pipe[0] = 0;
+		list->pipe[1] = 0;
+		list = list->next;
+	}
 }

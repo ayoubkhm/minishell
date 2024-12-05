@@ -21,6 +21,7 @@ SRCS        =   exec/builtins/cd.c \
                 exec/builtins/builtins_utils2.c \
                 exec/builtins/builtins_utils3.c \
                 exec/exec.c \
+                exec/execbi.c \
                 exec/pipe.c \
                 exec/redirections.c \
                 exec/exec_utils.c \
