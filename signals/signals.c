@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+t_signal_context *sig_status = NULL;
 void display_prompt(void)
 {
     rl_on_new_line();

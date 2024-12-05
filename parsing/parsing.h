@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/30 00:24:31 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 15:49:45 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ extern int g_status;
 
 t_token	*tokenize_input(char *input, t_env *env_list);
 char *append_character(char *value, char c);
-char *handle_single_quotes(char *input, int *i);
+char *handle_single_quotes(char *input, int *i, t_env *env_list);
 char *handle_double_quotes(char *input, int *i, t_token **tokens, t_env *env_list);
 char	*handle_variable_expansion(char *input, int *i, int in_quotes, t_token **tokens, t_env *env_list);
 int			handle_operator(char *input, int i, t_token **tokens);
@@ -48,7 +48,7 @@ t_cmd_list	*create_cmd_node(void);
 t_cmd_list	*init_command_node(t_cmd_list **cmd_list, t_cmd_list **current_cmd);
 int			allocate_command_args(t_cmd_list *current_cmd, int arg_count);
 void		post_process_command(t_cmd_list *current_cmd, t_env **env_list);
-t_cmd_list	*parse_commands(t_token *tokens, t_env **env_list);
+t_cmd_list *parse_commands(t_token *tokens, t_env **env_list, t_data *data);
 void		set_env_variable(t_env **env_list, char *name, char *value);
 char		*get_env_variable(t_env *env_list, char *name);
 void		add_env_variable(char *arg, t_env **env_list);
@@ -78,7 +78,7 @@ t_env		*create_env_node(char *name, char *value);
 t_env		*init_env(char **envp);
 int handle_quotes_in_word(char *input, int i, t_token **tokens, char quote_char, int expand, t_env *env_list);
 
-int	process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list);
+int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env **env_list, t_data *data);
 char *append_string(char *original, char *addition);
 
 char	*get_user_input(void);
@@ -88,8 +88,8 @@ void cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list);
 
 char *create_temp_file(char *content);
 char *strjoin_with_newline(char *s1, char *s2);
-int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd);
-char *get_heredoc(char *delimiter);
+int process_heredoc(t_token **tokens, t_cmd_list *curr_cmd, t_data *data, t_env **env_list);
+char *get_heredoc(char *delimiter, t_token **tokens, t_cmd_list *curr_cmd, t_data *data, t_env **env_list);
 
 
 

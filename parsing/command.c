@@ -222,10 +222,10 @@ void print_commands(t_cmd_list *cmd_list)
 
 
 
-
-
-t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
+t_cmd_list *parse_commands(t_token *tokens, t_env **env_list, t_data *data)
 {
+    // printf("DEBUG: Début de parse_commands\n");
+
     t_cmd_list *cmd_list = NULL;  // Liste principale des commandes
     t_cmd_list *current_cmd = NULL;  // Commande courante
     int arg_count;
@@ -233,39 +233,56 @@ t_cmd_list *parse_commands(t_token *tokens, t_env **env_list)
 
     while (tokens)
     {
+        // printf("DEBUG: Création d'un nouveau noeud de commande\n");
         current_cmd = init_command_node(&cmd_list, &current_cmd);
         if (!current_cmd)
         {
-            free_cmd_list(cmd_list); // Libérer toute la liste en cas d'erreur
+            fprintf(stderr, "minishell: erreur lors de l'initialisation du noeud de commande\n");
+            free_cmd_list(cmd_list);
             return (NULL);
         }
 
+        // printf("DEBUG: Calcul du nombre d'arguments pour la commande\n");
         arg_count = count_arguments(tokens);
+        // printf("DEBUG: Nombre d'arguments détecté: %d\n", arg_count);
+
+        // printf("DEBUG: Allocation des arguments de la commande\n");
         if (allocate_command_args(current_cmd, arg_count) == -1)
         {
-            free_cmd_list(cmd_list); // Libérer toute la liste
+            fprintf(stderr, "minishell: erreur lors de l'allocation des arguments de la commande\n");
+            free_cmd_list(cmd_list);
             return (NULL);
         }
 
-        ret = process_token_cmd(&tokens, current_cmd, *env_list);
+        // printf("DEBUG: Traitement des tokens pour remplir la commande\n");
+        ret = process_token_cmd(&tokens, current_cmd, env_list, data);
         if (ret == -1)
         {
-            free_cmd_list(cmd_list); // Libérer toute la liste
+            fprintf(stderr, "minishell: erreur lors du traitement des tokens\n");
+            free_cmd_list(cmd_list);
             return (NULL);
         }
 
+        // printf("DEBUG: Post-traitement de la commande\n");
         post_process_command(current_cmd, env_list);
 
         if (tokens && tokens->type == TYPE_PIPE)
+        {
+            // printf("DEBUG: Détection d'un pipe, passage au token suivant\n");
             tokens = tokens->next;
+        }
     }
 
     // Libérer `current_cmd->cmd` si nécessaire (bonnes pratiques)
     if (current_cmd && current_cmd->cmd)
     {
+        // printf("DEBUG: Libération de la commande finale\n");
         free(current_cmd->cmd);
         current_cmd->cmd = NULL;
     }
 
+    // printf("DEBUG: Fin de parse_commands\n");
     return cmd_list;
 }
+
+

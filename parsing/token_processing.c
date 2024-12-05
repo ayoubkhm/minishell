@@ -27,7 +27,7 @@ int	process_redirections(t_token **tokens, t_cmd_list *current_cmd)
 }
 
 
-int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
+int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env **env_list, t_data *data)
 {
     int arg_index = 0;
 
@@ -36,17 +36,16 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
         // Si le token est un argument à ajouter à `cmd_args`
         if ((*tokens)->type == TYPE_WORD || (*tokens)->type == TYPE_QUOTED || (*tokens)->type == TYPE_ENV_VAR)
         {
-            char *arg_value;
-
-            // Expansion uniquement si le token est marqué pour cela
-            if ((*tokens)->expand)
-                arg_value = expand_variables((*tokens)->value, env_list);
-            else
-                arg_value = ft_strdup((*tokens)->value);
+            char *arg_value = ft_strdup((*tokens)->value); // Directement utiliser la valeur du token
 
             // Vérifier l'allocation
             if (!arg_value)
+            {
+                fprintf(stderr, "minishell: memory allocation failed for argument\n");
                 return (-1);
+            }
+
+            // printf("DEBUG: Ajout de l'argument '%s' à cmd_args[%d]\n", arg_value, arg_index);
 
             // Ajouter l'argument à `cmd_args` et gérer l'indexation
             curr_cmd->cmd_args[arg_index++] = arg_value;
@@ -60,7 +59,8 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
             // Gestion spécifique pour heredocs
             if ((*tokens)->type == TYPE_HEREDOC)
             {
-                if (process_heredoc(tokens, curr_cmd) == -1)
+                // printf("DEBUG: Traitement d'un heredoc\n");
+                if (process_heredoc(tokens, curr_cmd, data, env_list) == -1)
                 {
                     return (-1);
                 }
@@ -68,6 +68,7 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
             else
             {
                 // Si c'est une redirection classique, appeler `process_redirections`
+                // printf("DEBUG: Traitement d'une redirection classique\n");
                 if (process_redirections(tokens, curr_cmd) == -1)
                     return (-1);
             }
@@ -75,14 +76,17 @@ int process_token_cmd(t_token **tokens, t_cmd_list *curr_cmd, t_env *env_list)
         else
         {
             // Si le token n'est ni un argument ni une redirection, on avance simplement
+            // printf("DEBUG: Ignorer le token de type %d\n", (*tokens)->type);
             *tokens = (*tokens)->next;
         }
     }
 
     // Terminer la liste des arguments avec NULL
     curr_cmd->cmd_args[arg_index] = NULL;
+    // printf("DEBUG: Fin de process_token_cmd, cmd_args terminé avec %d arguments\n", arg_index);
     return (0);
 }
+
 
 
 
