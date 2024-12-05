@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:36:39 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 22:19:51 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:59:16 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ int	checkbi(t_cmd_list *list)
 {
 	if (!list->cmd_args[0])
 		return (1);
-	// if (ft_strcmp(list->cmd_args[0], "[") == 0)
-	// 	return (0);
 	if (ft_strcmp(list->cmd_args[0], ":") == 0)
 		return (0);
 	if (ft_strcmp(list->cmd_args[0], "!") == 0)
@@ -55,7 +53,25 @@ int	checkbi(t_cmd_list *list)
 		return (0);
 	if (ft_strcmp(list->cmd_args[0], "export") == 0)
 		return (0);
+	if (ft_weirdparse(list) == 0)
+		return (0);
 	return (256);
+}
+
+int	ft_weirdparse(t_cmd_list *list)
+{
+	int	i;
+
+	i = 0;
+	if (list->cmd_args[0][i] == '[')
+	{
+		i++;
+		while (list->cmd_args[0][i] == '\t' || list->cmd_args[0][i] == ' ')
+			i++;
+		if (!list->cmd_args[0][i])
+			return (0);
+	}
+	return (1);
 }
 
 int	ft_resbi(t_cmd_list *list, t_data *data, t_env **env_list, int i)
