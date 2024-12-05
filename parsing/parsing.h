@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/05 19:11:31 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:53:39 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@
 # define TYPE_ENV_VAR 5
 # define TYPE_PIPE 6
 # define TYPE_QUOTED 7
-
-extern int g_status;
 
 t_token	*tokenize_input(char *input, t_env *env_list);
 char *append_character(char *value, char c);
