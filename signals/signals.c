@@ -8,13 +8,12 @@ void display_prompt(void)
     rl_on_new_line();
     rl_replace_line("", 0);
     rl_redisplay();
-    g_status = 0;
 }
 
 void sigint_handler(int signum)
 {
     g_received_signal = signum;
-    g_last_exit_status = 130;
+    //printf("g received signal = %d\n", g_received_signal);
     write(1, "\n", 1);
 
     struct termios term;
@@ -27,13 +26,14 @@ void sigint_handler(int signum)
     {
         display_prompt();
     }
+
 }
 
 void sigquit_handler(int signum)
 {
-    (void)signum;
+    g_received_signal = 131;
+    printf("signum = %d\n", signum);
     write(1, "Quit\n", 5);
-    g_last_exit_status = 131;
     rl_replace_line("", 0);
     rl_redisplay();
 }

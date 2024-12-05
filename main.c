@@ -1,8 +1,6 @@
 #include "minishell.h"
 #include <termios.h>
 
-int g_last_exit_status = 0;
-int g_status = 0;
 volatile sig_atomic_t g_received_signal = 0;
 
 void init_data(int argc, char **argv, char **envp, t_data *data)
@@ -131,12 +129,22 @@ int main(int argc, char **argv, char **envp)
 
     while (1)
     {
-        if (g_status == 1)
+
+        if (g_received_signal == 1)
         {
             display_prompt();
             continue;
         }
+        if (g_received_signal == 2)
+        {
+            env_list->exit_status = 130;
 
+        }
+        if (g_received_signal == 131)
+        {
+            env_list->exit_status = 131;
+            g_received_signal = 0;
+        }
         input = get_user_input();
 
         if (!input)
