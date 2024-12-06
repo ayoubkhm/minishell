@@ -19,6 +19,8 @@ int	ft_cd(t_cmd_list *list, t_data *data)
 {
 	char	*path;
 
+	if (!list->cmd_args[1])
+		return (0);
 	if (list->cmd_args[2])
 		return (printf("cd: too many arguments\n"), data->exit = 1);
 	path = list->cmd_args[1];
@@ -36,8 +38,7 @@ int	ft_cd(t_cmd_list *list, t_data *data)
 	{
 		perror("getcwd");
 		free(data->cwd);
-		data->cwd = NULL;
-		return (1);
+		return (data->cwd = NULL, 1);
 	}
 	ft_update_env(data, "PWD");
 	return (0);
@@ -49,6 +50,8 @@ int	ft_update_env(t_data *data, char *str)
 	char	*new_value;
 
 	i = 0;
+	if (!data->cwd)
+		return (0);
 	while (data->envp[i] && ft_strncmp(data->envp[i], str,
 			ft_strlen(str)) != 0)
 		i++;
