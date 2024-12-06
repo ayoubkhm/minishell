@@ -226,19 +226,33 @@ int handle_valid_variable(char *input, int i, int dollar_count, char *dollar_seq
 int handle_invalid_variable(char *input, int i, char *dollar_sequence, t_token **tokens)
 {
     int start = i - ft_strlen(dollar_sequence);
-    int j = i;
 
+    if (start < 0 || start >= (int)ft_strlen(input))
+    {
+        free(dollar_sequence);
+        return -1;
+    }
+
+    int j = i;
     while (input[j] && !isspace(input[j]) && !is_operator(input[j]))
     {
         j++;
     }
-    char *literal_value = ft_substr(input, start, j - start);
-    if (!literal_value)
+    if (j - start <= 0)
     {
-        fprintf(stderr, "[ERROR] Failed to allocate memory for literal_value\n");
         free(dollar_sequence);
         return -1;
     }
+
+    char *literal_value = ft_substr(input, start, j - start);
+    if (!literal_value)
+    {
+        free(dollar_sequence);
+        return -1;
+    }
+
+
+    // Appel direct de add_token sans condition
     add_token(tokens, create_token(literal_value, TYPE_WORD, 1));
     free(literal_value);
     free(dollar_sequence);
