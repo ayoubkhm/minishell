@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:05:13 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/07 20:41:47 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 22:26:00 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,60 +21,59 @@ void	ft_free_inlist(t_cmd_list *list)
 	free(list);
 }
 
-char    **ft_updateshlvl(char **tab)
+char	**ft_updateshlvl(char **tab)
 {
-    char    **tabret;
-    int        i;
-    char    *temp;
+	char	**tabret;
+	int		i;
+	char	*temp;
 
-    i = -1;
-    
-    if(!tab || !tab[0])
-        return(ft_envi());
-    tabret = malloc((ft_tabstrlen(tab) + 1) * sizeof(char *));
-    if (!tabret)
-        exit(1);
-    while (tab[++i])
-    {
-        if (ft_strncmp(tab[i], "SHLVL=", 6) == 0)
-        {
-            temp = ft_atoishlvl(tab[i]);
-            tabret[i] = ft_strdup(temp);
-            free(temp);
-        }
-        else
-            tabret[i] = ft_strdup(tab[i]);
-    }
-    tabret[i] = NULL;
-    return (tabret);
+	i = -1;
+	if (!tab || !tab[0])
+		return (ft_envi());
+	tabret = malloc((ft_tabstrlen(tab) + 1) * sizeof(char *));
+	if (!tabret)
+		exit(1);
+	while (tab[++i])
+	{
+		if (ft_strncmp(tab[i], "SHLVL=", 6) == 0)
+		{
+			temp = ft_atoishlvl(tab[i]);
+			tabret[i] = ft_strdup(temp);
+			free(temp);
+		}
+		else
+			tabret[i] = ft_strdup(tab[i]);
+	}
+	tabret[i] = NULL;
+	return (tabret);
 }
 
-char    **ft_envi(void)
+char	**ft_envi(void)
 {
-    char    **tab;
-    char    *str;
-    char    *newstr;
+	char	**tab;
+	char	*str;
+	char	*newstr;
 
-    tab = malloc(4 * sizeof(char *));
-    if (!tab)
-        exit(1);
-    tab[0] = ft_strdup("SHLVL=1");
-    tab[1] = ft_strdup("_=/usr/bin/env");
-    str = malloc(4096);
-    if (!tab[0] || !tab[1] || !str)
-        return (ft_freetab(tab), perror("malloc"), NULL);
-    if (!getcwd(str, 4096))
-        return (free(str), ft_freetab(tab), perror("getcwd"), NULL);
-    newstr = ft_addstr("PWD=", str);
-    free(str);
-    if (!newstr)
-        return (ft_freetab(tab), perror("malloc"), NULL);
-    tab[2] = ft_strdup(newstr);
-    free(newstr);
-    if (!tab[2])
-        return (ft_freetab(tab), perror("malloc"), NULL);
-    tab[3] = NULL;
-    return (tab);
+	tab = malloc(4 * sizeof(char *));
+	if (!tab)
+		exit(1);
+	tab[0] = ft_strdup("SHLVL=1");
+	tab[1] = ft_strdup("_=/usr/bin/env");
+	str = malloc(4096);
+	if (!tab[0] || !tab[1] || !str)
+		return (ft_freetab(tab), perror("malloc"), NULL);
+	if (!getcwd(str, 4096))
+		return (free(str), ft_freetab(tab), perror("getcwd"), NULL);
+	newstr = ft_addstr("PWD=", str);
+	free(str);
+	if (!newstr)
+		return (ft_freetab(tab), perror("malloc"), NULL);
+	tab[2] = ft_strdup(newstr);
+	free(newstr);
+	if (!tab[2])
+		return (ft_freetab(tab), perror("malloc"), NULL);
+	tab[3] = NULL;
+	return (tab);
 }
 
 char	*ft_atoishlvl(char *str)
