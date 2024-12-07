@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:03:27 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 18:48:10 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 19:54:29 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void process_prefix_as_word(char *prefix, t_token **tokens)
 {
     if (prefix && *prefix)
     {
-        add_token(tokens, create_token(prefix, TYPE_WORD, 1));
+        add_token(tokens, create_token(prefix, TYPE_WORD, 0));
 		free(prefix);
 	}
     else

@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 05:28:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 18:15:17 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 20:13:18 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,58 @@
 
 int	gere_var2(t_pars_cxt *ctx)
 {
-	char	*var_value;
-	char	*combined;
+    char	*combined;
 
-	var_value = NULL;
-	combined = NULL;
+    combined = NULL;
 
-	ctx->i = gere_var_ref(ctx->inp, ctx->i, ctx->tok, ctx->e_l);
-	if (*(ctx->tok) == NULL || (*(ctx->tok))->value == NULL)
-	{
-		free(ctx->pfx);
-		ctx->pfx = NULL;
-		return (ctx->i);
-	}
-	var_value = (*(ctx->tok))->value;
-	if (ctx->pfx && *(ctx->pfx))
-	{
-		t_token *next_token = *(ctx->tok);
-		while (next_token->next)
-			next_token = next_token->next;
-		combined = ft_strjoin(ctx->pfx, next_token->value);
-		free(ctx->pfx);
-		ctx->pfx = NULL;
-		free(next_token->value);
-		next_token->value = combined;
-	}
-	else
-	{
-		(*(ctx->tok))->value = var_value;
-	}
-	return (ctx->i);
+
+    ctx->i = gere_var_ref(ctx->inp, ctx->i, ctx->tok, ctx->e_l);
+
+    if (*(ctx->tok) == NULL || (*(ctx->tok))->value == NULL)
+    {
+        free(ctx->pfx);
+        ctx->pfx = NULL;
+        return (ctx->i);
+    }
+    if (ctx->pfx && *(ctx->pfx))
+    {
+        t_token *token = *(ctx->tok);
+        t_token *first_var_token = NULL;
+        while (token)
+        {
+            if (token->expand == 1)
+            {
+                first_var_token = token;
+                break ;
+            }
+            token = token->next;
+        }
+        if (first_var_token)
+        {
+            combined = ft_strjoin(ctx->pfx, first_var_token->value);
+            free(ctx->pfx);
+            ctx->pfx = NULL;
+            free(first_var_token->value);
+            first_var_token->value = combined;
+            first_var_token->expand = 0;
+
+        }
+    }
+	    token = *(ctx->tok);
+    while (token)
+    {
+        if (token->expand != 0)
+        {
+            token->expand = 0;
+        }
+        token = token->next;
+    }
+    return (ctx->i);
 }
+
+
+
+
 
 int	handle_variable_type(t_ctx *ctx)
 {
@@ -60,14 +81,14 @@ int	handle_variable_type(t_ctx *ctx)
 		result = gere_num_var(ctx);
 		return (result);
 	}
-	if (ctx->inp[ctx->i] && (ft_isalnum(ctx->inp[ctx->i])
-			|| ctx->inp[ctx->i] == '_'))
+	if (ctx->inp[ctx->i] && (ft_isalnum(ctx->inp[ctx->i]) || ctx->inp[ctx->i] == '_'))
 	{
 		result = gere_valid_var(ctx);
 		return (result);
 	}
 	return (-1);
 }
+
 
 char	*initialize_exit_status(t_ctx *ctx)
 {
