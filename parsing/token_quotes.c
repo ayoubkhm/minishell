@@ -63,34 +63,3 @@ void	finalize_first_token(t_ctx *ctx)
 	free(ctx->dol_seq);
 	ctx->dol_seq = NULL;
 }
-
-int	handle_tok_proc(t_ctx *ctx, char **split_values, int j, int i)
-{
-	char	*token_value;
-
-	token_value = get_token_value(ctx, split_values, j);
-	if (!token_value)
-	{
-		return (i);
-	}
-	if (j == 0)
-	{
-		i = process_first_token(ctx, i, &token_value);
-		if (i == -1)
-		{
-			free(token_value);
-			return (-1);
-		}
-		add_token(ctx->tok, create_token(token_value, TYPE_WORD, 1));
-	}
-	else
-	{
-		add_token(ctx->tok, create_token(token_value, TYPE_WORD, 0));
-	}
-	free(token_value);
-	if (j == 0)
-	{
-		finalize_first_token(ctx);
-	}
-	return (i);
-}

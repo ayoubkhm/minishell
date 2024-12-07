@@ -12,74 +12,6 @@
 
 #include "parsing.h"
 
-int	gere_var2(t_pars_cxt *ctx)
-{
-    char	*combined;
-    t_token *token;
-    t_token *first_var_token = NULL;
-
-    combined = NULL;
-
-    ctx->i = gere_var_ref(ctx->inp, ctx->i, ctx->tok, ctx->e_l);
-
-    if (*(ctx->tok) == NULL || (*(ctx->tok))->value == NULL)
-    {
-        free(ctx->pfx);
-        ctx->pfx = NULL;
-        return (ctx->i);
-    }
-
-    if (ctx->pfx && *(ctx->pfx))
-    {
-        token = *(ctx->tok);
-        while (token)
-        {
-            if (token->expand == 1)
-            {
-                first_var_token = token;
-                break;
-            }
-            token = token->next;
-        }
-
-        if (first_var_token)
-        {
-            combined = ft_strjoin(ctx->pfx, first_var_token->value);
-            free(ctx->pfx);
-            ctx->pfx = NULL;
-            free(first_var_token->value);
-            first_var_token->value = combined;
-            first_var_token->expand = 0;
-        }
-        else
-        {
-            // Aucun first_var_token trouvé, on libère ctx->pfx
-            free(ctx->pfx);
-            ctx->pfx = NULL;
-        }
-    }
-
-    token = *(ctx->tok);
-    while (token)
-    {
-        if (token->expand != 0)
-        {
-            token->expand = 0;
-        }
-        token = token->next;
-    }
-
-    return (ctx->i);
-}
-
-
-
-
-
-
-
-
-
 int	handle_variable_type(t_ctx *ctx)
 {
 	int	result;
@@ -94,14 +26,14 @@ int	handle_variable_type(t_ctx *ctx)
 		result = gere_num_var(ctx);
 		return (result);
 	}
-	if (ctx->inp[ctx->i] && (ft_isalnum(ctx->inp[ctx->i]) || ctx->inp[ctx->i] == '_'))
+	if (ctx->inp[ctx->i] && (ft_isalnum(ctx->inp[ctx->i])
+			|| ctx->inp[ctx->i] == '_'))
 	{
 		result = gere_valid_var(ctx);
 		return (result);
 	}
 	return (-1);
 }
-
 
 char	*initialize_exit_status(t_ctx *ctx)
 {

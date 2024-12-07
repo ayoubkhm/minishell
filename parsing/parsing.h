@@ -115,7 +115,13 @@ int	handle_quotes_in_var(char *inp, int i, char **token_value);
 char	*get_token_value(t_ctx *ctx, char **split_values, int j);
 int	process_first_token(t_ctx *ctx, int i, char **token_value);
 void	finalize_first_token(t_ctx *ctx);
+
+//token_quotes.c
+int	handle_first_token(t_ctx *ctx, int i, char **token_value);
+void	handle_standard_token(t_ctx *ctx, char *token_value);
+void	finalize_token_if_first(t_ctx *ctx, int j);
 int	handle_tok_proc(t_ctx *ctx, char **split_values, int j, int i);
+
 
 //token_operations.c
 int	add_all_tokens(t_ctx *ctx, char **split_values, int i);
@@ -300,16 +306,37 @@ char *accumulate_invalid_chars(char *inp, int *i, char *token_value);
 int finalize_and_add_tok(t_token **tok, char *tok_val, char *dol_seq, int i);
 int	handle_dollar_sequence(t_ctx *ctx);
 
-// tokenizer_variables1.c
+// tokenizer_variables3.c
 int gere_num_var(t_ctx *ctx);
 int	accumulate_dol_seq(char *inp, int i, char **dol_seq, int *dol_cnt);
+
+//toniwzer_variables4.c
+void	combine_prefix_with_var(t_pars_cxt *ctx, t_token *first_var_token);
+t_token	*find_first_expandable_token(t_token *token);
+void	handle_prefix_logic(t_pars_cxt *ctx);
+void	reset_expand_flags(t_token *token);
+int	gere_var2(t_pars_cxt *ctx);
+
+
 
 // tokenizer_chars.c
 int handle_backslash(char *input, int i, char **current_value);
 int handle_character_iteration(char *input, int i);
 char *extract_prefix(char *input, int start, int i);
 void process_prefix_as_word(char *prefix, t_token **tokens);
+
+//tokenizer_chars2.c
 int	handle_regular_characters(char *inp, int i, t_token **tok, t_env *env_list);
+void	handle_prefix(t_pars_cxt *cxt);
+int	handle_dollar_character(t_pars_cxt *cxt);
+t_pars_cxt	init_parsing_context(char *inp, int i, t_token **tok, t_env *env_list);
+
+//tokenizer_chars3.c
+int	handle_solo_quotes(char *input, int i, int *in_single_quotes);
+int	handle_double_quotes(char *input, int i, int *in_double_quotes);
+int	gere_out_quote(char *input, int i, int *in_sing_quot, int *in_duo_quot);
+int	handle_character_iteration(char *input, int i);
+
 
 // tokenizer_brackets.c
 char *extract_and_expand(char *input, int *i, t_env *env_list);
