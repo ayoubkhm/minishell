@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:03:27 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 19:54:29 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 22:05:51 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,11 +112,6 @@ void process_prefix_as_word(char *prefix, t_token **tokens)
     if (prefix && *prefix)
     {
         add_token(tokens, create_token(prefix, TYPE_WORD, 0));
-		free(prefix);
-	}
-    else
-    {
-        free(prefix);
     }
 }
 
@@ -135,21 +130,29 @@ int handle_regular_characters(char *inp, int i, t_token **tok, t_env *env_list)
 
     // Étape 2 : Extraction du préfixe
     cxt.pfx = extract_prefix(cxt.inp, i, cxt.i);
+
     // Étape 3 : Gestion des variables
     if (cxt.inp[cxt.i] == '$')
     {
         cxt.i = gere_var2(&cxt);
         if (*cxt.tok == NULL || (*cxt.tok)->value == NULL)
         {
-            free(cxt.pfx);
-            return (cxt.i);
+            free(cxt.pfx);  // Libération si la variable n'est pas valide (pfx n'a pas été libéré)
+            return cxt.i;
         }
         return cxt.i;
     }
+
+    // Étape 4 : Si un préfixe existe mais n'est pas traité comme une variable
     if (cxt.pfx)
     {
+        // process_prefix_as_word libère déjà cxt.pfx
         process_prefix_as_word(cxt.pfx, cxt.tok);
+        free(cxt.pfx);
+
+        cxt.pfx = NULL;
     }
-    cxt.pfx = NULL;
+
     return cxt.i;
 }
+
