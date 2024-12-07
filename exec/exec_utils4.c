@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:06:46 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 21:53:36 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 00:10:10 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ char	*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list)
 	char	**tab;
 
 	path = NULL;
+	if(!data->envp)
+		return(NULL);
 	tab = ft_get_path(data->envp, data, list);
 	if (!tab)
 		return (ft_freetab(tab), NULL);
