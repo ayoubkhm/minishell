@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 22:49:06 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 20:43:43 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ char		*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list);
 int			ft_is_absolute_path(char *cmd);
 int			ft_iscinstr(char *str, char c);
 int			ft_weirdparse(t_cmd_list *list);
+char                **ft_envi(void);
+
 
 int			ft_openall(t_cmd_list *list);
 int			ft_execpipe(t_cmd_list *list);
