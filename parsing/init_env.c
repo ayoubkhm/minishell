@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/05 20:00:18 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 01:03:25 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@ void	extract_name_value(char *env_var, char **name, char **value)
 	char	*equal_sign;
 	size_t	name_len;
 
+
+	if (!env_var || !name || !value)
+		return ;
 	equal_sign = strchr(env_var, '=');
 	if (equal_sign)
 	{
@@ -28,6 +31,13 @@ void	extract_name_value(char *env_var, char **name, char **value)
 	{
 		*name = ft_strdup(env_var);
 		*value = ft_strdup("");
+	}
+	if (!*name || !*value) // Gestion des erreurs d'allocation
+	{
+		free(*name);
+		free(*value);
+		*name = NULL;
+		*value = NULL;
 	}
 }
 
@@ -54,6 +64,15 @@ t_env	*init_env(char **envp)
 
 	env_list = NULL;
 	current = NULL;
+	if (!envp || !*envp) // Si envp est vide ou NULL
+	{
+		env_list = create_env_node("PWD", "/");
+		current = env_list;
+		current->next = create_env_node("SHLVL", "1");
+		current = current->next;
+		current->next = create_env_node("_", "/usr/bin/env");
+		return (env_list);
+	}
 	while (*envp)
 	{
 		extract_name_value(*envp, &name, &value);

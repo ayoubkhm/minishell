@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 21:44:40 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 00:39:21 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ int	ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 			ft_resbi(list, data, env_list, 0);
 		}
 		else
+		{
 			ft_exechild(list, data, env_list);
+		}
 	}
 	else
 		ft_exechild(list, data, env_list);
