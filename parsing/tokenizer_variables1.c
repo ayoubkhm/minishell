@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 05:28:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 06:29:28 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 17:46:00 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,41 @@ int	gere_var2(t_pars_cxt *ctx)
 
 	var_value = NULL;
 	combined = NULL;
+
+	// Appel de gere_var_ref pour récupérer la valeur de la variable
 	ctx->i = gere_var_ref(ctx->inp, ctx->i, ctx->tok, ctx->e_l);
+
+	// Si la variable est invalide ou vide
 	if (*(ctx->tok) == NULL || (*(ctx->tok))->value == NULL)
 	{
-		free(ctx->pfx);
+		free(ctx->pfx); // Libère le préfixe
 		ctx->pfx = NULL;
 		return (ctx->i);
 	}
+
+	// Récupérer la valeur de la variable
+	var_value = (*(ctx->tok))->value;
+
+	// Si un préfixe existe, créer une nouvelle combinaison
 	if (ctx->pfx && *(ctx->pfx))
 	{
-		var_value = (*(ctx->tok))->value;
-		combined = ft_strjoin(ctx->pfx, var_value);
-		free(ctx->pfx);
-		free(var_value);
-		(*(ctx->tok))->value = combined;
+		combined = ft_strjoin(ctx->pfx, var_value); // Combinaison préfixe + valeur
+		free(ctx->pfx); // Libère le préfixe
+		ctx->pfx = NULL; // Préfixe traité
+		free(var_value); // Libère l'ancienne valeur de la variable
+		(*(ctx->tok))->value = combined; // Mise à jour du token avec la valeur combinée
 	}
+	else
+	{
+		// Si aucun préfixe, la valeur de la variable reste telle quelle
+		(*(ctx->tok))->value = var_value;
+	}
+
+	// Retourne l'indice mis à jour
 	return (ctx->i);
 }
+
+
 
 int	handle_variable_type(t_ctx *ctx)
 {
