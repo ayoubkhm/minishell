@@ -119,7 +119,7 @@ int	main(int argc, char **argv, char **envp)
 	t_env	*env_list;
 
 	init_data(argc, argv, envp, &data);
-	init_signals_and_env(&env_list, envp);
+	init_signals_and_env(&env_list, data.envp);
 	while (1)
 	{
 		if (g_received_signal == 1)

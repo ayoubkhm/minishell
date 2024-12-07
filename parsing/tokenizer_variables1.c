@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_variables1.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 05:28:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 20:13:18 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 20:44:07 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,15 @@ int	gere_var2(t_pars_cxt *ctx)
 
         }
     }
-	    token = *(ctx->tok);
-    while (token)
-    {
-        if (token->expand != 0)
-        {
-            token->expand = 0;
-        }
-        token = token->next;
-    }
+	//     token = *(ctx->tok);
+//     while (token)
+//     {
+//         if (token->expand != 0)
+//         {
+//             token->expand = 0;
+//         }
+//         token = token->next;
+//     }
     return (ctx->i);
 }
 
