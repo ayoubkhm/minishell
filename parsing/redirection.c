@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/07 01:44:16 by akhamass          #+#    #+#             */
+/*   Updated: 2024/12/07 01:44:17 by akhamass         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 int	add_to_files_list(t_cmd_list *cmd, char *filename, int new_count)
@@ -5,7 +17,7 @@ int	add_to_files_list(t_cmd_list *cmd, char *filename, int new_count)
 	char	**new_files_list;
 	int		i;
 
-	new_files_list = malloc(sizeof(char *) * (new_count + 1)); // Allouer un élément supplémentaire pour NULL
+	new_files_list = malloc(sizeof(char *) * (new_count + 1));
 	if (!new_files_list)
 		return (-1);
 	i = 0;
@@ -15,7 +27,7 @@ int	add_to_files_list(t_cmd_list *cmd, char *filename, int new_count)
 		i++;
 	}
 	new_files_list[cmd->files_count] = ft_strdup(filename);
-	new_files_list[cmd->files_count + 1] = NULL; // Terminer le tableau par NULL
+	new_files_list[cmd->files_count + 1] = NULL;
 	free(cmd->files_list);
 	cmd->files_list = new_files_list;
 	return (0);

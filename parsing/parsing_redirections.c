@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:30 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/05 00:15:56 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/06 18:45:56 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,22 @@ int	handle_redirection(char *input, int i, t_token **tokens)
 {
 	if (input[i] == '>' && input[i + 1] == '>')
 	{
-		add_token(tokens, create_token(">>", TYPE_REDIR_APPEND, 0)); // Pas d'expansion
+		add_token(tokens, create_token(">>", TYPE_REDIR_APPEND, 0));
 		return (i + 2);
 	}
 	else if (input[i] == '<' && input[i + 1] == '<')
 	{
-		add_token(tokens, create_token("<<", TYPE_HEREDOC, 0)); // Pas d'expansion
+		add_token(tokens, create_token("<<", TYPE_HEREDOC, 0));
 		return (i + 2);
 	}
 	else if (input[i] == '>')
 	{
-		add_token(tokens, create_token(">", TYPE_REDIR_OUT, 0)); // Pas d'expansion
+		add_token(tokens, create_token(">", TYPE_REDIR_OUT, 0));
 		return (i + 1);
 	}
 	else if (input[i] == '<')
 	{
-		add_token(tokens, create_token("<", TYPE_REDIR_IN, 0)); // Pas d'expansion
+		add_token(tokens, create_token("<", TYPE_REDIR_IN, 0));
 		return (i + 1);
 	}
 	return (i);
