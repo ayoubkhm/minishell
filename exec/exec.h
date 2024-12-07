@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/07 22:26:06 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 00:38:25 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 # define EXEC_H
 # include "../minishell.h"
 
-extern int	g_last_exit_status;
+typedef struct s_data			t_data;
+typedef struct s_env			t_env;
+typedef struct s_cmd_list		t_cmd_list;
 
 int			ft_openout(t_cmd_list *list, char *fname);
 int			ft_openin(t_cmd_list *list, char *fname);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 23:23:01 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 23:23:02 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 00:38:33 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 # define BUILTINS_H
 
 # include "../../minishell.h"
+# include "../../parsing/parsing.h"
+# include <stdbool.h>
+
+typedef struct s_data			t_data;
+typedef struct s_env			t_env;
+typedef struct s_cmd_list		t_cmd_list;
 
 int		ft_cd(t_cmd_list *list, t_data *data);
 int		ft_update_env(t_data *data, char *str);

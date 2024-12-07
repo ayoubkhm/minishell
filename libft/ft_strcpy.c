@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 09:54:00 by akhamass          #+#    #+#             */
-/*   Updated: 2024/11/30 09:58:54 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 23:57:14 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ char	*ft_strcpy(char *dest, const char *src)
 {
 	char	*start;
 
-    start = dest;
+	start = dest;
 	while (*src)
 	{
 		*dest = *src;

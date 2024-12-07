@@ -67,54 +67,40 @@ typedef struct s_env
 
 typedef struct s_cmd_list
 {
-	char			**files_list;
-	int				*files_type;
-	int				last_in;
-	int				last_out;
-	int				files_count;
-	int				open[2];
-	int				save_std[2];
-	char			**cmd_args;
-	int				pipe[2];
-	char			*cmd;
-	int				error;
+	char				**files_list;
+	int					*files_type;
+	int					last_in;
+	int					last_out;
+	int					files_count;
+	int					open[2];
+	int					save_std[2];
+	char				**cmd_args;
+	int					pipe[2];
+	char				*cmd;
+	int					error;
 	t_env				*env_vars;
 	char				*heredoc_delimiter;
 	char				*heredoc_content;
 	struct s_cmd_list	*next;
 	struct s_cmd_list	*prev;
-} t_cmd_list;
+}	t_cmd_list;
 
 typedef struct s_var_exp_params
 {
-	char		*input;
+	char	*input;
 	int		*index;
 	t_token	**tokens;
-	t_env		*env_list;
-} t_var_exp_params;
+	t_env	*env_list;
+}	t_var_exp_params;
 
 typedef struct s_var_exp
 {
-	char		*input;
+	char	*input;
 	int		*index;
-	int			in_quotes;
+	int		in_quotes;
 	t_token	**tokens;
-	t_env		*env_list;
-} t_var_exp;
-
-typedef struct s_ctxt
-{
-	t_token	**tokens;
-	t_env		*env_list;
-	char		*dollar_sequence;
-} t_ctxt;
-
-typedef struct s_var_ref_context
-{
-	char	*dol_seq;
-	int		dol_cnt;
-	int		initial_index;
-} t_var_ref_context;
+	t_env	*env_list;
+}	t_var_exp;
 
 typedef struct s_variable_data
 {
@@ -123,35 +109,34 @@ typedef struct s_variable_data
 	int		start;
 	int		val_start;
 	int		end;
-} t_variable_data;
+}	t_variable_data;
 
 typedef struct s_quote_context
 {
 	char	*input;
-	int	*i;
+	int		*i;
 	t_env	*env_list;
 	char	*final_content;
-} t_quote_context;
+}	t_quote_context;
 
 typedef struct s_ctx
 {
-	char		*inp;
-	int			i;
+	char	*inp;
+	int		i;
 	t_token	**tok;
-	t_env		*e_l;
-	char		*prefix;
-	char		*dol_seq;
+	t_env	*e_l;
+	char	*prefix;
+	char	*dol_seq;
 	int		dol_cnt;
-} t_ctx;
+}	t_ctx;
 
 typedef struct s_pars_cxt
 {
-	char		*inp;
-	int			i;
-	char		*pfx;
+	char	*inp;
+	int		i;
+	char	*pfx;
 	t_token	**tok;
-	t_env		*e_l;
-} t_pars_cxt;
-
+	t_env	*e_l;
+}	t_pars_cxt;
 
 #endif

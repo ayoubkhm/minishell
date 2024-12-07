@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:57:09 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 22:22:52 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 00:39:23 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "../libft/libft.h"
 # include "../minishell.h"
+# include <signal.h>
+# include <stdbool.h>
 
 extern volatile sig_atomic_t	g_received_signal;
 
