@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:03:27 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 17:31:24 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 18:17:41 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ int	handle_regular_characters(char *inp, int i, t_token **tok, t_env *env_list)
 {
 	t_pars_cxt	cxt;
 
-	// Initialisation de la structure de contexte
 	cxt.inp = inp;
 	cxt.i = i;
 	cxt.pfx = NULL;
