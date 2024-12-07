@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/07 23:42:02 by akhamass          #+#    #+#             */
+/*   Updated: 2024/12/07 23:42:59 by akhamass         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "signals.h"
 #include <readline/readline.h>
 #include <termios.h>
@@ -15,7 +27,6 @@ void	sigint_handler(int signum)
 	struct termios	term;
 
 	g_received_signal = signum;
-	// printf("g received signal = %d\n", g_received_signal);
 	write(1, "\n", 1);
 	tcgetattr(STDIN_FILENO, &term);
 	if (!(term.c_lflag & ICANON))
