@@ -11,14 +11,13 @@ void	init_data(int argc, char **argv, char **envp, t_data *data)
 	data->cwd = malloc(4096);
 	data->exit = 0;
 	data->nodenb = 0;
-	data->prev_pipe_read_end = -1; // Initialize here
+	data->prev_pipe_read_end = -1;
 	if (!data->cwd)
 	{
 		perror("malloc failed in init_data");
 		exit(1);
 	}
 	getcwd(data->cwd, 1024);
-	printf("Debug: init_data completed successfully.\n");
 }
 
 void	cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
@@ -87,7 +86,7 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	t_cmd_list	*cmd_list;
 
 	tokens = tokenize_input(input, *env_list);
-	// print_tokens(tokens);
+	print_tokens(tokens);
 	free(input);
 	if (check_syntax(tokens) == 0)
 	{
@@ -103,7 +102,6 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 				cleanup_resources(data, env_list, cmd_list);
 			else
 				(*env_list)->exit_status = data->exit;
-			// fprintf(stderr, "\nhere\n");
 			free_cmd_list(cmd_list);
 		}
 	}

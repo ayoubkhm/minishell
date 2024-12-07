@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 01:03:25 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 05:49:17 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	extract_name_value(char *env_var, char **name, char **value)
 {
 	char	*equal_sign;
 	size_t	name_len;
-
 
 	if (!env_var || !name || !value)
 		return ;
@@ -32,7 +31,7 @@ void	extract_name_value(char *env_var, char **name, char **value)
 		*name = ft_strdup(env_var);
 		*value = ft_strdup("");
 	}
-	if (!*name || !*value) // Gestion des erreurs d'allocation
+	if (!*name || !*value)
 	{
 		free(*name);
 		free(*value);
@@ -51,41 +50,49 @@ t_env	*create_env_node(char *name, char *value)
 	new_var->name = name;
 	new_var->value = value;
 	new_var->next = NULL;
-    new_var->exit_status = 0;
+	new_var->exit_status = 0;
 	return (new_var);
+}
+
+t_env	*init_default_env(void)
+{
+	t_env	*env_list;
+	t_env	*current;
+
+	env_list = create_env_node("PWD", "/");
+	current = env_list;
+	current->next = create_env_node("SHLVL", "1");
+	current = current->next;
+	current->next = create_env_node("_", "/usr/bin/env");
+	return (env_list);
+}
+
+t_env	*add_env_node(t_env *env_list, char *name, char *value)
+{
+	t_env	*current;
+
+	if (!env_list)
+		return (create_env_node(name, value));
+	current = env_list;
+	while (current->next)
+		current = current->next;
+	current->next = create_env_node(name, value);
+	return (env_list);
 }
 
 t_env	*init_env(char **envp)
 {
 	t_env	*env_list;
-	t_env	*current;
 	char	*name;
 	char	*value;
 
 	env_list = NULL;
-	current = NULL;
-	if (!envp || !*envp) // Si envp est vide ou NULL
-	{
-		env_list = create_env_node("PWD", "/");
-		current = env_list;
-		current->next = create_env_node("SHLVL", "1");
-		current = current->next;
-		current->next = create_env_node("_", "/usr/bin/env");
-		return (env_list);
-	}
+	if (!envp || !*envp)
+		return (init_default_env());
 	while (*envp)
 	{
 		extract_name_value(*envp, &name, &value);
-		if (!env_list)
-		{
-			env_list = create_env_node(name, value);
-			current = env_list;
-		}
-		else
-		{
-			current->next = create_env_node(name, value);
-			current = current->next;
-		}
+		env_list = add_env_node(env_list, name, value);
 		envp++;
 	}
 	return (env_list);

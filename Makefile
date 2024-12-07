@@ -30,26 +30,47 @@ SRCS        =   exec/builtins/cd.c \
                 exec/exec_utils4.c \
                 main.c \
                 parsing/parsing_tokenizer.c \
-                parsing/parsing_quotes.c \
                 parsing/parsing_redirections.c \
                 parsing/parsing_pipes.c \
                 parsing/parsing_syntax.c \
                 parsing/parsing_utils.c \
                 parsing/parsing_memory.c \
                 parsing/parsing_display.c \
-                parsing/command.c \
                 parsing/memory_utils.c \
-                parsing/expansion.c \
                 parsing/parsing_expansion.c \
                 parsing/redirection.c \
-                parsing/environment.c \
-                parsing/token_processing.c \
                 parsing/operator_detection.c \
-                parsing/init_env.c \
+                parsing/variable_extraction.c \
+                parsing/token_quotes.c \
+                parsing/token_operations.c \
+                parsing/indexing_and_validation.c \
+                parsing/command.c \
+                parsing/command_args.c \
+                parsing/command_env.c \
+                parsing/environment.c \
+                parsing/expand_variable_utils.c \
+                parsing/expansion.c \
                 parsing/heredoc.c \
-                parsing/variable_reference_handler.c \
-                parsing/positional_utils.c \
-                signals/signals.c \
+                parsing/heredoc_utils.c \
+                parsing/init_env.c \
+                parsing/token_arguments.c \
+                parsing/token_redirection.c \
+                parsing/token_processing.c \
+                parsing/parsing_quotes.c \
+                parsing/quote_utils.c \
+                parsing/variable_expansion.c \
+                parsing/double_quote_processing.c \
+                parsing/tokenizer_quotes1.c \
+                parsing/tokenizer_quotes2.c \
+                parsing/tokenizer_variables1.c \
+                parsing/tokenizer_variables2.c \
+                parsing/tokenizer_variables3.c \
+                parsing/tokenizer_chars.c \
+                parsing/tokenizer_brackets.c \
+                parsing/tokenizer_token_dispatch1.c \
+                parsing/tokenizer_token_dispatch2.c \
+                parsing/tokenizer_assignments.c \
+                signals/signals.c
 
 
 

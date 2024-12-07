@@ -6,11 +6,33 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:09:47 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:09:50 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 01:56:07 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
+
+void	populate_arguments_array(char **cmd_args, char **new_cmd_args)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (cmd_args[i])
+	{
+		if (cmd_args[i][0] != '\0')
+		{
+			new_cmd_args[j] = cmd_args[i];
+			j++;
+		}
+		else
+		{
+			free(cmd_args[i]);
+		}
+		i++;
+	}
+}
 
 void	set_env_variable(t_env **env_list, char *name, char *value)
 {
