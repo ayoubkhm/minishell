@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 23:39:44 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 00:39:37 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,19 @@
 # define TYPE_PIPE 6
 # define TYPE_QUOTED 7
 
+typedef struct s_token			t_token;
+typedef struct s_data			t_data;
+typedef struct s_env			t_env;
+typedef struct s_cmd_list		t_cmd_list;
+typedef struct s_var_exp_params	t_var_exp_params;
+typedef struct s_var_exp		t_var_exp;
+typedef struct s_variable_data	t_variable_data;
+typedef struct s_quote_context	t_quote_context;
+typedef struct s_ctx			t_ctx;
+typedef struct s_pars_cxt		t_pars_cxt;
+
+void		ft_testsig(t_env *env_list);
+void		init_signals_and_env(t_env **env_list, char **envp);
 int			check_syntax(t_token *tokens);
 t_token		*create_token(char *value, int type, int expand);
 void		add_token(t_token **tokens, t_token *new_token);
