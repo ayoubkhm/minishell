@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 06:10:51 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 17:13:11 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,7 +309,7 @@ int handle_backslash(char *input, int i, char **current_value);
 int handle_character_iteration(char *input, int i);
 char *extract_prefix(char *input, int start, int i);
 void process_prefix_as_word(char *prefix, t_token **tokens);
-int	handle_regular_characters(char *input, int i, t_token **tok, t_env *e_l);
+int	handle_regular_characters(char *inp, int i, t_token **tok, t_env *env_list);
 
 // tokenizer_brackets.c
 char *extract_and_expand(char *input, int *i, t_env *env_list);

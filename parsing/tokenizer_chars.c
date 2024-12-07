@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:03:27 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 06:30:03 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 17:31:24 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,10 @@ int	handle_backslash(char *input, int i, char **current_value)
 
 int	handle_character_iteration(char *input, int i)
 {
-	while (input[i] && !isspace(input[i]) && !is_operator(input[i]))
-	{
-		if (input[i] == '\'' || input[i] == '"')
-			i++;
-		else
-			i++;
-	}
+	while (input[i] && !isspace((unsigned char)input[i])
+		&& !is_operator(input[i])
+		&& input[i] != '\'' && input[i] != '"' && input[i] != '$')
+		i++;
 	return (i);
 }
 
@@ -61,40 +58,52 @@ char	*extract_prefix(char *input, int start, int i)
 
 void	process_prefix_as_word(char *prefix, t_token **tokens)
 {
-	char	*cleaned_prefix;
-
-	cleaned_prefix = NULL;
 	if (prefix && *prefix)
 	{
-		cleaned_prefix = remove_quotes(prefix);
+		add_token(tokens, create_token(prefix, TYPE_WORD, 1));
 		free(prefix);
-		add_token(tokens, create_token(cleaned_prefix, TYPE_WORD, 1));
-		free(cleaned_prefix);
 	}
 }
 
-int	handle_regular_characters(char *input, int i, t_token **tok, t_env *e_l)
+int	handle_regular_characters(char *inp, int i, t_token **tok, t_env *env_list)
 {
-	int			start;
-	t_pars_cxt	ctx;
+	t_pars_cxt	cxt;
 
-	start = i;
-	ctx.inp = input;
-	ctx.i = i;
-	ctx.pfx = NULL;
-	ctx.tok = tok;
-	ctx.e_l = e_l;
-	ctx.i = handle_character_iteration(ctx.inp, ctx.i);
-	ctx.pfx = extract_prefix(ctx.inp, start, ctx.i);
-	if (ctx.inp[ctx.i] == '$')
+	// Initialisation de la structure de contexte
+	cxt.inp = inp;
+	cxt.i = i;
+	cxt.pfx = NULL;
+	cxt.tok = tok;
+	cxt.e_l = env_list;
+
+
+	// Étape 1 : Itération sur les caractères réguliers
+	cxt.i = handle_character_iteration(cxt.inp, cxt.i);
+
+	// Étape 2 : Extraction du préfixe
+	cxt.pfx = extract_prefix(cxt.inp, i, cxt.i);
+
+	// Étape 3 : Gestion des variables
+	if (cxt.inp[cxt.i] == '$')
 	{
-		ctx.i = gere_var2(&ctx);
-		i = ctx.i + 1;
+		cxt.i = gere_var2(&cxt);
+
+		// Si la variable est invalide
+		if (*cxt.tok == NULL || (*cxt.tok)->value == NULL)
+		{
+			fprintf(stderr, "minishell: command not found\n");
+			free(cxt.pfx);
+			return (cxt.i);
+		}
+
+		// Si gere_var2 a combiné le préfixe, on sort directement
+		return (cxt.i);
 	}
-	else
-	{
-		process_prefix_as_word(ctx.pfx, tok);
-		i = ctx.i;
-	}
-	return (i);
+
+	// Étape 4 : Traitement du préfixe comme mot s'il existe
+	process_prefix_as_word(cxt.pfx, cxt.tok);
+
+	cxt.pfx = NULL;
+	return (cxt.i);
 }
+
