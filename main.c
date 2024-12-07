@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/12/07 23:34:52 by gtraiman         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-#include <termios.h>
 
 volatile sig_atomic_t	g_received_signal = 0;
 
@@ -18,48 +29,6 @@ void	init_data(int argc, char **argv, char **envp, t_data *data)
 		exit(1);
 	}
 	getcwd(data->cwd, 1024);
-}
-
-void	cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
-{
-	t_env	*tmp;
-
-	if (data)
-		ft_freedata(data);
-	if (list)
-	{
-		free_cmd_list(list);
-		list = NULL;
-	}
-	while (*env_list)
-	{
-		tmp = *env_list;
-		free((*env_list)->name);
-		free((*env_list)->value);
-		*env_list = (*env_list)->next;
-		free(tmp);
-	}
-}
-
-void	init_signals_and_env(t_env **env_list, char **envp)
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, sigquit_handler);
-	if (!envp)
-		return ;
-	*env_list = init_env(envp);
-}
-
-void	set_terminal_mode(int canonical)
-{
-	struct termios	term;
-
-	tcgetattr(STDIN_FILENO, &term);
-	if (canonical)
-		term.c_lflag |= ICANON | ECHO;
-	else
-		term.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 char	*get_user_input(void)
@@ -86,7 +55,6 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	t_cmd_list	*cmd_list;
 
 	tokens = tokenize_input(input, *env_list);
-	//print_tokens(tokens);
 	free(input);
 	if (check_syntax(tokens) == 0)
 	{
@@ -94,11 +62,9 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 		free_tokens(tokens);
 		if (cmd_list)
 		{
-			// print_commands(cmd_list);
-			(void)data;
 			initpipe(cmd_list);
 			ft_exec(cmd_list, data, env_list);
-			if(!data->envp)
+			if (!data->envp)
 				cleanup_resources(data, env_list, cmd_list);
 			else
 				(*env_list)->exit_status = data->exit;
@@ -127,15 +93,7 @@ int	main(int argc, char **argv, char **envp)
 			display_prompt();
 			continue ;
 		}
-		if (g_received_signal == 2)
-		{
-			env_list->exit_status = 130;
-		}
-		if (g_received_signal == 131)
-		{
-			env_list->exit_status = 131;
-			g_received_signal = 0;
-		}
+		ft_testsig(env_list);
 		input = get_user_input();
 		if (!input)
 		{
