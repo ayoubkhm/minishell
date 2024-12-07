@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 20:43:14 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 05:49:17 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,19 @@ t_env	*create_env_node(char *name, char *value)
 	return (new_var);
 }
 
+t_env	*init_default_env(void)
+{
+	t_env	*env_list;
+	t_env	*current;
+
+	env_list = create_env_node("PWD", "/");
+	current = env_list;
+	current->next = create_env_node("SHLVL", "1");
+	current = current->next;
+	current->next = create_env_node("_", "/usr/bin/env");
+	return (env_list);
+}
+
 t_env	*add_env_node(t_env *env_list, char *name, char *value)
 {
 	t_env	*current;
@@ -74,6 +87,8 @@ t_env	*init_env(char **envp)
 	char	*value;
 
 	env_list = NULL;
+	if (!envp || !*envp)
+		return (init_default_env());
 	while (*envp)
 	{
 		extract_name_value(*envp, &name, &value);

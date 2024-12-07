@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_variables1.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 05:28:20 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 20:44:07 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/07 22:09:16 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 int	gere_var2(t_pars_cxt *ctx)
 {
     char	*combined;
+    t_token *token;
+    t_token *first_var_token = NULL;
 
     combined = NULL;
-
 
     ctx->i = gere_var_ref(ctx->inp, ctx->i, ctx->tok, ctx->e_l);
 
@@ -27,19 +28,20 @@ int	gere_var2(t_pars_cxt *ctx)
         ctx->pfx = NULL;
         return (ctx->i);
     }
+
     if (ctx->pfx && *(ctx->pfx))
     {
-        t_token *token = *(ctx->tok);
-        t_token *first_var_token = NULL;
+        token = *(ctx->tok);
         while (token)
         {
             if (token->expand == 1)
             {
                 first_var_token = token;
-                break ;
+                break;
             }
             token = token->next;
         }
+
         if (first_var_token)
         {
             combined = ft_strjoin(ctx->pfx, first_var_token->value);
@@ -48,20 +50,31 @@ int	gere_var2(t_pars_cxt *ctx)
             free(first_var_token->value);
             first_var_token->value = combined;
             first_var_token->expand = 0;
-
+        }
+        else
+        {
+            // Aucun first_var_token trouvé, on libère ctx->pfx
+            free(ctx->pfx);
+            ctx->pfx = NULL;
         }
     }
-	//     token = *(ctx->tok);
-//     while (token)
-//     {
-//         if (token->expand != 0)
-//         {
-//             token->expand = 0;
-//         }
-//         token = token->next;
-//     }
+
+    token = *(ctx->tok);
+    while (token)
+    {
+        if (token->expand != 0)
+        {
+            token->expand = 0;
+        }
+        token = token->next;
+    }
+
     return (ctx->i);
 }
+
+
+
+
 
 
 
