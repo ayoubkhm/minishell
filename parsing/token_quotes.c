@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 02:42:48 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 18:13:23 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/07 19:55:44 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,9 @@ int	handle_tok_proc(t_ctx *ctx, char **split_values, int j, int i)
 
 	token_value = get_token_value(ctx, split_values, j);
 	if (!token_value)
+	{
 		return (i);
+	}
 	if (j == 0)
 	{
 		i = process_first_token(ctx, i, &token_value);
@@ -79,10 +81,16 @@ int	handle_tok_proc(t_ctx *ctx, char **split_values, int j, int i)
 			free(token_value);
 			return (-1);
 		}
+		add_token(ctx->tok, create_token(token_value, TYPE_WORD, 1));
 	}
-	add_token(ctx->tok, create_token(token_value, TYPE_WORD, 1));
+	else
+	{
+		add_token(ctx->tok, create_token(token_value, TYPE_WORD, 0));
+	}
 	free(token_value);
 	if (j == 0)
+	{
 		finalize_first_token(ctx);
+	}
 	return (i);
 }
