@@ -42,6 +42,7 @@ SRCS        =   exec/builtins/cd.c \
                 parsing/operator_detection.c \
                 parsing/variable_extraction.c \
                 parsing/token_quotes.c \
+                parsing/token_quotes2.c \
                 parsing/token_operations.c \
                 parsing/indexing_and_validation.c \
                 parsing/command.c \
@@ -65,7 +66,10 @@ SRCS        =   exec/builtins/cd.c \
                 parsing/tokenizer_variables1.c \
                 parsing/tokenizer_variables2.c \
                 parsing/tokenizer_variables3.c \
+                parsing/tokenizer_variables4.c \
                 parsing/tokenizer_chars.c \
+                parsing/tokenizer_chars2.c \
+                parsing/tokenizer_chars3.c \
                 parsing/tokenizer_brackets.c \
                 parsing/tokenizer_token_dispatch1.c \
                 parsing/tokenizer_token_dispatch2.c \
