@@ -23,7 +23,7 @@ char	**ft_unset(char **envp, char *str)
 
 	i = 0;
 	j = 0;
-	if (!str)
+	if (!str || (str[0] == '_' && !str[1]))
 		return (envp);
 	str = ft_addstr(str, "=");
 	tabret = malloc((ft_tabstrlen(envp)) * sizeof(char *));
