@@ -63,8 +63,9 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	if (check_syntax(tokens) == 0)
 	{
 		cmd_list = parse_commands(tokens, env_list);
+
 		free_tokens(tokens);
-		if (cmd_list)
+		if (cmd_list && is_dangerous_command(cmd_list, env_list) == 0)
 		{
 			initpipe(cmd_list);
 			ft_exec(cmd_list, data, env_list);
