@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/07 23:34:52 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:18:05 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	init_data(int argc, char **argv, char **envp, t_data *data)
 {
 	data->ac = argc;
 	data->av = ft_copytab(argv);
+	if (!data->av)
+		ft_freetab(data->av);
 	data->envp = ft_updateshlvl(envp);
 	data->cwd = malloc(4096);
 	data->exit = 0;
@@ -29,6 +31,8 @@ void	init_data(int argc, char **argv, char **envp, t_data *data)
 		exit(1);
 	}
 	getcwd(data->cwd, 1024);
+	if (!data->cwd)
+		free(data->cwd);
 }
 
 char	*get_user_input(void)
