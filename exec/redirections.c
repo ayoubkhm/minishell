@@ -50,6 +50,7 @@ int	ft_exec1par(t_cmd_list *list, t_data *data)
 	list->open[1] = STDOUT_FILENO;
 	if (open == -1 || open == -2)
 		return (data->exit = 1, 1);
+	printf("here\n");
 	if (list->open[0] != STDIN_FILENO)
 	{
 		list->save_std[0] = dup(STDIN_FILENO);

@@ -59,7 +59,7 @@ int	ft_parsecho(t_cmd_list *list, t_data *data)
 	{
 		if (!first_arg)
 			write(1, " ", 1);
-		ft_echo(list->cmd_args[i]);
+		printf("%s\n",list->cmd_args[i]);
 		first_arg = false;
 		i++;
 	}

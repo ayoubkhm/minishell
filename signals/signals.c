@@ -15,6 +15,15 @@
 #include <termios.h>
 #include <unistd.h>
 
+void	configure_terminal(void)
+{
+	struct termios term;
+
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
+
 void	display_prompt(void)
 {
 	rl_on_new_line();
@@ -40,9 +49,8 @@ void	sigint_handler(int signum)
 
 void	sigquit_handler(int signum)
 {
+	(void)signum;
 	g_received_signal = 131;
-	printf("signum = %d\n", signum);
-	write(1, "Quit\n", 5);
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
