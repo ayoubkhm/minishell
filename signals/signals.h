@@ -23,5 +23,7 @@ extern volatile sig_atomic_t	g_received_signal;
 void							sigint_handler(int sig_num);
 void							sigquit_handler(int sig_num);
 void							display_prompt(void);
+void							configure_terminal(void);
+
 
 #endif

@@ -18,25 +18,35 @@ char	*create_temp_file(char *content)
 	char	*filename;
 	int		fd;
 
-	base_filename = "/tmp/heredoc";
+	base_filename = "/home/akhamass/eval";
 	filename = allocate_filename(base_filename);
 	if (!filename)
+	{
 		return (NULL);
+	}
 	fd = create_unique_temp_file(base_filename, filename);
 	if (fd == -1)
 	{
+		perror("Erreur de création du fichier temporaire");
 		free(filename);
 		return (NULL);
 	}
 	if (write_to_temp_file(fd, filename, content) == -1)
 	{
+		perror("Erreur d'écriture dans le fichier temporaire");
 		close(fd);
 		free(filename);
 		return (NULL);
 	}
-	close(fd);
+	if (close(fd) == -1)
+	{
+		perror("Erreur lors de la fermeture du fichier temporaire");
+		free(filename);
+		return (NULL);
+	}
 	return (filename);
 }
+
 
 char	*get_heredoc(char *delimiter)
 {

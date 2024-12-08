@@ -90,6 +90,7 @@ int	main(int argc, char **argv, char **envp)
 
 	init_data(argc, argv, envp, &data);
 	init_signals_and_env(&env_list, data.envp);
+	// configure_terminal();
 	while (1)
 	{
 		if (g_received_signal == 1)
