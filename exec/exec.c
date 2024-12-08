@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 20:31:34 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/08 01:13:48 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:17:40 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int	ft_exec(t_cmd_list *list, t_data *data, t_env **env_list)
 	{
 		if (checkbi(list) == 0)
 		{
-			if(ft_exec1par(list, data) == 1)
-				return(0);
+			if (ft_exec1par(list, data) == 1)
+				return (0);
 			ft_resbi(list, data, env_list, 0);
 		}
 		else
@@ -69,7 +69,6 @@ void	ft_execinchild(t_cmd_list *list, t_data *data, t_env **env_list)
 	if (list->next || list->prev)
 		ft_execpipe(list);
 	ft_exec1(list, data, env_list);
-	printf("here1\n");
 	if (checkbi(list) == 0)
 		ft_resbi(list, data, env_list, 1);
 	else
