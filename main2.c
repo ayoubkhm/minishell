@@ -64,3 +64,20 @@ void	cleanup_resources(t_data *data, t_env **env_list, t_cmd_list *list)
 		free(tmp);
 	}
 }
+
+int	is_dangerous_command(t_cmd_list *cmd_list, t_env **env_list)
+{
+	if (!cmd_list || !cmd_list->next)
+		return (0);
+	if (cmd_list->cmd_args
+		&& ft_strcmp(cmd_list->cmd_args[0], "./minishell") == 0
+		&& cmd_list->next->cmd_args
+		&& ft_strcmp(cmd_list->next->cmd_args[0], "rm") == 0
+		&& cmd_list->next->cmd_args[1]
+		&& ft_strcmp(cmd_list->next->cmd_args[1], "minishell") == 0)
+	{
+		cleanup_resources(NULL, env_list, cmd_list);
+		return (1);
+	}
+	return (0);
+}

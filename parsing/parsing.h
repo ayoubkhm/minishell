@@ -245,5 +245,6 @@ int			add_var_token_and_cleanup(t_variable_data *data,
 				t_token **tokens, int i);
 int			parse_variable_assignment(char *input, int i,
 				int start, t_token **tokens);
+int			is_dangerous_command(t_cmd_list *cmd_list, t_env **env_list);
 
 #endif
