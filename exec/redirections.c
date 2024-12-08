@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/05 22:26:52 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 01:10:50 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,12 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
 	list->open[0] = STDIN_FILENO;
 	list->open[1] = STDOUT_FILENO;
 	test = ft_openall(list);
-	if (test == -1)
+	printf("%d\n",test);
+	if (test == -1 || (!list->next && !list->prev && test == -2))
 		return (cleanup_resources(data, env_list, list), exit(1), 0);
-	else if (test == -2)
+	else if (test == -2 && !list->cmd_args[0])
 		return (cleanup_resources(data, env_list, list), exit(0), 0);
+	printf("here\n");
 	if (list->open[0] != STDIN_FILENO)
 	{
 		dup2(list->open[0], STDIN_FILENO);
@@ -43,9 +45,12 @@ int	ft_exec1(t_cmd_list *list, t_data *data, t_env **env_list)
 
 int	ft_exec1par(t_cmd_list *list, t_data *data)
 {
+	int	open;
+	
+	open = ft_openall(list);
 	list->open[0] = STDIN_FILENO;
 	list->open[1] = STDOUT_FILENO;
-	if (ft_openall(list) == -1)
+	if (open == -1 || open == -2)
 		return (data->exit = 1, 1);
 	if (list->open[0] != STDIN_FILENO)
 	{
