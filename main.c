@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/08 03:18:05 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/08 17:19:16 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	if (check_syntax(tokens) == 0)
 	{
 		cmd_list = parse_commands(tokens, env_list);
-
 		free_tokens(tokens);
 		if (cmd_list && is_dangerous_command(cmd_list, env_list) == 0)
 		{
