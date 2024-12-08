@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 01:47:00 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 01:47:01 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:35:54 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*get_heredoc(char *delimiter)
 	line = readline(NULL);
 	while (line)
 	{
-		if (strcmp(line, delimiter) == 0)
+		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
 			break ;
@@ -73,8 +73,8 @@ int	update_cmd_files(t_cmd_list *curr_cmd, char *temp_filename)
 	new_files_type = NULL;
 	new_files_list_size = sizeof(char *) * (curr_cmd->files_count + 2);
 	new_files_type_size = sizeof(int) * (curr_cmd->files_count + 1);
-	new_files_list = realloc(curr_cmd->files_list, new_files_list_size);
-	new_files_type = realloc(curr_cmd->files_type, new_files_type_size);
+	new_files_list = ft_realloc(curr_cmd->files_list, new_files_list_size);
+	new_files_type = ft_realloc(curr_cmd->files_type, new_files_type_size);
 	if (!new_files_list || !new_files_type)
 		return (-1);
 	curr_cmd->files_list = new_files_list;

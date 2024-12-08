@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 16:40:49 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 01:37:13 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:35:11 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,11 @@ void	post_process_command(t_cmd_list *current_cmd, t_env **env_list)
 			current_cmd->cmd = NULL;
 		}
 		current_cmd->cmd = strdup(current_cmd->cmd_args[0]);
-		if (strcmp(current_cmd->cmd, "export") == 0)
+		if (ft_strcmp(current_cmd->cmd, "export") == 0)
 		{
 			handle_export(current_cmd, env_list);
 		}
-		else if (strcmp(current_cmd->cmd, "unset") == 0)
+		else if (ft_strcmp(current_cmd->cmd, "unset") == 0)
 		{
 			handle_unset(current_cmd, env_list);
 		}

@@ -29,8 +29,8 @@ char	*ft_addstr(char *str1, char *str2)
 		stret[i] = str1[i];
 	i = -1;
 	while (str2[++i])
-		stret[i + strlen(str1)] = str2[i];
-	stret[i + strlen(str1)] = '\0';
+		stret[i + ft_strlen(str1)] = str2[i];
+	stret[i + ft_strlen(str1)] = '\0';
 	return (stret);
 }
 

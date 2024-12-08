@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 13:17:26 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 05:49:17 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:36:36 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	extract_name_value(char *env_var, char **name, char **value)
 
 	if (!env_var || !name || !value)
 		return ;
-	equal_sign = strchr(env_var, '=');
+	equal_sign = ft_strchr(env_var, '=');
 	if (equal_sign)
 	{
 		name_len = equal_sign - env_var;
