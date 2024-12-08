@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:32 by akhamass          #+#    #+#             */
-/*   Updated: 2024/10/27 12:10:33 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:30:03 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	check_first_token(t_token *current)
 {
 	if (current && current->type == TYPE_PIPE)
 	{
-		fprintf(stderr, "minishell: syntax error near unexpected token '|'\n");
 		return (-1);
 	}
 	return (0);
@@ -30,8 +29,6 @@ int	check_intermediate_tokens(t_token *current)
 		{
 			if (!current->next || current->next->type == TYPE_PIPE)
 			{
-				fprintf(stderr,
-					"minishell: syntax error near unexpected token '|'\n");
 				return (-1);
 			}
 		}
@@ -40,9 +37,6 @@ int	check_intermediate_tokens(t_token *current)
 		{
 			if (!current->next || current->next->type != TYPE_WORD)
 			{
-				fprintf(stderr,
-					"minishell: syntax error near unexpected token '%s'\n",
-					current->value);
 				return (-1);
 			}
 		}
@@ -58,8 +52,6 @@ int	check_last_token(t_token *tokens, t_token *current)
 			|| current->type == TYPE_REDIR_OUT
 			|| current->type == TYPE_REDIR_APPEND))
 	{
-		fprintf(stderr,
-			"minishell: syntax errornear unexpected token 'newline'\n");
 		return (-1);
 	}
 	return (0);

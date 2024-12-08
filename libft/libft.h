@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 21:37:22 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 23:55:52 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:43:51 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *),
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 char	*ft_strcat(char *dest, const char *src);
 void	free_split(char **split);
-void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
+void	*ft_realloc(void *ptr, size_t new_size);
 char	*ft_strcpy(char *dest, const char *src);
 
 #endif

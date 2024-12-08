@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:09:47 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 01:56:07 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:36:59 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	set_env_variable(t_env **env_list, char *name, char *value)
 	current = *env_list;
 	while (current)
 	{
-		if (strcmp(current->name, name) == 0)
+		if (ft_strcmp(current->name, name) == 0)
 		{
 			free(current->value);
 			current->value = strdup(value);
@@ -64,7 +64,7 @@ char	*get_env_variable(t_env *env_list, char *name)
 	current = env_list;
 	while (current)
 	{
-		if (strcmp(current->name, name) == 0)
+		if (ft_strcmp(current->name, name) == 0)
 		{
 			return (current->value);
 		}
@@ -80,12 +80,12 @@ void	add_env_variable(char *arg, t_env **env_list)
 	char	*value;
 	size_t	name_len;
 
-	equal_sign = strchr(arg, '=');
+	equal_sign = ft_strchr(arg, '=');
 	if (equal_sign)
 	{
 		name_len = equal_sign - arg;
-		name = strndup(arg, name_len);
-		value = strdup(equal_sign + 1);
+		name = ft_strndup(arg, name_len);
+		value = ft_strdup(equal_sign + 1);
 		set_env_variable(env_list, name, value);
 		free(name);
 		free(value);

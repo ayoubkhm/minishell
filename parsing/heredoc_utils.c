@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 01:47:25 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 01:47:26 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:34:02 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	create_unique_temp_file(const char *base_filename, char *filename)
 	suffix = 0;
 	while (1)
 	{
-		sprintf(filename, "%s%d", base_filename, suffix);
+		printf(filename, "%s%d", base_filename, suffix);
 		fd = open(filename, O_CREAT | O_EXCL | O_RDWR, 0600);
 		if (fd != -1)
 			break ;

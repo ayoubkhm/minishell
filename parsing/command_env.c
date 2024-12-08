@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 02:44:18 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 02:44:19 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/08 14:34:49 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	remove_env_variable(char *var_name, t_env **env_list)
 	prev = NULL;
 	while (current)
 	{
-		if (strcmp(current->name, var_name) == 0)
+		if (ft_strcmp(current->name, var_name) == 0)
 		{
 			if (prev)
 				prev->next = current->next;
