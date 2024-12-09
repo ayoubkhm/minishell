@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/08 17:19:16 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/09 17:51:21 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ int	main(int argc, char **argv, char **envp)
 
 	init_data(argc, argv, envp, &data);
 	init_signals_and_env(&env_list, data.envp);
-	// configure_terminal();
 	while (1)
 	{
 		if (g_received_signal == 1)

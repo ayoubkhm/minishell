@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 01:47:00 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/08 14:35:54 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:10:30 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,26 @@ char	*create_temp_file(char *content)
 	char	*filename;
 	int		fd;
 
-	base_filename = "/home/akhamass/eval";
+	base_filename = malloc(4096);
+	if(!base_filename)
+		return(perror("malloc"),NULL);
+	getcwd(base_filename,1024);
 	filename = allocate_filename(base_filename);
 	if (!filename)
-	{
 		return (NULL);
-	}
 	fd = create_unique_temp_file(base_filename, filename);
 	if (fd == -1)
 	{
 		perror("Erreur de création du fichier temporaire");
-		free(filename);
-		return (NULL);
+		return (free(filename), NULL);
 	}
 	if (write_to_temp_file(fd, filename, content) == -1)
 	{
 		perror("Erreur d'écriture dans le fichier temporaire");
-		close(fd);
-		free(filename);
-		return (NULL);
+		return (close(fd), free(filename), NULL);
 	}
 	if (close(fd) == -1)
-	{
-		perror("Erreur lors de la fermeture du fichier temporaire");
-		free(filename);
-		return (NULL);
-	}
+		return (perror("close"), free(filename), NULL);
 	return (filename);
 }
 

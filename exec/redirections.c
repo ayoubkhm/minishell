@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/18 11:29:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/08 03:17:14 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/09 17:43:09 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,11 @@ int	ft_exec1par(t_cmd_list *list, t_data *data)
 {
 	int	open;
 
-	open = ft_openall(list);
 	list->open[0] = STDIN_FILENO;
 	list->open[1] = STDOUT_FILENO;
+	open = ft_openall(list);
 	if (open == -1 || open == -2)
 		return (data->exit = 1, 1);
-	printf("here\n");
 	if (list->open[0] != STDIN_FILENO)
 	{
 		list->save_std[0] = dup(STDIN_FILENO);

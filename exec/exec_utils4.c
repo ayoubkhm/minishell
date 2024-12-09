@@ -6,13 +6,13 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:06:46 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/07 22:25:51 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/09 17:48:55 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	**ft_get_path(char **envp, t_data *data, t_cmd_list *list)
+char	**ft_get_path(char **envp, t_cmd_list *list)
 {
 	char	**tab;
 	int		i;
@@ -25,8 +25,8 @@ char	**ft_get_path(char **envp, t_data *data, t_cmd_list *list)
 		i++;
 	if (!envp[i])
 	{
-		write(2, "minishell : No such file or directory\n", 39);
-		return (data->exit = 127, NULL);
+		tab = malloc(2 * sizeof(char *));
+		return (tab[0] = ft_strdup(list->cmd_args[0]), tab[1] = NULL, tab);
 	}
 	split = ft_split(&envp[i][5], ':');
 	tab = ft_copyntab(split, 1);
@@ -49,7 +49,7 @@ char	*ft_get_command_path(char *cmd, t_data *data, t_cmd_list *list)
 	path = NULL;
 	if (!data->envp)
 		return (NULL);
-	tab = ft_get_path(data->envp, data, list);
+	tab = ft_get_path(data->envp, list);
 	if (!tab)
 		return (ft_freetab(tab), NULL);
 	if (ft_access(tab, cmd, &path) == -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 01:04:24 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/08 00:38:25 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/09 17:37:49 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int			fdinout(t_cmd_list *list, int *fd_in, int *fd_out, int i);
 int			ft_strcmp(const char *s1, const char *s2);
 int			ft_access(char **tab, char *avi, char **path);
 int			ft_access2(char **path, char *str);
-char		**ft_get_path(char **envp, t_data *data, t_cmd_list *list);
+char		**ft_get_path(char **envp, t_cmd_list *list);
 int			ft_strlkforc(char *str, char c);
 char		*rmstrbfc(char *str, char c);
 void		ft_free_list(t_cmd_list *list);
