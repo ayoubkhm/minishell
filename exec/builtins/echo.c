@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 16:25:00 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/04 23:23:59 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/09 17:50:18 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	ft_parsecho(t_cmd_list *list, t_data *data)
 	{
 		if (!first_arg)
 			write(1, " ", 1);
-		printf("%s\n",list->cmd_args[i]);
+		printf("%s\n", list->cmd_args[i]);
 		first_arg = false;
 		i++;
 	}
