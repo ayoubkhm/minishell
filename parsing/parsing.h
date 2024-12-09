@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/08 00:39:37 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/09 23:27:12 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ typedef struct s_variable_data	t_variable_data;
 typedef struct s_quote_context	t_quote_context;
 typedef struct s_ctx			t_ctx;
 typedef struct s_pars_cxt		t_pars_cxt;
+typedef struct s_heredoc_ctx	t_heredoc_ctx;
+
 
 void		ft_testsig(t_env *env_list);
 void		init_signals_and_env(t_env **env_list, char **envp);
@@ -100,7 +102,7 @@ int			handle_heredoc(t_token *current,
 				t_cmd_list *curr_cmd, char **temp_filename);
 int			process_heredoc(t_token **tokens, t_cmd_list *curr_cmd);
 int			create_unique_temp_file(const char *base_filename, char *filename);
-char		*allocate_filename(const char *base_filename);
+char *allocate_filename(t_heredoc_ctx *ctx);
 int			write_to_temp_file(int fd, const char *filename,
 				const char *content);
 char		*strjoin_with_newline(char *s1, char *s2);

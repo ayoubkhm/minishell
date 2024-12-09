@@ -139,4 +139,11 @@ typedef struct s_pars_cxt
 	t_env	*e_l;
 }	t_pars_cxt;
 
+typedef struct s_heredoc_ctx
+{
+    int counter;
+    char *base_path;
+    char *suffix;
+} t_heredoc_ctx;
+
 #endif
