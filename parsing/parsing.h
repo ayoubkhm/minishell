@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/10 02:51:01 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 14:22:46 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,5 +249,10 @@ int			add_var_token_and_cleanup(t_variable_data *data,
 int			parse_variable_assignment(char *input, int i,
 				int start, t_token **tokens);
 int			is_dangerous_command(t_cmd_list *cmd_list, t_env **env_list);
+void		init_heredoc_ctx(t_heredoc_ctx *ctx);
+char		*get_base_filename(void);
+int		init_ctx(t_heredoc_ctx *ctx, const char *base_filename);
+int		crecri_file(char *f_name, char *cntnt, char *base_path, char *base_f_name);
+int		find_max_heredoc_number(const t_heredoc_ctx *ctx);
 
 #endif
