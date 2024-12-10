@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:42:02 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 23:42:59 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 03:17:52 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-void	configure_terminal(void)
-{
-	struct termios term;
-
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-}
-
 void	display_prompt(void)
 {
 	rl_on_new_line();
@@ -31,20 +22,14 @@ void	display_prompt(void)
 	rl_redisplay();
 }
 
-void	sigint_handler(int signum)
+void    sigint_handler(int signum)
 {
-	struct termios	term;
-
-	g_received_signal = signum;
-	write(1, "\n", 1);
-	tcgetattr(STDIN_FILENO, &term);
-	if (!(term.c_lflag & ICANON))
-	{
-	}
-	else
-	{
-		display_prompt();
-	}
+    (void)signum;
+    g_received_signal = SIGINT;
+    write(1, "\n", 1);
+    rl_on_new_line();
+    rl_replace_line("", 0);
+    rl_redisplay();
 }
 
 void	sigquit_handler(int signum)

@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 12:10:38 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/09 23:27:12 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 02:51:01 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_heredoc_ctx	t_heredoc_ctx;
 
 void		ft_testsig(t_env *env_list);
 void		init_signals_and_env(t_env **env_list, char **envp);
+void	set_terminal_mode(int canonical);
 int			check_syntax(t_token *tokens);
 t_token		*create_token(char *value, int type, int expand);
 void		add_token(t_token **tokens, t_token *new_token);

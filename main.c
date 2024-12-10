@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/10 02:40:07 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 02:55:47 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,17 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	}
 }
 
+void    disable_echoctl(void)
+{
+    struct termios term;
+
+    tcgetattr(STDIN_FILENO, &term);
+    // On ne touche pas à ICANON ou ECHO, juste à ECHOCTL
+    term.c_lflag &= ~ECHOCTL;
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
+
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
@@ -90,6 +101,7 @@ int	main(int argc, char **argv, char **envp)
 
 	init_data(argc, argv, envp, &data);
 	init_signals_and_env(&env_list, data.envp);
+	disable_echoctl();
 	while (1)
 	{
 		if (g_received_signal == 1)
