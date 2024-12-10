@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:09:15 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/10 02:26:32 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 12:31:14 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	handle_word(char *input, int i, t_token **tokens, t_env *env_list)
 	{
 		i++;
 	}
-	if (input[i] == '=' && input[i + 1] == '"')
+	if (input[i] == '=' && (input[i + 1] == '"' || input[i + 1] == '\''))
 	{
 		return (parse_variable_assignment(input, i, start, tokens));
 	}

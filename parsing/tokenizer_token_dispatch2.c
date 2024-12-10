@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 03:02:15 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/07 19:53:41 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 12:33:58 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,17 @@ int	add_variable_token(char *name, char *value, t_token **tokens, int i)
 
 int	extract_indices(char *input, int i, t_variable_data *data)
 {
+	char	quote_char;
+
+	if (input[i + 1] == '"' || input[i + 1] == '\'')
+		quote_char = input[i + 1];
+	else
+	{
+		return (-1);
+	}
 	i += 2;
 	data->val_start = i;
-	while (input[i] && input[i] != '"')
+	while (input[i] && input[i] != quote_char)
 	{
 		i++;
 	}
