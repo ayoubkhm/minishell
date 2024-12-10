@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:23:55 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/10 02:55:47 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 14:38:47 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,16 +82,14 @@ void	process_input(char *input, t_data *data, t_env **env_list)
 	}
 }
 
-void    disable_echoctl(void)
+void	disable_echoctl(void)
 {
-    struct termios term;
+	struct termios	term;
 
-    tcgetattr(STDIN_FILENO, &term);
-    // On ne touche pas à ICANON ou ECHO, juste à ECHOCTL
-    term.c_lflag &= ~ECHOCTL;
-    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
-
 
 int	main(int argc, char **argv, char **envp)
 {
