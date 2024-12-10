@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:33:04 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/07 23:34:37 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/10 02:47:46 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,20 @@ void	ft_testsig(t_env *env_list)
 
 void	set_terminal_mode(int canonical)
 {
-	struct termios	term;
+    struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
-	if (canonical)
-		term.c_lflag |= ICANON | ECHO;
-	else
-		term.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    tcgetattr(STDIN_FILENO, &term);
+    if (canonical)
+    {
+        term.c_lflag |= ICANON | ECHO;
+        term.c_lflag |= ECHOCTL; // On réactive l'écho des caractères de contrôle si besoin
+    }
+    else
+    {
+        term.c_lflag &= ~(ICANON | ECHO);
+        term.c_lflag &= ~ECHOCTL; // On désactive l'écho des caractères de contrôle
+    }
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 void	init_signals_and_env(t_env **env_list, char **envp)
