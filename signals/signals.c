@@ -6,7 +6,7 @@
 /*   By: akhamass <akhamass@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 23:42:02 by akhamass          #+#    #+#             */
-/*   Updated: 2024/12/10 03:17:52 by akhamass         ###   ########.fr       */
+/*   Updated: 2024/12/10 12:33:10 by akhamass         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@ void	display_prompt(void)
 	rl_redisplay();
 }
 
-void    sigint_handler(int signum)
+void	sigint_handler(int signum)
 {
-    (void)signum;
-    g_received_signal = SIGINT;
-    write(1, "\n", 1);
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
+	(void)signum;
+	g_received_signal = SIGINT;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 void	sigquit_handler(int signum)
