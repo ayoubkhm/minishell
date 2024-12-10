@@ -53,6 +53,10 @@ SRCS        =   exec/builtins/cd.c \
                 parsing/expand_variable_utils.c \
                 parsing/expansion.c \
                 parsing/heredoc.c \
+                parsing/heredoc2.c \
+                parsing/heredoc3.c \
+                parsing/heredoc4.c \
+                parsing/heredoc5.c \
                 parsing/heredoc_utils.c \
                 parsing/init_env.c \
                 parsing/token_arguments.c \
