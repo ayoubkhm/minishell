@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 14:09:42 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/10 14:20:36 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/10 14:44:47 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	get_heredoc_number(const char *filename, size_t prefix_len)
 	return (num);
 }
 
-int	find_max_heredoc_number(const t_heredoc_ctx *ctx)
+int	find_max_hc_number(const t_heredoc_ctx *ctx)
 {
 	DIR				*dir;
 	struct dirent	*entry;

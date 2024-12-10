@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 14:11:29 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/12/10 14:12:21 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/12/10 14:44:56 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	init_ctx(t_heredoc_ctx *ctx, const char *base_filename)
 	ctx->base_path = strdup(base_filename);
 	if (!ctx->base_path)
 		return (0);
-	ctx->counter = find_max_heredoc_number(ctx) + 1;
+	ctx->counter = find_max_hc_number(ctx) + 1;
 	return (1);
 }
 
