@@ -47,13 +47,13 @@ typedef struct s_token
 
 typedef struct s_data
 {
-	int		ac;
-	char	**av;
-	char	**envp;
-	char	*cwd;
-	int		exit;
-	int		nodenb;
-	int		prev_pipe_read_end;
+	int			ac;
+	char		**av;
+	char		**envp;
+	char		*cwd;
+	int			exit;
+	int			nodenb;
+	int			prev_pipe_read_end;
 
 }	t_data;
 
@@ -141,9 +141,9 @@ typedef struct s_pars_cxt
 
 typedef struct s_heredoc_ctx
 {
-    int counter;
-    char *base_path;
-    char *suffix;
-} t_heredoc_ctx;
+	int		counter;
+	char	*base_path;
+	char	*suffix;
+}	t_heredoc_ctx;
 
 #endif
